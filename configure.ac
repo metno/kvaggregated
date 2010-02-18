@@ -1,9 +1,9 @@
-AC_PREREQ([2.59])
+AC_PREREQ([2.61])
 AC_INIT([kvAgregated], [2.0.7], [kvoss@met.no])
 
 
-AC_CONFIG_SRCDIR([src/main.cpp])
-#AC_CONFIG_HEADER([config.h])
+AC_CONFIG_SRCDIR([src/main.cc])
+AC_CONFIG_HEADER([config.h])
 
 AC_PROG_LIBTOOL
 
@@ -15,15 +15,6 @@ AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_LN_S
 
-
-AM_INIT_AUTOMAKE
-
-AM_PROG_CC_C_O
-AC_PROG_CXX
-AC_PROG_INSTALL
-
-
-AC_CONFIG_FILES([Makefile])
 
 PKG_CHECK_MODULES(kvcpp, kvcpp)
 PKG_CHECK_MODULES(sqlite3, sqlite3)
@@ -41,6 +32,14 @@ if test -z $BOOST_FILESYSTEM_LIB; then AC_MSG_ERROR([Unable to find boost filesy
 AX_BOOST_PROGRAM_OPTIONS
 if test -z $BOOST_PROGRAM_OPTIONS_LIB; then AC_MSG_ERROR([Unable to find boost program_options library]); fi
  
-AC_CONFIG_HEADERS(config.h)
 
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_C_CONST
+AC_TYPE_SIZE_T
+
+
+AM_INIT_AUTOMAKE(-Wall -Werror subdir-objects)
+
+AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT
