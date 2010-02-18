@@ -41,24 +41,15 @@ kvAgregated_SOURCES = \
 kvAgregated_CPPFLAGS = \
 	-D_REENTRANT \
 	-DVERSION=\"$(VERSION)\" \
-	-I$(top_srcdir)/src/service-libs \
-	-I$(top_srcdir)/src/lib/ \
-	-I$(top_builddir)/src/lib/ \
-	-I$(top_builddir)/src/lib/kvskel \
-	$(omniDynamic4_CFLAGS) \
-	$(BOOST_CPPFLAGS) \
-	$(putools_CFLAGS)
+	$(kvcpp_CFLAGS) \
+	$(BOOST_CPPFLAGS)
 
 kvAgregated_LDFLAGS = -rpath $(pkglibdir) -export-dynamic
 
 kvAgregated_LDADD = \
-	$(top_builddir)/src/service-libs/kvcpp/libkvcpp.la \
-	$(top_builddir)/src/lib/kvalobs/libkvalobs.la \
-	$(top_builddir)/src/lib/fileutil/libfileutil.la \
-	$(top_builddir)/src/lib/miconfparser/libmiconfparser.a \
+	$(kvcpp_LIBS) \
 	$(BOOST_PROGRAM_OPTIONS_LIB) 
 
-	
 pkgstatedir = $(localstatedir)/$(PACKAGE)/agregate
 nodist_pkgstate_DATA = database.sqlite
 
@@ -71,7 +62,12 @@ EXTRA_DIST = kvAgregateDbInit.sh
 
 
 
-#TESTS = kvAgregatedTest
+
+
+
+
+
+
 
 #check_PROGRAMS = kvAgregatedTest
 EXTRA_PROGRAMS = kvAgregatedTest
