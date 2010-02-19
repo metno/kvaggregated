@@ -58,7 +58,7 @@ public:
 	std::string backProductionSpec() const;
 
 	bool daemonMode() const;
-	bool runInDaemonMode() const { return backProduction() or daemonMode(); }
+	bool runInDaemonMode() const { return not backProduction() or daemonMode(); }
 
 	const std::vector<int> & stations() const { return stations_; }
 	const std::vector<int> & parameters() const { return parameters_; }
