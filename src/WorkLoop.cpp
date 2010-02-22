@@ -27,41 +27,62 @@
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef AGREGATORRUNNER_H_
-#define AGREGATORRUNNER_H_
-
 #include "WorkLoop.h"
-#include "proxy/IncomingHandler.h"
-#include <dnmithread/CommandQue.h>
-#include <boost/shared_ptr.hpp>
-#include <vector>
+#include <boost/thread/thread.hpp>
 
-namespace kvservice
+WorkLoop::WorkLoop() :
+	shutdown_(false), thread(0)
 {
-namespace proxy
-{
-class KvalobsProxy;
-}
 }
 
-class AgregatorRunner : public WorkLoop
+WorkLoop::~WorkLoop()
 {
-public:
-	explicit AgregatorRunner(const std::vector<int> & stations, kvservice::proxy::KvalobsProxy & proxy);
-	~AgregatorRunner();
+	stop();
+}
 
-    dnmi::thread::CommandQue & getCommandQueue() { return queue; }
-    const dnmi::thread::CommandQue & getCommandQueue() const { return queue; }
+void WorkLoop::start()
+{
+	try
+	{
+		run();
+	}
+	catch ( ... )
+	{
+		stop();
+		throw;
+	}
+}
 
-protected:
-
-    virtual void run();
-    virtual void onStop();
-
-    void awaitData(int timeout);
-
-    dnmi::thread::CommandQue queue;
-    kvservice::proxy::internal::IncomingHandler incomingHandler;
+namespace
+{
+struct startit
+{
+	WorkLoop & l_;
+	startit(WorkLoop & l) :
+		l_(l)
+	{
+	}
+	void operator()()
+	{
+		l_.start();
+	}
 };
+}
 
-#endif /* AGREGATORRUNNER_H_ */
+
+void WorkLoop::start_thread()
+{
+	startit s(* this);
+	thread = new boost::thread(s);
+}
+
+void WorkLoop::stop()
+{
+	shutdown_ = true;
+	if (thread)
+	{
+		thread->join();
+		delete thread;
+		thread = 0;
+	}
+}

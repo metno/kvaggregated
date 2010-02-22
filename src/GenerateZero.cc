@@ -113,12 +113,14 @@ namespace agregator
 	  {
 	    LOGDEBUG( "Station " << it->station );
 	    
-	    AgregatorHandler * ag = AgregatorHandler::agHandler;
+	    kvservice::proxy::Callback * ag = AgregatorHandler::agHandler;
 	    if ( ! ag )
 	    	return;
 	    	
+	    kvservice::KvDataList dl;
 	    kvDataFactory dataFactory( it->station, from, it->type, it->sensor, it->lvl );
-		ag->process( dataFactory.getData( obsVal(), RR_01 ) );
+	    dl.push_back(dataFactory.getData( obsVal(), RR_01 ));
+		ag->newData(dl);
 	  }
 	}
   }

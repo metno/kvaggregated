@@ -38,7 +38,6 @@
 #include <milog/milog.h>
 #include <milog/FLogStream.h>
 #include <puTools/miClock.h>
-//#include <kvdb/dbdrivermgr.h>
 #include <set>
 #include <fileutil/pidfileutil.h>
 #include <kvalobs/kvPath.h>
@@ -57,18 +56,16 @@ using namespace agregator;
 using namespace miutil;
 using namespace milog;
 using namespace dnmi::db;
-namespace opt = boost::program_options;
 
 typedef kvservice::corba::CorbaKvApp KvApp;
-// typedef kvservice::KvApp KvApp;
 
 namespace
 {
 void setupPidFile(dnmi::file::PidFileHelper & pidFile)
 {
 	//PID-file
-	std::string pidFileName;
-	pidFileName = dnmi::file::createPidFileName(kvPath("localstatedir") + "/run", "kvAgregated");
+	std::string pidFileName = dnmi::file::createPidFileName(kvPath("localstatedir") + "/run", "kvAgregated");
+
 	bool pidfileError;
 	if (dnmi::file::isRunningPidFile(pidFileName, pidfileError))
 	{
@@ -183,6 +180,7 @@ int main(int argc, char **argv)
 		return result;
 
 	// Logging
+	milog::Logger::logger().logLevel( milog::INFO );
 	std::auto_ptr<FLogStream> fine = createLog("kvAgregated.log", INFO, 1024 * 1024);
 	std::auto_ptr<FLogStream> error = createLog("kvAgregated.warn.log", INFO, 100 * 1024);
 
@@ -230,7 +228,6 @@ int main(int argc, char **argv)
 		ra2rr_12_forward ra2rr_f;
 		handler.addHandler(&ra2rr_f);
 
-		// Backproduction instead of daemon mode?
 		try
 		{
 		    runAgregator(conf, proxy);

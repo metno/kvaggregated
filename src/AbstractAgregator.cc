@@ -160,7 +160,7 @@ namespace agregator
 	      return return_type( 0 );
 	    }
 	    
-	    LOGINFO( "Agregating with base " << data );
+	    LOGINFO( "Agregating " << decodeutility::kvdataformatter::createString(data) );
 	
 	    // Call abstract method to get agregate value:
 	    float agregateValue;

@@ -71,7 +71,7 @@ namespace kvservice
          */
         void getData( KvDataList &data, int station,
                       const miutil::miTime &from, const miutil::miTime &to,
-                      int paramid, int type, int sensor, int lvl );
+                      int paramid, int type, int sensor, int lvl ) const;
 
         /**
          * Send data to kvalobs. Data will also be stored in proxy database
@@ -115,8 +115,6 @@ namespace kvservice
       private:
         dnmi::db::Connection &connection;
 
-      private:  // Kvalobs subscription:
-
         std::set<int> interesting;
         
         const std::vector<int> stations_;
@@ -124,23 +122,19 @@ namespace kvservice
         boost::shared_ptr<internal::IncomingHandler> incomingHandler;
         friend class internal::IncomingHandler;
 
-      private:  // Fetch data
         miutil::miTime oldestInProxy;
 
         void proxy_getData( KvDataList &data, int station,
                             const miutil::miTime &from,
                             const miutil::miTime &to,
-                            int paramid, int type, int sensor, int lvl );
+                            int paramid, int type, int sensor, int lvl ) const;
 
         void kvalobs_getData( KvDataList &data, int station,
                               const miutil::miTime &from,
                               const miutil::miTime &to,
-                              int paramid, int type, int sensor, int lvl );
+                              int paramid, int type, int sensor, int lvl ) const;
 
-      private:  // Callback
         CallbackCollection callbackCollection;
-
-      private:  // Thread synchronization
 
         friend class internal::KvDataSaver;
 

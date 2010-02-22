@@ -144,28 +144,28 @@ namespace agregator
   bool rr_24::shouldProcess( const kvData &trigger,
 			     const kvDataList &observations )
   {
-    // These are the times from which we will generate data:
-    const set<miClock> &when = sixAmSixPm;
+	// These are the times from which we will generate data:
+	const set<miClock> &when = sixAmSixPm;
 
-    const miTime &time = trigger.obstime();
-    if ( when.find( time.clock() ) == when.end() )
-      return false;
+	const miTime &time = trigger.obstime();
+	if (when.find(time.clock()) == when.end())
+		return false;
 
-
-    for ( set<miClock>::const_iterator genTime = when.begin();
-	  genTime != when.end();  genTime++) {
-      kvDataList::const_iterator search = observations.begin();
-      while ( search != observations.end() ) {
-	const miTime &t = search->obstime();
-	if ( t.clock() == *genTime ) 
-	  break;
-	search++;
-      }
-      if ( search == observations.end() )
-	return false;
-    }
-    return true;
-  }
+	for (set<miClock>::const_iterator genTime = when.begin(); genTime != when.end(); genTime++)
+	{
+		kvDataList::const_iterator search = observations.begin();
+		while (search != observations.end())
+		{
+			const miTime &t = search->obstime();
+			if (t.clock() == *genTime)
+				break;
+			search++;
+		}
+		if (search == observations.end())
+			return false;
+	}
+	return true;
+}
 
   
   float rr_24::generateKvData( const kvDataList &data, 

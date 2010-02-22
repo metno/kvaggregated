@@ -35,7 +35,7 @@
 #include <boost/scoped_ptr.hpp>
 
 AgregatorRunner::AgregatorRunner(const std::vector<int> & stations, kvservice::proxy::KvalobsProxy & proxy) :
-	shutdown(false), incomingHandler(proxy)
+	incomingHandler(proxy)
 {
     assert( kvservice::KvApp::kvApp );
 
@@ -51,75 +51,36 @@ AgregatorRunner::~AgregatorRunner()
 {
 }
 
-void AgregatorRunner::start()
-{
-	milog::LogContext context("AgregatorRunner::start");
-	shutdown = false;
-	try
-	{
-		run();
-	} catch (std::exception & e)
-	{
-		LOGFATAL( e.what() );
-		stop();
-	} catch (...)
-	{
-		LOGFATAL( "Unknown exception!" );
-		stop();
-	}
-	LOGDEBUG( "Stopping..." );
-}
-
-namespace
-{
-struct startit
-{
-	AgregatorRunner *p;
-	startit(AgregatorRunner *p) :
-		p(p)
-	{
-	}
-	void operator()()
-	{
-		p->start();
-	}
-};
-}
-
-void AgregatorRunner::start_thread()
-{
-	milog::LogContext context("AgregatorRunner::start_thread");
-
-	LOGDEBUG( "Start thread" );
-	startit s(this);
-	thread = new boost::thread(s);
-}
-
-void AgregatorRunner::stop()
-{
-	shutdown = true;
-	incomingHandler.stopThreads();
-	if (thread)
-	{
-		LOGDEBUG( "Stopping AgregatorRunner thread" );
-		thread->join();
-		delete thread;
-		thread = 0;
-		LOGDEBUG( "AgregatorRunner thread stopped" );
-	}
-}
-
 void AgregatorRunner::run()
 {
 	milog::LogContext context("AgregatorRunner::run (main loop)");
 	LOGDEBUG( "Running" );
-	while (not shutdown)
+	try
 	{
-		awaitData(1);
-//		miutil::miTime now = miutil::miTime::nowTime();
-//		if (now.date() > lastCleaned and now.clock() > miClock(2, 15, 0))
-//			db_cleanup();
+		while (not stopping())
+		{
+			awaitData(1);
+	//		miutil::miTime now = miutil::miTime::nowTime();
+	//		if (now.date() > lastCleaned and now.clock() > miClock(2, 15, 0))
+	//			db_cleanup();
+		}
 	}
+	catch (std::exception & e)
+	{
+		LOGFATAL( e.what() );
+		stop();
+	}
+	catch (...)
+	{
+		LOGFATAL( "Unknown exception!" );
+		stop();
+	}
+}
+
+void AgregatorRunner::onStop()
+{
+	LOGDEBUG( "Stopping AgregatorRunner thread" );
+	incomingHandler.stopThreads();
 }
 
 void AgregatorRunner::awaitData(int timeout)
@@ -135,8 +96,6 @@ void AgregatorRunner::awaitData(int timeout)
 		LOGERROR( "Could not understand data received from kvalobs" );
 		return;
 	}
-
-	assert( ( void* ) base.get() == ( void* ) data );
 
 	data->dispatchEvent(incomingHandler);
 }

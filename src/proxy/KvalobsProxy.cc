@@ -289,7 +289,7 @@ namespace proxy
 
     void KvalobsProxy::getData( KvDataList &data, int station,
                                 const miutil::miTime &from, const miutil::miTime &to,
-                                int paramid, int type, int sensor, int lvl )
+                                int paramid, int type, int sensor, int lvl ) const
     {
       //LogContext context( "KvalobsProxy::getData" );
 
@@ -321,7 +321,7 @@ namespace proxy
 
     void KvalobsProxy::proxy_getData( KvDataList &data, int station,
                                       const miutil::miTime &from, const miutil::miTime &to,
-                                      int paramid, int type, int sensor, int lvl )
+                                      int paramid, int type, int sensor, int lvl ) const
     {
       LogContext context( "proxy_getData" );
       //LOGDEBUG( "KvalobsProxy::proxy_getData" );
@@ -393,7 +393,7 @@ namespace proxy
 
     void KvalobsProxy::kvalobs_getData( KvDataList &data, int station,
                                         const miutil::miTime &from, const miutil::miTime &to,
-                                        int paramid, int type, int sensor, int lvl )
+                                        int paramid, int type, int sensor, int lvl ) const
     {
       ostringstream contextstream;
       contextstream << "kvalobs_getData( " << station << ", " << from << ", " << to << ", " << paramid << "< " << type << " )";

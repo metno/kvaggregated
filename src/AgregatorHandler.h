@@ -52,9 +52,15 @@ public:
 
 	virtual void newData(kvservice::KvDataList &data);
 
-	void process(const kvalobs::kvData & data);
+	void process(kvservice::KvDataList & out, const kvalobs::kvData & data);
 
-	void save(const kvalobs::kvData & d);
+	void save(const kvalobs::kvData & d)
+	{
+		kvservice::KvDataList dl;
+		dl.push_back(d);
+		save(dl);
+	}
+	void save(const kvservice::KvDataList & dataList);
 
 	void setParameterFilter(const std::vector<int> & allowedParameters)
 	{
@@ -65,7 +71,7 @@ public:
 
 	virtual std::list<kvalobs::kvData>
 	getRelevantObsList(const kvalobs::kvData & data,
-			const AbstractAgregator::TimeSpan & obsTimes);
+			const AbstractAgregator::TimeSpan & obsTimes) const;
 
 private:
 	typedef std::pair<int, AbstractAgregator *> Handler;

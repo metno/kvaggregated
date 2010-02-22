@@ -27,41 +27,62 @@
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef AGREGATORRUNNER_H_
-#define AGREGATORRUNNER_H_
+#ifndef WORKLOOP_H_
+#define WORKLOOP_H_
 
-#include "WorkLoop.h"
-#include "proxy/IncomingHandler.h"
-#include <dnmithread/CommandQue.h>
-#include <boost/shared_ptr.hpp>
-#include <vector>
+#include <boost/noncopyable.hpp>
 
-namespace kvservice
+namespace boost
 {
-namespace proxy
-{
-class KvalobsProxy;
-}
+class thread;
 }
 
-class AgregatorRunner : public WorkLoop
+class WorkLoop : boost::noncopyable
 {
 public:
-	explicit AgregatorRunner(const std::vector<int> & stations, kvservice::proxy::KvalobsProxy & proxy);
-	~AgregatorRunner();
+	WorkLoop();
+	virtual ~WorkLoop();
 
-    dnmi::thread::CommandQue & getCommandQueue() { return queue; }
-    const dnmi::thread::CommandQue & getCommandQueue() const { return queue; }
+    /**
+     * call run() in this thread
+     */
+    void start();
+
+    /**
+     * call run() in a new thread thread
+     */
+    void start_thread();
+
+    /**
+     * Signal run to stop. If a thread is running, join with it.
+     */
+    void stop();
+
+    /**
+     * Are we about to stop?
+     */
+    bool stopping() const
+    {
+      return shutdown_;
+    }
 
 protected:
 
-    virtual void run();
-    virtual void onStop();
+    /**
+     * Override to supply functionality. Implementer is supposed to check for
+     * stopping() every now and then, and return from function if it has been
+     * called.
+     */
+    virtual void run() =0;
 
-    void awaitData(int timeout);
+    /**
+     * Called by stop before trying to stop threads
+     */
+    virtual void onStop() {}
 
-    dnmi::thread::CommandQue queue;
-    kvservice::proxy::internal::IncomingHandler incomingHandler;
+private:
+    bool shutdown_;
+    boost::thread * thread;
 };
 
-#endif /* AGREGATORRUNNER_H_ */
+#endif /* WORKLOOP_H_ */

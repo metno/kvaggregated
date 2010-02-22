@@ -1,5 +1,5 @@
 #include "BackProduction.h"
-#include "AgregatorRunner.h"
+#include "WorkLoop.h"
 #include "proxy/KvDataReceiver.h"
 #include "proxy/KvalobsProxy.h"
 #include <kvcpp/KvApp.h>
@@ -10,79 +10,86 @@
 using namespace std;
 
 BackProduction::BackProduction(kvservice::proxy::KvalobsProxy & proxy,
-		const AgregatorRunner & runner,
-    const miutil::miTime & from, const miutil::miTime & to) :
-  proxy_(proxy), runner_(runner), from_(from), to_(to)
+		const WorkLoop & mainLoop, const miutil::miTime & from,
+		const miutil::miTime & to) :
+	proxy_(proxy), mainLoop_(mainLoop), from_(from), to_(to)
 {
 }
 
 BackProduction::BackProduction(kvservice::proxy::KvalobsProxy & proxy,
-		const AgregatorRunner & runner,
-    const std::string & timeSpec) :
-  proxy_(proxy), runner_(runner)
+		const WorkLoop & mainLoop, const std::string & timeSpec) :
+	proxy_(proxy), mainLoop_(mainLoop)
 {
-  const string::size_type sep = timeSpec.find_first_of(',');
-  if ( sep == string::npos )
-    throw std::logic_error("Invalid specification: " + timeSpec);
-  
-  string from = timeSpec.substr(0, sep);
-  
-  from_.setTime( from );
-  if ( from_.undef() )
-    throw std::logic_error("Invalid from specification: " + from);
-  
-  const string::size_type nextWord = sep +1;
-  if ( nextWord == timeSpec.size() )
-    throw std::logic_error("Invalid specification: " + timeSpec);
-  
-  const std::string to = timeSpec.substr(nextWord);
-  try {
-    unsigned duration = boost::lexical_cast<unsigned>(to);
-    to_ = from_;
-    to_.addHour(duration);
-  }
-  catch ( boost::bad_lexical_cast & ) {
-    to_.setTime(to);
-  }
-  
-  if ( to_.undef() )
-    throw std::logic_error("Invalid to specification: " + to);
+	const string::size_type sep = timeSpec.find_first_of(',');
+	if (sep == string::npos)
+	{
+		from_.setTime(timeSpec);
+		if (from_.undef())
+			throw std::logic_error("Invalid specification: " + timeSpec);
+		to_ = from_;
+	}
+	else
+	{
+		string from = timeSpec.substr(0, sep);
+
+		from_.setTime(from);
+		if (from_.undef())
+			throw std::logic_error("Invalid from specification: " + from);
+
+		const string::size_type nextWord = sep + 1;
+		if (nextWord == timeSpec.size())
+			throw std::logic_error("Invalid specification: " + timeSpec);
+
+		const std::string to = timeSpec.substr(nextWord);
+		try
+		{
+			unsigned duration = boost::lexical_cast<unsigned>(to);
+			to_ = from_;
+			to_.addHour(duration);
+		}
+		catch (boost::bad_lexical_cast &)
+		{
+			to_.setTime(to);
+		}
+
+		if (to_.undef())
+			throw std::logic_error("Invalid to specification: " + to);
+	}
 }
 
 BackProduction::~BackProduction()
 {
 }
 
-void BackProduction::operator () ()
+void BackProduction::operator ()()
 {
-  miutil::miTime f(to_);
+	miutil::miTime f(from_);
 
-  while ( ! runner_.stopping() && from_ < to_ ) {
-    to_ = f;
-    f.addHour(-1);
-
-    processData(f, to_);
-
-    LOGINFO( "Done processing data for time " << to_ );
-  }
+	while (!mainLoop_.stopping() && f <= to_)
+	{
+		processData(f);
+		LOGINFO("Done processing data for time " << f);
+		f.addHour(1);
+	}
 }
 
-void BackProduction::processData(const miutil::miTime &from, const miutil::miTime &to)
+void BackProduction::processData(const miutil::miTime & time)
 {
 	milog::LogContext context("BackProduction::processData");
-	LOGINFO( "Starting processing of data from " << from << " to " << to );
+	LOGINFO("Starting processing of data for time " << time);
 
 	kvservice::WhichDataHelper wdh(CKvalObs::CService::All);
-	miutil::miTime new_to(to);
-	new_to.addSec(-1);
 
-    const std::vector<int> & stations = proxy_.getInteresingStations();
+	miutil::miTime to(time);
+	to.addSec((60*60)-1);
+
+	const std::vector<int> & stations = proxy_.getInteresingStations();
 
 	if (stations.empty())
-		wdh.addStation(0, from, new_to);
+		wdh.addStation(0, time, to);
 	else
-		for ( std::vector<int>::const_iterator it = stations.begin(); it != stations.end(); ++ it )
-			wdh.addStation(*it, from, new_to);
+		for ( std::vector<int>::const_iterator it = stations.begin(); it != stations.end(); ++it )
+			wdh.addStation(*it, time, to);
 
 	kvservice::KvDataList dataList;
 	kvservice::proxy::internal::KvDataReceiver dr(dataList);
@@ -90,13 +97,13 @@ void BackProduction::processData(const miutil::miTime &from, const miutil::miTim
 	if (!result)
 	{
 		const char * err_msg = "Unable to retrieve data from kvalobs.";
-		LOGERROR( err_msg );
+		LOGERROR(err_msg);
 		return;
 	}
 
-	LOGDEBUG( "Got data. Processing..." );
+	LOGDEBUG("Got data. Processing...");
 	proxy_.getCallbackCollection().send(dataList);
 
-	LOGDEBUG( "Done" );
+	LOGDEBUG("Done");
 }
 
