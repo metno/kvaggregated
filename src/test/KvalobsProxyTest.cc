@@ -42,10 +42,10 @@ class KvalobsProxyTest : public Test
 {
 protected:
 	ProxyDatabaseConnection db;
-	std::vector<int> stations;
 
 	typedef testing::NiceMock<testing::MockKvApp> MockKvApp;
 	MockKvApp * kvApp;
+	CallbackCollection callbacks;
 	KvalobsProxy * proxy;
 
 	kvservice::KvDataList sampleData;
@@ -56,7 +56,7 @@ protected:
 	virtual void SetUp()
 	{
 		kvApp = new MockKvApp;
-		proxy = new KvalobsProxy(db, stations);
+		proxy = new KvalobsProxy(db, callbacks);
 		for ( int i = 1; i <= 3; ++ i )
 			proxy->addInteresting(i);
 		// this should cause oldestInProxy to be ignored when searching cache/kvalobs:
@@ -82,7 +82,7 @@ TEST_F(KvalobsProxyTest, createWithoutKvApp)
 {
 	delete kvApp;
 	kvApp = 0;
-	ASSERT_THROW(KvalobsProxy proxy(db, stations), std::runtime_error);
+	ASSERT_THROW(KvalobsProxy proxy(db, callbacks), std::runtime_error);
 }
 
 TEST_F(KvalobsProxyTest, sameDataShouldOnlyBeSentOnce)

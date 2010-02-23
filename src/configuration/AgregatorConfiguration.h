@@ -62,6 +62,7 @@ public:
 
 	const std::vector<int> & stations() const { return stations_; }
 	const std::vector<int> & parameters() const { return parameters_; }
+	const std::vector<int> & types() const { return types_; }
 
 	std::string proxyDatabaseName() const;
 	bool repopulateDatabase() const;
@@ -80,6 +81,7 @@ private:
 
 	std::vector<int> stations_;
 	std::vector<int> parameters_;
+	std::vector<int> types_;
 };
 
 #endif /* AGREGATORCONFIGURATION_H_ */

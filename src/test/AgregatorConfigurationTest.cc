@@ -79,6 +79,22 @@ TEST_F(AgregatorConfigurationTest, daemonModeShortOption)
 	ASSERT_TRUE(config.daemonMode());
 }
 
+TEST_F(AgregatorConfigurationTest, stationListSingle)
+{
+	int argc = 2;
+	const char * argv[] = {"test", "-s1"};
+
+	EXPECT_EQ(AgregatorConfiguration::No_Action, parse(argc, argv));
+
+	const std::vector<int> & stations = config.stations();
+	ASSERT_FALSE(stations.empty());
+
+	EXPECT_EQ(1u, stations.size()) << "(last value is " << stations.back() << ")";
+
+	EXPECT_EQ(1, stations[0]);
+}
+
+
 TEST_F(AgregatorConfigurationTest, stationList)
 {
 	int argc = 2;

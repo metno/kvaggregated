@@ -44,7 +44,8 @@ void AgregatorConfiguration::setup_()
 			("back-production,b", value<std::string>(), "Produce data according to the given specification. Format for specification is '2008-04-08T06:00:00,5', which means produce data valid for period 2008-04-08T06:00:00 - 2008-04-08T11:00:00. Daemon mode will not be entered if this option is given.")
 			("daemon-mode,d", "Enter daemon mode, even if overridden by the --back-production option.")
 			("stations,s", value<std::vector<std::string> >(), "Only process stations from the given comma-separated list.")
-			("parameter,p", value<std::string>(), "Only process parameters from the given comma-separated list.")
+			("parameter,p", value<std::vector<std::string> >(), "Only process parameters from the given comma-separated list.")
+			("type,t", value<std::vector<std::string> >(), "Only process the typeid from the given comma-separated list.")
 	;
 	availableOptions_.add(mode);
 
@@ -128,6 +129,7 @@ AgregatorConfiguration::ParseResult AgregatorConfiguration::parse(int & argc, ch
 
 		getOptionList(std::back_inserter(stations_), "stations", givenOptions_);
 		getOptionList(std::back_inserter(parameters_), "parameter", givenOptions_);
+		getOptionList(std::back_inserter(types_), "type", givenOptions_);
 
 		return No_Action;
 	}

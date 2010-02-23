@@ -41,13 +41,15 @@ namespace kvservice
 namespace proxy
 {
 class KvalobsProxy;
+class CallbackCollection;
 }
 }
 
 class AgregatorRunner : public WorkLoop
 {
 public:
-	explicit AgregatorRunner(const std::vector<int> & stations, kvservice::proxy::KvalobsProxy & proxy);
+	AgregatorRunner(const std::vector<int> & stations, kvservice::proxy::KvalobsProxy & proxy,
+			kvservice::proxy::CallbackCollection & callbacks);
 	~AgregatorRunner();
 
     dnmi::thread::CommandQue & getCommandQueue() { return queue; }

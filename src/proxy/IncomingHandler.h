@@ -31,6 +31,7 @@
 #ifndef __kvservice__proxy__internal__IncomingHandler_h__
 #define __kvservice__proxy__internal__IncomingHandler_h__
 
+#include "CallbackCollection.h"
 #include <list>
 #include <stdexcept>
 #include <kvcpp/kvevents.h>
@@ -56,6 +57,7 @@ namespace kvservice
       {
         public:
           IncomingHandler( KvalobsProxy & proxy,
+					 CallbackCollection & callbacks,
                            bool doStartThreads = true,
                            int noOfThreads = 4 );
           virtual ~IncomingHandler( );
@@ -73,6 +75,7 @@ namespace kvservice
         private:
 
           KvalobsProxy & proxy;
+          CallbackCollection & callbacks_;
 
           const int noOfThreads;
 

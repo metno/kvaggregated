@@ -1,6 +1,7 @@
 #ifndef BACKPRODUCTION_H_
 #define BACKPRODUCTION_H_
 
+#include "proxy/CallbackCollection.h"
 #include <puTools/miTime>
 #include <string>
 
@@ -22,7 +23,8 @@ class WorkLoop;
 class BackProduction
 {
 public:
-	BackProduction(kvservice::proxy::KvalobsProxy & proxy, 
+	BackProduction(kvservice::proxy::KvalobsProxy & proxy,
+			kvservice::proxy::CallbackCollection & callbacks,
 			const WorkLoop & mainLoop,
 			const miutil::miTime & from, 
 			const miutil::miTime & to);
@@ -36,7 +38,9 @@ public:
 	 * 
 	 * @throw std::logic_error if specification is invalid
 	 */
-	BackProduction(kvservice::proxy::KvalobsProxy & proxy, const WorkLoop & mainLoop, const std::string & timeSpec);
+	BackProduction(kvservice::proxy::KvalobsProxy & proxy,
+			kvservice::proxy::CallbackCollection & callbacks,
+			const WorkLoop & mainLoop, const std::string & timeSpec);
 	
 	~BackProduction();
 
@@ -47,6 +51,7 @@ private:
 	void processData( const miutil::miTime & time);
 
 	kvservice::proxy::KvalobsProxy & proxy_;
+	kvservice::proxy::CallbackCollection & callbacks_;
 	const WorkLoop & mainLoop_;
 	miutil::miTime from_;
 	miutil::miTime to_;

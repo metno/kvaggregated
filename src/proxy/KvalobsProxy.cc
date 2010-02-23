@@ -112,9 +112,8 @@ namespace proxy
 	};
 
 
-    KvalobsProxy::KvalobsProxy( ProxyDatabaseConnection & connection_, const std::vector<int> & stations, bool repopulate )
+    KvalobsProxy::KvalobsProxy( ProxyDatabaseConnection & connection_, CallbackCollection & callbacks, bool repopulate )
         : connection( connection_.get() )
-        , stations_(stations)
         , oldestInProxy( miTime::nowTime() )
     {
       if ( ! KvApp::kvApp )
@@ -125,7 +124,7 @@ namespace proxy
       }
 
       incomingHandler =
-          boost::shared_ptr<internal::IncomingHandler>( new internal::IncomingHandler( * this ) );
+          boost::shared_ptr<internal::IncomingHandler>( new internal::IncomingHandler( * this, callbacks ) );
 
 
       // Make reasonably sure the proxy is correct.

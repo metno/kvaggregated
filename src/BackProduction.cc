@@ -10,15 +10,17 @@
 using namespace std;
 
 BackProduction::BackProduction(kvservice::proxy::KvalobsProxy & proxy,
+		kvservice::proxy::CallbackCollection & callbacks,
 		const WorkLoop & mainLoop, const miutil::miTime & from,
 		const miutil::miTime & to) :
-	proxy_(proxy), mainLoop_(mainLoop), from_(from), to_(to)
+	proxy_(proxy), callbacks_(callbacks), mainLoop_(mainLoop), from_(from), to_(to)
 {
 }
 
 BackProduction::BackProduction(kvservice::proxy::KvalobsProxy & proxy,
+		kvservice::proxy::CallbackCollection & callbacks,
 		const WorkLoop & mainLoop, const std::string & timeSpec) :
-	proxy_(proxy), mainLoop_(mainLoop)
+	proxy_(proxy), callbacks_(callbacks), mainLoop_(mainLoop)
 {
 	const string::size_type sep = timeSpec.find_first_of(',');
 	if (sep == string::npos)
@@ -83,13 +85,7 @@ void BackProduction::processData(const miutil::miTime & time)
 	miutil::miTime to(time);
 	to.addSec((60*60)-1);
 
-	const std::vector<int> & stations = proxy_.getInteresingStations();
-
-	if (stations.empty())
-		wdh.addStation(0, time, to);
-	else
-		for ( std::vector<int>::const_iterator it = stations.begin(); it != stations.end(); ++it )
-			wdh.addStation(*it, time, to);
+	wdh.addStation(0, time, to);
 
 	kvservice::KvDataList dataList;
 	kvservice::proxy::internal::KvDataReceiver dr(dataList);
@@ -102,7 +98,7 @@ void BackProduction::processData(const miutil::miTime & time)
 	}
 
 	LOGDEBUG("Got data. Processing...");
-	proxy_.getCallbackCollection().send(dataList);
+	callbacks_.send(dataList);
 
 	LOGDEBUG("Done");
 }

@@ -42,8 +42,8 @@ namespace agregator
 {
 AgregatorHandler *AgregatorHandler::agHandler = 0;
 
-AgregatorHandler::AgregatorHandler(KvalobsProxy & proxy) :
-	Callback(proxy.getCallbackCollection()), proxy_(proxy)
+AgregatorHandler::AgregatorHandler(CallbackCollection & callbacks, KvalobsProxy & proxy) :
+	Callback(callbacks), proxy_(proxy)
 {
 	if (!agHandler)
 		agHandler = this;
@@ -101,12 +101,25 @@ void AgregatorHandler::newData(KvDataList &data)
 	save(toSave);
 }
 
+namespace
+{
+bool inIncludeList(int val, const std::vector<int> & valList)
+{
+	if ( valList.empty() )
+		return true;
+	return std::find(valList.begin(), valList.end(), val) != valList.end();
+}
+}
+
 void AgregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvData & data)
 {
 	const int paramID = data.paramID();
 
-	if ( ! allowedParameters_.empty() &&
-		find(allowedParameters_.begin(), allowedParameters_.end(), paramID) == allowedParameters_.end())
+	if ( not inIncludeList(paramID, allowedParameters_) )
+		return;
+	if ( not inIncludeList(data.stationID(), allowedStations_) )
+		return;
+	if ( not inIncludeList(data.typeID(), allowedTypes_) )
 		return;
 
 	HandlerMap::const_iterator it = handlers.lower_bound(paramID);

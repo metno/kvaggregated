@@ -31,13 +31,12 @@
 #ifndef __kvservice__proxy__KvalobsProxy_h__
 #define __kvservice__proxy__KvalobsProxy_h__
 
+#include "DataAccess.h"
 #include "CallbackCollection.h"
 #include <boost/utility.hpp>
-#include <kvcpp/kvservicetypes.h>
 #include <set>
 #include <puTools/miTime>
 #include <dnmithread/CommandQue.h>
-#include <kvskel/datasource.hh>
 #include <decodeutility/kvDataFormatter.h>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/shared_ptr.hpp>
@@ -60,10 +59,10 @@ namespace kvservice
     }
 
 
-    class KvalobsProxy : boost::noncopyable
+    class KvalobsProxy : public DataAccess, boost::noncopyable
     {
       public:
-        KvalobsProxy( ProxyDatabaseConnection & connection, const std::vector<int> & stations, bool repopulate = false );
+        KvalobsProxy( ProxyDatabaseConnection & connection, CallbackCollection & callbacks, bool repopulate = false );
         ~KvalobsProxy( );
 
         /**
@@ -85,11 +84,6 @@ namespace kvservice
         {
           interesting.insert( param );
         }
-
-        const std::vector<int> & getInteresingStations() const { return stations_; }
-
-        CallbackCollection & getCallbackCollection() { return callbackCollection; }
-        const CallbackCollection & getCallbackCollection() const { return callbackCollection; }
 
         // Operations on proxy:
         void db_clear();
@@ -117,8 +111,6 @@ namespace kvservice
 
         std::set<int> interesting;
         
-        const std::vector<int> stations_;
-
         boost::shared_ptr<internal::IncomingHandler> incomingHandler;
         friend class internal::IncomingHandler;
 
@@ -133,8 +125,6 @@ namespace kvservice
                               const miutil::miTime &from,
                               const miutil::miTime &to,
                               int paramid, int type, int sensor, int lvl ) const;
-
-        CallbackCollection callbackCollection;
 
         friend class internal::KvDataSaver;
 

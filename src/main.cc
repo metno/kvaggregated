@@ -145,12 +145,12 @@ void runThreadWithBackProduction(BackProduction & back, AgregatorRunner & runner
 }
 
 void runAgregator(const AgregatorConfiguration & conf,
-		kvservice::proxy::KvalobsProxy & proxy)
+		kvservice::proxy::KvalobsProxy & proxy, kvservice::proxy::CallbackCollection & callbacks)
 {
-	AgregatorRunner runner(conf.stations(), proxy);
+	AgregatorRunner runner(conf.stations(), proxy, callbacks);
 	if ( conf.backProduction() )
 	{
-		BackProduction back(proxy, runner, conf.backProductionSpec());
+		BackProduction back(proxy, callbacks, runner, conf.backProductionSpec());
 		if (!conf.daemonMode())
 			back(); // run outside a thread
 		else
@@ -164,7 +164,7 @@ void runAgregator(const AgregatorConfiguration & conf,
 		miutil::miTime from(to);
 		from.addHour(-3);
 
-		BackProduction back(proxy, runner, from, to);
+		BackProduction back(proxy, callbacks, runner, from, to);
 		runThreadWithBackProduction(back, runner);
 	}
 }
@@ -197,12 +197,12 @@ int main(int argc, char **argv)
 
 		// Proxy database
 		ProxyDatabaseConnection dbConn(conf.proxyDatabaseName());
-		kvservice::proxy::KvalobsProxy proxy(dbConn, conf.stations(), false);
+		kvservice::proxy::CallbackCollection callbacks;
+		kvservice::proxy::KvalobsProxy proxy(dbConn, callbacks, conf.repopulateDatabase());
 
-		AgregatorHandler handler(proxy);
+		AgregatorHandler handler(callbacks, proxy);
 		handler.setParameterFilter(conf.parameters());
-		if (conf.repopulateDatabase())
-			proxy.db_repopulate();
+		handler.setStationFilter(conf.stations());
 
 		// Standard times
 		set<miClock> six;
@@ -230,7 +230,7 @@ int main(int argc, char **argv)
 
 		try
 		{
-		    runAgregator(conf, proxy);
+		    runAgregator(conf, proxy, callbacks);
 		}
 		catch (std::exception & e)
 		{

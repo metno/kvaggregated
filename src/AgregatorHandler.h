@@ -47,7 +47,7 @@ class AgregatorHandler: public kvservice::proxy::Callback
 
 public:
 
-	AgregatorHandler(kvservice::proxy::KvalobsProxy &proxy);
+	AgregatorHandler(kvservice::proxy::CallbackCollection & callbacks, kvservice::proxy::KvalobsProxy &proxy);
 	virtual ~AgregatorHandler();
 
 	virtual void newData(kvservice::KvDataList &data);
@@ -67,6 +67,17 @@ public:
 		allowedParameters_ = allowedParameters;
 	}
 
+	void setStationFilter(const std::vector<int> & allowedStations)
+	{
+		allowedStations_ = allowedStations;
+	}
+
+	void setTypeFilter(const std::vector<int> & allowedTypes)
+	{
+		allowedTypes_ = allowedTypes;
+	}
+
+
 	void addHandler(AbstractAgregator *handler);
 
 	virtual std::list<kvalobs::kvData>
@@ -82,6 +93,8 @@ private:
 	HandlerMap handlers;
 
 	std::vector<int> allowedParameters_;
+	std::vector<int> allowedStations_;
+	std::vector<int> allowedTypes_;
 };
 }
 

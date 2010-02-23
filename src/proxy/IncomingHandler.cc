@@ -119,9 +119,10 @@ namespace kvservice
       }
 
       IncomingHandler::IncomingHandler( KvalobsProxy &proxy_,
-                                        bool doStartThreads,
-                                        int noOfThreads_ )
-          : proxy( proxy_ ), noOfThreads( noOfThreads_ ), threadsStopping( true )
+				CallbackCollection & callbacks,
+				bool doStartThreads,
+				int noOfThreads_ )
+          : proxy( proxy_ ), callbacks_(callbacks), noOfThreads( noOfThreads_ ), threadsStopping( true )
       {
         if ( doStartThreads )
           startThreads();
@@ -195,7 +196,7 @@ namespace kvservice
           KvDataSaver ds( proxy );
           ds.next( *data );
 
-          proxy.getCallbackCollection().send( *data );
+          callbacks_.send( *data );
 
           LOGINFO( "Station " << data->front().dataList().front().stationID() << " done" );
         }

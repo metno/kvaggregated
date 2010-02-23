@@ -74,7 +74,8 @@ kvAgregatedTest_SOURCES = \
 	test/ra2rr_12ForwardTest.cc \
 	test/ra2rr_12Test.cc \
 	test/AgregatorConfigurationTest.cc \
-	test/KvalobsProxyTest.cc
+	test/KvalobsProxyTest.cc \
+	test/AgregatorHandlerTest.cc
 	
 
 kvAgregatedTest_CPPFLAGS = \

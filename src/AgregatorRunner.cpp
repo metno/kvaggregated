@@ -28,14 +28,16 @@
  */
 
 #include "AgregatorRunner.h"
+#include "proxy/CallbackCollection.h"
 #include <kvcpp/kvevents.h>
 #include <kvcpp/KvApp.h>
 #include <milog/milog.h>
 #include <puTools/miTime>
 #include <boost/scoped_ptr.hpp>
 
-AgregatorRunner::AgregatorRunner(const std::vector<int> & stations, kvservice::proxy::KvalobsProxy & proxy) :
-	incomingHandler(proxy)
+AgregatorRunner::AgregatorRunner(const std::vector<int> & stations, kvservice::proxy::KvalobsProxy & proxy,
+		kvservice::proxy::CallbackCollection & callbacks) :
+	incomingHandler(proxy, callbacks)
 {
     assert( kvservice::KvApp::kvApp );
 
