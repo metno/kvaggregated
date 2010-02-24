@@ -111,8 +111,8 @@ namespace proxy
 	};
 
 
-    KvalobsProxy::KvalobsProxy( ProxyDatabaseConnection & connection, CallbackCollection & callbacks, bool repopulate )
-        : cache_( connection )
+    KvalobsProxy::KvalobsProxy( const std::string & proxyDatabaseName, CallbackCollection & callbacks, bool repopulate )
+        : cache_( proxyDatabaseName )
         , oldestInProxy( miTime::nowTime() )
     {
       if ( ! KvApp::kvApp )

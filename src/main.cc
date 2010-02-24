@@ -31,7 +31,6 @@
 #include "AgregatorRunner.h"
 #include "AgregatorHandler.h"
 #include "BackProduction.h"
-#include "proxy/ProxyDatabaseConnection.h"
 #include "proxy/KvalobsProxy.h"
 #include "configuration/AgregatorConfiguration.h"
 #include <kvalobs/kvStation.h>
@@ -196,9 +195,8 @@ int main(int argc, char **argv)
 		KvApp app(argc, argv, confSec.get());
 
 		// Proxy database
-		ProxyDatabaseConnection dbConn(conf.proxyDatabaseName());
 		kvservice::proxy::CallbackCollection callbacks;
-		kvservice::proxy::KvalobsProxy proxy(dbConn, callbacks, conf.repopulateDatabase());
+		kvservice::proxy::KvalobsProxy proxy(conf.proxyDatabaseName(), callbacks, conf.repopulateDatabase());
 
 		AgregatorHandler handler(callbacks, proxy);
 		handler.setParameterFilter(conf.parameters());

@@ -45,8 +45,6 @@
 
 
 
-class ProxyDatabaseConnection;
-
 namespace kvservice
 {
   namespace proxy
@@ -63,7 +61,7 @@ namespace kvservice
     class KvalobsProxy : public DataAccess, boost::noncopyable
     {
       public:
-        KvalobsProxy( ProxyDatabaseConnection & connection, CallbackCollection & callbacks, bool repopulate = false );
+        KvalobsProxy( const std::string & proxyDatabaseName, CallbackCollection & callbacks, bool repopulate = false );
         ~KvalobsProxy( );
 
         /**

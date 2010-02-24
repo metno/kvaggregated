@@ -51,7 +51,7 @@ ProxyDatabaseConnection::ProxyDatabaseConnection(const std::string & databasePro
 	if ( ! connection_)
 		throw std::runtime_error("Cant create a database connection to " + databaseProxyFile);
 
-	if ( createDatabase )
+	if ( createDatabase or databaseProxyFile == ":memory:")
 		createDatabase_();
 }
 

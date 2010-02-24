@@ -31,9 +31,9 @@
 #define CACHEDDATAACCESS_H_
 
 #include "DataAccess.h"
+#include "ProxyDatabaseConnection.h"
 #include <boost/thread/recursive_mutex.hpp>
 
-class ProxyDatabaseConnection;
 
 
 namespace kvservice
@@ -42,7 +42,7 @@ namespace kvservice
 class CachedDataAccess: public kvservice::DataAccess
 {
 public:
-	explicit CachedDataAccess(ProxyDatabaseConnection & connection);
+	explicit CachedDataAccess(const std::string & proxyDatabaseName);
 	virtual ~CachedDataAccess();
 
     virtual void getData( KvDataList &data, int station,
@@ -56,7 +56,7 @@ public:
     void deleteOldData(const miutil::miTime & olderThanThis);
 
 private:
-    dnmi::db::Connection & connection;
+    mutable ProxyDatabaseConnection connection_;
 
     typedef boost::recursive_mutex::scoped_lock Lock;
     mutable boost::recursive_mutex kv_mutex;

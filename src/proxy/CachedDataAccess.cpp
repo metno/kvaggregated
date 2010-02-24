@@ -40,8 +40,8 @@ using namespace dnmi::db;
 namespace kvservice
 {
 
-CachedDataAccess::CachedDataAccess(ProxyDatabaseConnection & connection) :
-	connection(connection.get())
+CachedDataAccess::CachedDataAccess(const std::string & proxyDatabaseName) :
+	connection_(proxyDatabaseName)
 {
 }
 
@@ -83,7 +83,7 @@ void CachedDataAccess::getData(KvDataList &data, int station,
 	{
 		auto_ptr<Result> res;
 		Lock lock(proxy_mutex);
-		res.reset(connection.execQuery(s.str()));
+		res.reset(connection_.get().execQuery(s.str()));
 		while (res->hasNext())
 			data.push_back(kvalobs::kvData(res->next()));
 	} catch (exception & e)
@@ -105,20 +105,20 @@ CKvalObs::CDataSource::Result_var CachedDataAccess::sendData(
 		Lock lock(proxy_mutex);
 		try
 		{
-			connection.exec(insertQuery);
+			connection_.get().exec(insertQuery);
 		} catch (exception &ex)
 		{ // Should have been: dnmi::db::SQLDuplicate &ex ) {
 			try
 			{
-				connection.exec("delete from data " + d->uniqueKey());
-				connection.exec(insertQuery);
+				connection_.get().exec("delete from data " + d->uniqueKey());
+				connection_.get().exec(insertQuery);
 			} catch (exception &ex)
 			{
-				// proxy.connection.rollBack();
+				// proxy.connection_.get().rollBack();
 				LOGERROR("Could not insert data! Error: " << ex.what());
 			} catch (...)
 			{
-				// proxy.connection.rollBack();
+				// proxy.connection_.get().rollBack();
 				LOGERROR("Could not insert data!");
 			}
 		} catch (...)
@@ -133,7 +133,7 @@ void CachedDataAccess::clear()
 {
 	LOGDEBUG("Deleting all entries in cache database");
 	Lock lock(proxy_mutex);
-	connection.exec("delete from data");
+	connection_.get().exec("delete from data");
 	LOGINFO("Cache cleared");
 }
 
@@ -143,7 +143,7 @@ void CachedDataAccess::deleteOldData(const miutil::miTime & olderThanThis)
 	query << "delete from data where obstime < \'" << olderThanThis << "\';";
 
 	Lock lock(proxy_mutex);
-	connection.exec(query.str());
+	connection_.get().exec(query.str());
 }
 
 }

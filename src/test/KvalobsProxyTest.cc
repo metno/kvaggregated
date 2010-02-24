@@ -29,7 +29,6 @@
 
 #include <gtest/gtest.h>
 #include <proxy/KvalobsProxy.h>
-#include <proxy/ProxyDatabaseConnection.h>
 #include <kvcpp/mock/MockKvApp.h>
 #include <kvalobs/kvDataOperations.h>
 #include <stdexcept>
@@ -41,8 +40,6 @@ using namespace testing;
 class KvalobsProxyTest : public Test
 {
 protected:
-	ProxyDatabaseConnection db;
-
 	typedef testing::NiceMock<testing::MockKvApp> MockKvApp;
 	MockKvApp * kvApp;
 	CallbackCollection callbacks;
@@ -51,12 +48,12 @@ protected:
 	kvservice::KvDataList sampleData;
 	kvalobs::kvDataFactory factory;
 
-	KvalobsProxyTest() : db(":memory:", true), factory(1, "2010-02-11 00:00:00", 2) {}
+	KvalobsProxyTest() : factory(1, "2010-02-11 00:00:00", 2) {}
 
 	virtual void SetUp()
 	{
 		kvApp = new MockKvApp;
-		proxy = new KvalobsProxy(db, callbacks);
+		proxy = new KvalobsProxy(":memory:", callbacks);
 		for ( int i = 1; i <= 3; ++ i )
 			proxy->addInteresting(i);
 		// this should cause oldestInProxy to be ignored when searching cache/kvalobs:
@@ -82,7 +79,7 @@ TEST_F(KvalobsProxyTest, createWithoutKvApp)
 {
 	delete kvApp;
 	kvApp = 0;
-	ASSERT_THROW(KvalobsProxy proxy(db, callbacks), std::runtime_error);
+	ASSERT_THROW(KvalobsProxy proxy(":memory:", callbacks), std::runtime_error);
 }
 
 TEST_F(KvalobsProxyTest, sameDataShouldOnlyBeSentOnce)

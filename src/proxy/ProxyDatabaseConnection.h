@@ -48,7 +48,6 @@ public:
 	~ProxyDatabaseConnection();
 
 	dnmi::db::Connection & get() { return * connection_; }
-
 	const dnmi::db::Connection & get() const  { return * connection_; }
 
 private:
