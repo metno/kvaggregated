@@ -70,6 +70,16 @@ namespace
 void KvalobsDataAccess::getData(KvDataList &data, int station, const miutil::miTime &from,
 		const miutil::miTime &to, int paramid, int type, int sensor, int lvl) const
 {
+	KvDataList tmpData;
+
+	getAllData(tmpData, from, to, station);
+
+    tmpData.remove_if( invalid( paramid, type, sensor, lvl ) );
+    data.insert(data.end(), tmpData.begin(), tmpData.end());
+}
+
+void KvalobsDataAccess::getAllData(KvDataList & data, const miutil::miTime &from, const miutil::miTime &to, int station) const
+{
     WhichDataHelper wdh( CKvalObs::CService::All );
     miutil::miTime newFrom = from;
     if ( from != to )
@@ -77,17 +87,14 @@ void KvalobsDataAccess::getData(KvDataList &data, int station, const miutil::miT
 
     wdh.addStation( station, newFrom, to );
 
-    KvDataList tmpData;
-    proxy::internal::KvDataReceiver dr( tmpData );
+    proxy::internal::KvDataReceiver dr( data );
 
     bool result = KvApp::kvApp->getKvData( dr, wdh );
 
     if ( ! result )
       LOGERROR( "Unable to retrieve data from kvalobs." );
-
-    tmpData.remove_if( invalid( paramid, type, sensor, lvl ) );
-    data.insert(data.end(), tmpData.begin(), tmpData.end());
 }
+
 
 CKvalObs::CDataSource::Result_var KvalobsDataAccess::sendData(const KvDataList & data)
 {

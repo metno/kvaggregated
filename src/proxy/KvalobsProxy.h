@@ -99,6 +99,8 @@ namespace kvservice
         }
 
       private:
+        void adaptDataToKvalobs_(KvDataList & out, const kvalobs::kvData & data) const;
+
         std::set<int> interestingParameters_;
         
         miutil::miTime oldestInProxy;

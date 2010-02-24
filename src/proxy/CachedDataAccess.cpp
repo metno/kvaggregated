@@ -82,8 +82,10 @@ void CachedDataAccess::getData(KvDataList &data, int station,
 	try
 	{
 		auto_ptr<Result> res;
-		Lock lock(proxy_mutex);
-		res.reset(connection_.get().execQuery(s.str()));
+		{
+			Lock lock(proxy_mutex);
+			res.reset(connection_.get().execQuery(s.str()));
+		}
 		while (res->hasNext())
 			data.push_back(kvalobs::kvData(res->next()));
 	} catch (exception & e)

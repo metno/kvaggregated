@@ -45,6 +45,9 @@ public:
                   const miutil::miTime &from, const miutil::miTime &to,
                   int paramid, int type, int sensor, int lvl ) const;
 
+    /// station==0 means all stations
+    void getAllData(KvDataList & data, const miutil::miTime &from, const miutil::miTime &to, int station = 0) const;
+
     virtual CKvalObs::CDataSource::Result_var sendData( const KvDataList & data );
 };
 

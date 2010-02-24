@@ -122,10 +122,6 @@ namespace proxy
         throw runtime_error( msg );
       }
 
-//      incomingHandler =
-//          boost::shared_ptr<internal::IncomingHandler>( new internal::IncomingHandler( * this, callbacks ) );
-
-
       // Make reasonably sure the proxy is correct.
       oldestInProxy.addHour( 2 );
 
@@ -156,26 +152,14 @@ namespace proxy
 
     void KvalobsProxy::db_populate(int hours)
 	{
-		WhichDataHelper wdh(CKvalObs::CService::All);
+    	KvDataList data;
 		miTime to = miTime::nowTime();
 		miTime from = to;
 		from.addHour(-hours);
-		wdh.addStation(0, from, to);
 
-		KvDataList kvalobsData;
-		internal::KvDataReceiver receiver(kvalobsData);
+		kvalobs_.getAllData(data, from, to);
 
-		LOGDEBUG("Fetching data from source database.");
-
-		bool result = KvApp::kvApp->getKvData(receiver, wdh);
-		if (!result)
-		{
-			const char * err_msg = "Unable to retrieve data from main server.";
-			LOGFATAL(err_msg);
-			throw runtime_error(err_msg);
-		}
-
-		cache_.sendData(kvalobsData);
+		cache_.sendData(data);
 
 		Lock lock(kv_mutex);
 		if (oldestInProxy.undef())
@@ -199,7 +183,6 @@ namespace proxy
 
     	cache_.deleteOldData(t);
     	LOGINFO("KvalobsProxy::db_cleanup: Done");
-
     }
 
     namespace
@@ -226,43 +209,12 @@ namespace proxy
 		KvDataList l;
 		Lock lock(kv_mutex); // We must lock everything
 
-		for ( int i = 0; i < 10; ++ i )
-			std::cout << "\n";
-		for ( std::set<int>::const_iterator it = interestingParameters_.begin(); it != interestingParameters_.end(); ++ it )
-			std::cout << * it << " ";
-		for ( int i = 0; i < 10; ++ i )
-			std::cout << "\n";
-		std::cout << std::endl;
-
 		for (CIKvDataList it = data.begin(); it != data.end(); it++)
 		{
 			if ( interestingParameters_.find(it->paramID()) == interestingParameters_.end() )
 				continue;
 
-			KvDataList dl;
-			getData(dl, it->stationID(), it->obstime(), it->obstime(),
-					it->paramID(), it->typeID(), it->sensor(), it->level());
-			if (dl.empty())
-			{
-				l.push_back(*it);
-				LOGDEBUG( "No matching entries in kvalobs - sending unmodified." );
-				continue;
-			}
-			//assert( dl.size() == 1 );
-			kvData & d = dl.front();
-			LOGDEBUG( "Matching entry:\n" << decodeutility::kvdataformatter::createString( d ) );
-
-			if (not different_(d, *it))
-			{
-				LOGDEBUG( "New data matches old - will not send correction" );
-				continue;
-			}
-			if (valid(*it))
-				correct(d, it->corrected());
-			else
-				reject(d);
-
-			l.push_back(d);
+			adaptDataToKvalobs_(l, * it);
 		}
 		if (l.empty())
 		{
@@ -325,5 +277,36 @@ namespace proxy
     	if ( not toSave.empty() )
     		cache_.sendData(toSave);
     }
-  }
+
+void KvalobsProxy::adaptDataToKvalobs_(KvDataList & out, const kvalobs::kvData & toAdapt) const
+{
+	KvDataList dl;
+	getData(dl, toAdapt.stationID(), toAdapt.obstime(), toAdapt.obstime(),
+			toAdapt.paramID(), toAdapt.typeID(), toAdapt.sensor(), toAdapt.level());
+
+	if (dl.empty())
+	{
+		LOGDEBUG( "No matching entries in kvalobs - sending unmodified." );
+		out.push_back(toAdapt);
+		return;
+	}
+
+	kvData & d = dl.front();
+	LOGDEBUG( "Matching entry:\n" << decodeutility::kvdataformatter::createString( d ) );
+
+	if (not different_(d, toAdapt))
+	{
+		LOGDEBUG( "New data matches old - will not send correction" );
+		return;
+	}
+
+	if (valid(toAdapt))
+		correct(d, toAdapt.corrected());
+	else
+		reject(d);
+
+	out.push_back(d);
+}
+
+}
 }
