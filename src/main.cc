@@ -203,6 +203,7 @@ int main(int argc, char **argv)
 		AgregatorHandler handler(callbacks, proxy);
 		handler.setParameterFilter(conf.parameters());
 		handler.setStationFilter(conf.stations());
+		handler.setTypeFilter(conf.types());
 
 		// Standard times
 		set<miClock> six;

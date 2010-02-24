@@ -30,7 +30,6 @@
 */
 #include "KvalobsProxy.h"
 #include "Callback.h"
-#include "KvDataSaver.h"
 #include "KvDataReceiver.h"
 #include "IncomingHandler.h"
 #include "ProxyDatabaseConnection.h"
@@ -112,8 +111,8 @@ namespace proxy
 	};
 
 
-    KvalobsProxy::KvalobsProxy( ProxyDatabaseConnection & connection_, CallbackCollection & callbacks, bool repopulate )
-        : connection( connection_.get() )
+    KvalobsProxy::KvalobsProxy( ProxyDatabaseConnection & connection, CallbackCollection & callbacks, bool repopulate )
+        : cache_( connection )
         , oldestInProxy( miTime::nowTime() )
     {
       if ( ! KvApp::kvApp )
@@ -123,8 +122,8 @@ namespace proxy
         throw runtime_error( msg );
       }
 
-      incomingHandler =
-          boost::shared_ptr<internal::IncomingHandler>( new internal::IncomingHandler( * this, callbacks ) );
+//      incomingHandler =
+//          boost::shared_ptr<internal::IncomingHandler>( new internal::IncomingHandler( * this, callbacks ) );
 
 
       // Make reasonably sure the proxy is correct.
@@ -150,60 +149,57 @@ namespace proxy
 
     void KvalobsProxy::db_clear()
     {
-      Lock lock ( proxy_mutex )
-        ;
-      LOGDEBUG( "Deleting all entries in proxy database" );
-      connection.exec( "delete from data" );
-      oldestInProxy = miTime::nowTime();
-      oldestInProxy.addHour();
-      LOGINFO( "Proxy database cleared" );
+    	oldestInProxy = miTime::nowTime();
+    	oldestInProxy.addHour();
+    	cache_.clear();
     }
 
-    void KvalobsProxy::db_populate( int hours )
-    {
-      WhichDataHelper wdh( CKvalObs::CService::All );
-      miTime to = miTime::nowTime();
-      miTime from = to;
-      from.addHour( -hours );
-      wdh.addStation( 0, from, to );
+    void KvalobsProxy::db_populate(int hours)
+	{
+		WhichDataHelper wdh(CKvalObs::CService::All);
+		miTime to = miTime::nowTime();
+		miTime from = to;
+		from.addHour(-hours);
+		wdh.addStation(0, from, to);
 
-      internal::KvDataSaver ds( *this );
+		KvDataList kvalobsData;
+		internal::KvDataReceiver receiver(kvalobsData);
 
-      LOGDEBUG( "Fetching data from source database." );
+		LOGDEBUG("Fetching data from source database.");
 
-      bool result = KvApp::kvApp->getKvData( ds, wdh );
-      if ( ! result )
-      {
-        const char * err_msg = "Unable to retrieve data from main server.";
-        LOGFATAL( err_msg );
-        throw runtime_error( err_msg );
-      }
-      Lock lock ( kv_mutex )
-        ;
-      if ( oldestInProxy.undef() )
-    	  oldestInProxy = from;
-      else
-    	  oldestInProxy = min( oldestInProxy, from );
-      LOGINFO( "Got data from source database. Current oldest observation:" << oldestInProxy << "." );
-    }
+		bool result = KvApp::kvApp->getKvData(receiver, wdh);
+		if (!result)
+		{
+			const char * err_msg = "Unable to retrieve data from main server.";
+			LOGFATAL(err_msg);
+			throw runtime_error(err_msg);
+		}
+
+		cache_.sendData(kvalobsData);
+
+		Lock lock(kv_mutex);
+		if (oldestInProxy.undef())
+			oldestInProxy = from;
+		else
+			oldestInProxy = min(oldestInProxy, from);
+		LOGINFO("Got data from source database. Current oldest observation:"
+				<< oldestInProxy << ".");
+	}
 
     void KvalobsProxy::db_cleanup()
     {
-      LOGINFO( "KvalobsProxy::db_cleanup" );
+    	LOGINFO( "KvalobsProxy::db_cleanup" );
+    	miTime t = miTime::nowTime();
+    	t.addDay(- 35);
 
-      miTime t = miTime::nowTime();
-      t.addDay( - 35 ); // Keep data for 35 days
-      ostringstream query;
-      query << "delete from data where obstime < \'" << t << "\';";
+    	if (oldestInProxy.undef())
+    		oldestInProxy = t;
+    	else
+    		oldestInProxy = max(oldestInProxy, t);
 
-      Lock lock ( proxy_mutex );
-      connection.exec( query.str() );
-      if ( oldestInProxy.undef() )
-    	  oldestInProxy = t;
-      else
-    	  oldestInProxy = max( oldestInProxy, t );
+    	cache_.deleteOldData(t);
+    	LOGINFO("KvalobsProxy::db_cleanup: Done");
 
-      LOGINFO( "KvalobsProxy::db_cleanup: Done" );
     }
 
     namespace
@@ -272,17 +268,7 @@ namespace proxy
 		// LOG ERRORS!
 
 		if (res->res == CKvalObs::CDataSource::OK)
-		{
-			// LOGDEBUG( "Save in proxy" );
-			KvObsDataList odl;
-			KvObsData obsdata;
-			KvDataList &dl = obsdata.dataList();
-			dl.insert(dl.end(), l.begin(), l.end());
-			internal::KvDataSaver ds(*this);
-			odl.push_back(obsdata);
-			// LOGDEBUG( "Saving " << odl.size() << " elements." );
-			ds.next(odl);
-		}
+			cache_.sendData(data);
 		return res;
 	}
 
@@ -307,7 +293,7 @@ namespace proxy
         miTime p_from = oldestInProxy.undef() ? from : max( from, oldestInProxy );
         //LOGDEBUG( "Fetching times " << p_from << " - " << to << " from proxy" );
         KvDataList proxyData;
-        proxy_getData( proxyData, station, p_from, to, paramid, type, sensor, lvl );
+        cache_.getData( proxyData, station, p_from, to, paramid, type, sensor, lvl );
         for ( KvDataList::const_iterator it = proxyData.begin(); it != proxyData.end(); ++ it )
         {
         	KvDataList::const_iterator find = find_if(data.begin(), data.end(), 
@@ -318,55 +304,55 @@ namespace proxy
       }
     }
 
-    void KvalobsProxy::proxy_getData( KvDataList &data, int station,
-                                      const miutil::miTime &from, const miutil::miTime &to,
-                                      int paramid, int type, int sensor, int lvl ) const
-    {
-      LogContext context( "proxy_getData" );
-      //LOGDEBUG( "KvalobsProxy::proxy_getData" );
-
-      // This should avoid problems caused by database entries '0' and 0:
-      int alt_sensor;
-      if ( sensor >= '0' )
-        alt_sensor = sensor - '0';
-      else
-        alt_sensor = sensor + '0';
-
-      ostringstream s;
-      s << "select * from data where stationid=" << station
-      << " and paramid=" << paramid
-      << " and typeid=" << type
-      //<< " and sensor=" << ((sensor < 10) ? (sensor + '0') : sensor)
-      << " and (sensor=" << sensor << " or sensor=" << alt_sensor << ")"
-      << " and level=" << lvl;
-      if ( from < to )
-        s << " and (obstime>\'" << from << "\' and obstime<=\'" << to << "\')";
-      else if ( from == to )
-        s << " and obstime=\'" << from << "\'";
-      else // This is really an error, but...
-        s << " and (obstime>\'" << to << "\' and obstime<=\'" << from << "\')";
-
-      //LOGDEBUG( s.str() );
-
-      try
-      {
-        auto_ptr<Result> res;
-        Lock lock ( proxy_mutex )
-          ;
-        //Lock lock( kv_mutex );
-        res.reset( connection.execQuery( s.str() ) );
-        while ( res->hasNext() )
-          data.push_back( kvData( res->next() ) );
-      }
-      catch ( exception & e )
-      {
-        LOGERROR( e.what() );
-      }
-      catch ( ... )
-      {
-        LOGERROR( "Unknown error during database lookup" );
-      }
-    }
+//    void KvalobsProxy::proxy_getData( KvDataList &data, int station,
+//                                      const miutil::miTime &from, const miutil::miTime &to,
+//                                      int paramid, int type, int sensor, int lvl ) const
+//    {
+//      LogContext context( "proxy_getData" );
+//      //LOGDEBUG( "KvalobsProxy::proxy_getData" );
+//
+//      // This should avoid problems caused by database entries '0' and 0:
+//      int alt_sensor;
+//      if ( sensor >= '0' )
+//        alt_sensor = sensor - '0';
+//      else
+//        alt_sensor = sensor + '0';
+//
+//      ostringstream s;
+//      s << "select * from data where stationid=" << station
+//      << " and paramid=" << paramid
+//      << " and typeid=" << type
+//      //<< " and sensor=" << ((sensor < 10) ? (sensor + '0') : sensor)
+//      << " and (sensor=" << sensor << " or sensor=" << alt_sensor << ")"
+//      << " and level=" << lvl;
+//      if ( from < to )
+//        s << " and (obstime>\'" << from << "\' and obstime<=\'" << to << "\')";
+//      else if ( from == to )
+//        s << " and obstime=\'" << from << "\'";
+//      else // This is really an error, but...
+//        s << " and (obstime>\'" << to << "\' and obstime<=\'" << from << "\')";
+//
+//      //LOGDEBUG( s.str() );
+//
+//      try
+//      {
+//        auto_ptr<Result> res;
+//        Lock lock ( proxy_mutex )
+//          ;
+//        //Lock lock( kv_mutex );
+//        res.reset( connection.execQuery( s.str() ) );
+//        while ( res->hasNext() )
+//          data.push_back( kvData( res->next() ) );
+//      }
+//      catch ( exception & e )
+//      {
+//        LOGERROR( e.what() );
+//      }
+//      catch ( ... )
+//      {
+//        LOGERROR( "Unknown error during database lookup" );
+//      }
+//    }
 
     namespace
     {

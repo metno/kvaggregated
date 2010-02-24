@@ -5,12 +5,13 @@ kvAgregated_SOURCES = \
 	configuration/AgregatorConfiguration.cpp \
 	proxy/IncomingHandler.h \
 	proxy/IncomingHandler.cc \
+	proxy/DataAccess.h \
+	proxy/CachedDataAccess.h \
+	proxy/CachedDataAccess.cpp \
 	proxy/KvalobsProxy.h \
 	proxy/KvalobsProxy.cc \
 	proxy/KvDataReceiver.h \
 	proxy/KvDataReceiver.cc \
-	proxy/KvDataSaver.h \
-	proxy/KvDataSaver.cc \
 	proxy/Callback.h \
 	proxy/CallbackCollection.h \
 	proxy/CallbackCollection.cpp \

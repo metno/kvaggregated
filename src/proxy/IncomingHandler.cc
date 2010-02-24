@@ -30,7 +30,6 @@
 */
 #include "IncomingHandler.h"
 #include "KvalobsProxy.h"
-#include "KvDataSaver.h"
 #include "Callback.h"
 #include <milog/milog.h>
 
@@ -193,8 +192,11 @@ namespace kvservice
               ss << decodeutility::kvdataformatter::createString( * i2 ) << endl;
           LOGDEBUG( ss.str() );
 
-          KvDataSaver ds( proxy );
-          ds.next( *data );
+          for ( IKvObsDataList it = data->begin(); it != data->end(); ++ it )
+        	  proxy.getCache().sendData(* it);
+
+//          KvDataSaver ds( proxy );
+//          ds.next( *data );
 
           callbacks_.send( *data );
 

@@ -32,6 +32,7 @@
 #define __kvservice__proxy__KvalobsProxy_h__
 
 #include "DataAccess.h"
+#include "CachedDataAccess.h"
 #include "CallbackCollection.h"
 #include <boost/utility.hpp>
 #include <set>
@@ -105,21 +106,19 @@ namespace kvservice
           oldestInProxy = newTime;
         }
 
+        DataAccess & getCache() { return cache_; }
 
       private:
-        dnmi::db::Connection &connection;
-
         std::set<int> interesting;
         
-        boost::shared_ptr<internal::IncomingHandler> incomingHandler;
-        friend class internal::IncomingHandler;
-
         miutil::miTime oldestInProxy;
 
-        void proxy_getData( KvDataList &data, int station,
-                            const miutil::miTime &from,
-                            const miutil::miTime &to,
-                            int paramid, int type, int sensor, int lvl ) const;
+        CachedDataAccess cache_;
+
+//        void proxy_getData( KvDataList &data, int station,
+//                            const miutil::miTime &from,
+//                            const miutil::miTime &to,
+//                            int paramid, int type, int sensor, int lvl ) const;
 
         void kvalobs_getData( KvDataList &data, int station,
                               const miutil::miTime &from,
@@ -130,8 +129,6 @@ namespace kvservice
 
         typedef boost::recursive_mutex::scoped_lock Lock;
         mutable boost::recursive_mutex kv_mutex;
-
-        mutable boost::recursive_mutex proxy_mutex;
 
         class Cleaner;
         Cleaner * cleaner_;
