@@ -193,10 +193,7 @@ namespace kvservice
           LOGDEBUG( ss.str() );
 
           for ( IKvObsDataList it = data->begin(); it != data->end(); ++ it )
-        	  proxy.getCache().sendData(* it);
-
-//          KvDataSaver ds( proxy );
-//          ds.next( *data );
+        	  proxy.cacheData(* it);
 
           callbacks_.send( *data );
 

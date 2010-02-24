@@ -33,6 +33,7 @@
 
 #include "DataAccess.h"
 #include "CachedDataAccess.h"
+#include "KvalobsDataAccess.h"
 #include "CallbackCollection.h"
 #include <boost/utility.hpp>
 #include <set>
@@ -49,15 +50,6 @@ namespace kvservice
 {
   namespace proxy
   {
-    class Callback;
-
-    namespace internal
-    {
-      class IncomingHandler;
-      class KvDataSaver;
-    }
-
-
     class KvalobsProxy : public DataAccess, boost::noncopyable
     {
       public:
@@ -76,12 +68,14 @@ namespace kvservice
          */
         CKvalObs::CDataSource::Result_var sendData( const KvDataList &data );
 
+        void cacheData(const KvDataList &data);
+
         /**
          * Add parameter to store in cache database
          */
         void addInteresting( int param )
         {
-          interesting.insert( param );
+          interestingParameters_.insert( param );
         }
 
         // Operations on proxy:
@@ -104,26 +98,13 @@ namespace kvservice
           oldestInProxy = newTime;
         }
 
-        DataAccess & getCache() { return cache_; }
-
       private:
-        std::set<int> interesting;
+        std::set<int> interestingParameters_;
         
         miutil::miTime oldestInProxy;
 
         CachedDataAccess cache_;
-
-//        void proxy_getData( KvDataList &data, int station,
-//                            const miutil::miTime &from,
-//                            const miutil::miTime &to,
-//                            int paramid, int type, int sensor, int lvl ) const;
-
-        void kvalobs_getData( KvDataList &data, int station,
-                              const miutil::miTime &from,
-                              const miutil::miTime &to,
-                              int paramid, int type, int sensor, int lvl ) const;
-
-        friend class internal::KvDataSaver;
+        KvalobsDataAccess kvalobs_;
 
         typedef boost::recursive_mutex::scoped_lock Lock;
         mutable boost::recursive_mutex kv_mutex;

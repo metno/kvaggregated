@@ -8,6 +8,8 @@ kvAgregated_SOURCES = \
 	proxy/DataAccess.h \
 	proxy/CachedDataAccess.h \
 	proxy/CachedDataAccess.cpp \
+	proxy/KvalobsDataAccess.h \
+	proxy/KvalobsDataAccess.cpp \
 	proxy/KvalobsProxy.h \
 	proxy/KvalobsProxy.cc \
 	proxy/KvDataReceiver.h \

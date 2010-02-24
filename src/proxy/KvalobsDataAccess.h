@@ -27,44 +27,27 @@
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef CACHEDDATAACCESS_H_
-#define CACHEDDATAACCESS_H_
+#ifndef KVALOBSDATAACCESS_H_
+#define KVALOBSDATAACCESS_H_
 
 #include "DataAccess.h"
-#include "ProxyDatabaseConnection.h"
-#include <boost/thread/recursive_mutex.hpp>
-
-
 
 namespace kvservice
 {
 
-class CachedDataAccess: public kvservice::DataAccess, boost::noncopyable
+class KvalobsDataAccess: public kvservice::DataAccess
 {
 public:
-	explicit CachedDataAccess(const std::string & proxyDatabaseName);
-	virtual ~CachedDataAccess();
+	KvalobsDataAccess();
+	virtual ~KvalobsDataAccess();
 
     virtual void getData( KvDataList &data, int station,
                   const miutil::miTime &from, const miutil::miTime &to,
                   int paramid, int type, int sensor, int lvl ) const;
 
     virtual CKvalObs::CDataSource::Result_var sendData( const KvDataList & data );
-
-    void clear();
-
-    void deleteOldData(const miutil::miTime & olderThanThis);
-
-private:
-    mutable ProxyDatabaseConnection connection_;
-
-    typedef boost::recursive_mutex::scoped_lock Lock;
-    mutable boost::recursive_mutex kv_mutex;
-
-    mutable boost::recursive_mutex proxy_mutex;
-
 };
 
 }
 
-#endif /* CACHEDDATAACCESS_H_ */
+#endif /* KVALOBSDATAACCESS_H_ */

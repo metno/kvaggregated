@@ -226,8 +226,19 @@ namespace proxy
 		KvDataList l;
 		Lock lock(kv_mutex); // We must lock everything
 
+		for ( int i = 0; i < 10; ++ i )
+			std::cout << "\n";
+		for ( std::set<int>::const_iterator it = interestingParameters_.begin(); it != interestingParameters_.end(); ++ it )
+			std::cout << * it << " ";
+		for ( int i = 0; i < 10; ++ i )
+			std::cout << "\n";
+		std::cout << std::endl;
+
 		for (CIKvDataList it = data.begin(); it != data.end(); it++)
 		{
+			if ( interestingParameters_.find(it->paramID()) == interestingParameters_.end() )
+				continue;
+
 			KvDataList dl;
 			getData(dl, it->stationID(), it->obstime(), it->obstime(),
 					it->paramID(), it->typeID(), it->sensor(), it->level());
@@ -260,15 +271,14 @@ namespace proxy
 			res->message = "No data";
 			return res;
 		}
-		miString msg = decodeutility::kvdataformatter::createString(l);
-		const char *message = msg.cStr();
-		LOGINFO( "Sending data to kvalobs:\n" << message );
-		res = KvApp::kvApp->sendDataToKv(message, "kv2kvDecoder");
 
-		// LOG ERRORS!
+		res = kvalobs_.sendData(l);
 
 		if (res->res == CKvalObs::CDataSource::OK)
-			cache_.sendData(data);
+			cacheData(data);
+		else
+			LOGERROR("Error when sending data to kvalobs: " << res->message);
+
 		return res;
 	}
 
@@ -284,7 +294,8 @@ namespace proxy
         miTime k_from = from;
         miTime k_to = oldestInProxy.undef() ? to : min( to, oldestInProxy );
         //LOGDEBUG( "Fetching times " << from << " - " << k_to << " from kvalobs" );
-        kvalobs_getData( data, station, k_from, k_to, paramid, type, sensor, lvl );
+        kvalobs_.getData( data, station, k_from, k_to, paramid, type, sensor, lvl );
+        LOGDEBUG( "Data from kvalobs :\n" << decodeutility::kvdataformatter::createString( data ) );
       }
 
       // Fetch data from proxy, if neccessary
@@ -304,104 +315,15 @@ namespace proxy
       }
     }
 
-//    void KvalobsProxy::proxy_getData( KvDataList &data, int station,
-//                                      const miutil::miTime &from, const miutil::miTime &to,
-//                                      int paramid, int type, int sensor, int lvl ) const
-//    {
-//      LogContext context( "proxy_getData" );
-//      //LOGDEBUG( "KvalobsProxy::proxy_getData" );
-//
-//      // This should avoid problems caused by database entries '0' and 0:
-//      int alt_sensor;
-//      if ( sensor >= '0' )
-//        alt_sensor = sensor - '0';
-//      else
-//        alt_sensor = sensor + '0';
-//
-//      ostringstream s;
-//      s << "select * from data where stationid=" << station
-//      << " and paramid=" << paramid
-//      << " and typeid=" << type
-//      //<< " and sensor=" << ((sensor < 10) ? (sensor + '0') : sensor)
-//      << " and (sensor=" << sensor << " or sensor=" << alt_sensor << ")"
-//      << " and level=" << lvl;
-//      if ( from < to )
-//        s << " and (obstime>\'" << from << "\' and obstime<=\'" << to << "\')";
-//      else if ( from == to )
-//        s << " and obstime=\'" << from << "\'";
-//      else // This is really an error, but...
-//        s << " and (obstime>\'" << to << "\' and obstime<=\'" << from << "\')";
-//
-//      //LOGDEBUG( s.str() );
-//
-//      try
-//      {
-//        auto_ptr<Result> res;
-//        Lock lock ( proxy_mutex )
-//          ;
-//        //Lock lock( kv_mutex );
-//        res.reset( connection.execQuery( s.str() ) );
-//        while ( res->hasNext() )
-//          data.push_back( kvData( res->next() ) );
-//      }
-//      catch ( exception & e )
-//      {
-//        LOGERROR( e.what() );
-//      }
-//      catch ( ... )
-//      {
-//        LOGERROR( "Unknown error during database lookup" );
-//      }
-//    }
-
-    namespace
+    void KvalobsProxy::cacheData(const KvDataList & data)
     {
-      struct invalid
-      {
-        const int paramid;
-        const int type;
-        const int sensor;
-        const int lvl;
-        invalid( int paramid, int type, int sensor, int lvl )
-            : paramid( paramid ), type( type ), sensor( sensor ), lvl( lvl )
-        {}
-        bool operator() ( const kvData &data )
-        {
-          return not ( paramid == data.paramID() and
-                       type == data.typeID() and
-                       //sensor  == data.sensor() and
-                       ( sensor == data.sensor() or abs( sensor - data.sensor() ) == '0' ) and
-                       lvl == data.level() );
-        }
-      };
-    }
+    	KvDataList toSave;
+    	for ( CIKvDataList it = data.begin(); it != data.end(); ++ it )
+    		if ( interestingParameters_.find(it->paramID()) != interestingParameters_.end() )
+    			toSave.push_back(* it);
 
-    void KvalobsProxy::kvalobs_getData( KvDataList &data, int station,
-                                        const miutil::miTime &from, const miutil::miTime &to,
-                                        int paramid, int type, int sensor, int lvl ) const
-    {
-      ostringstream contextstream;
-      contextstream << "kvalobs_getData( " << station << ", " << from << ", " << to << ", " << paramid << "< " << type << " )";
-      LogContext context( contextstream.str() );
-
-      WhichDataHelper wdh( CKvalObs::CService::All );
-      miTime newFrom = from;
-      if ( from != to )
-        newFrom.addSec(); // We don't want inclusive from
-
-      wdh.addStation( station, newFrom, to );
-
-      internal::KvDataReceiver dr( data );
-      // getting data from kvalobs includes saving it in proxy:
-      LOGDEBUG( "Fetching data from kvalobs" );
-      bool result = KvApp::kvApp->getKvData( dr, wdh );
-
-      if ( ! result )
-        LOGERROR( "Unable to retrieve data from kvalobs." );
-      
-      data.remove_if( invalid( paramid, type, sensor, lvl ) );
-
-      //LOGDEBUG( "Data from kvalobs :\n" << decodeutility::kvdataformatter::createString( data ) );
+    	if ( not toSave.empty() )
+    		cache_.sendData(toSave);
     }
   }
 }
