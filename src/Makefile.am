@@ -19,6 +19,7 @@ kvAgregated_SOURCES = \
 	proxy/CallbackCollection.cpp \
 	proxy/ProxyDatabaseConnection.h \
 	proxy/ProxyDatabaseConnection.cpp \
+	proxy/ReadWriteLock.h \
 	WorkLoop.h \
 	WorkLoop.cpp \
 	AgregatorRunner.h \

@@ -32,7 +32,7 @@
 
 #include "DataAccess.h"
 #include "ProxyDatabaseConnection.h"
-#include <boost/thread/recursive_mutex.hpp>
+#include <boost/thread/mutex.hpp>
 
 
 
@@ -58,10 +58,9 @@ public:
 private:
     mutable ProxyDatabaseConnection connection_;
 
-    typedef boost::recursive_mutex::scoped_lock Lock;
-    mutable boost::recursive_mutex kv_mutex;
+    typedef boost::mutex Mutex;
 
-    mutable boost::recursive_mutex proxy_mutex;
+    mutable Mutex proxy_mutex;
 
 };
 

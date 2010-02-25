@@ -71,24 +71,28 @@ namespace proxy
 		void operator () ()
 		{
 			d->stop_ = false;
-			miutil::miDate lastCleaned = miutil::miDate::today();
 
 			boost::xtime time;
 			boost::xtime_get(& time, boost::TIME_UTC);
 
+			miutil::miClock startTime = miutil::miClock::oclock();
+			miutil::miClock cleanTime(2, 20 ,0);
+
+			int timeLeft = miutil::miClock::secDiff(cleanTime, startTime);
+			if ( timeLeft <= 0 )
+				timeLeft += 60 * 60 * 24;
+
+			time.nsec = 0;
+			time.sec += timeLeft;
 			while ( not d->stop_ )
 			{
 				boost::mutex::scoped_lock l(d->mutex_);
-
-				time.nsec = 0;
-				time.sec += 300;
 				d->condition.timed_wait(l, time);
+				time.sec += 60 * 60 * 24;
+
 				if ( d->stop_ )
 					break;
-
-				miutil::miTime now = miutil::miTime::nowTime();
-				if (now.date() > lastCleaned and now.clock() > miClock(2, 15, 0))
-					proxy_.db_cleanup();
+				proxy_.db_cleanup();
 			}
 		}
 
@@ -145,8 +149,11 @@ namespace proxy
 
     void KvalobsProxy::db_clear()
     {
-    	oldestInProxy = miTime::nowTime();
-    	oldestInProxy.addHour();
+    	{
+			ScopedWriteLock lock(timeMutex_);
+			oldestInProxy = miTime::nowTime();
+			oldestInProxy.addHour();
+    	}
     	cache_.clear();
     }
 
@@ -161,7 +168,7 @@ namespace proxy
 
 		cache_.sendData(data);
 
-		Lock lock(kv_mutex);
+		ScopedWriteLock lock(timeMutex_);
 		if (oldestInProxy.undef())
 			oldestInProxy = from;
 		else
@@ -176,10 +183,13 @@ namespace proxy
     	miTime t = miTime::nowTime();
     	t.addDay(- 35);
 
-    	if (oldestInProxy.undef())
-    		oldestInProxy = t;
-    	else
-    		oldestInProxy = max(oldestInProxy, t);
+    	{
+			ScopedWriteLock lock(timeMutex_);
+			if (oldestInProxy.undef())
+				oldestInProxy = t;
+			else
+				oldestInProxy = max(oldestInProxy, t);
+    	}
 
     	cache_.deleteOldData(t);
     	LOGINFO("KvalobsProxy::db_cleanup: Done");
@@ -205,9 +215,9 @@ namespace proxy
     CKvalObs::CDataSource::Result_var KvalobsProxy::sendData(const KvDataList &data)
 	{
 		LogContext context("KvalobsProxy::sendData");
-		CKvalObs::CDataSource::Result_var res(new CKvalObs::CDataSource::Result);
 		KvDataList l;
-		Lock lock(kv_mutex); // We must lock everything
+
+		boost::mutex::scoped_lock lock(sendDataMutex_);
 
 		for (CIKvDataList it = data.begin(); it != data.end(); it++)
 		{
@@ -219,12 +229,13 @@ namespace proxy
 		if (l.empty())
 		{
 			LOGDEBUG( "No new data to send (kvalobs had all data from before)" );
+			CKvalObs::CDataSource::Result_var res(new CKvalObs::CDataSource::Result);
 			res->res = CKvalObs::CDataSource::OK;
 			res->message = "No data";
 			return res;
 		}
 
-		res = kvalobs_.sendData(l);
+		CKvalObs::CDataSource::Result_var res = kvalobs_.sendData(l);
 
 		if (res->res == CKvalObs::CDataSource::OK)
 			cacheData(data);
@@ -241,6 +252,7 @@ namespace proxy
       //LogContext context( "KvalobsProxy::getData" );
 
       // Fetch data from kvalobs, if neccessary
+    	ScopedReadLock lock(timeMutex_);
       if ( oldestInProxy.undef() or from <= oldestInProxy )
       {
         miTime k_from = from;
@@ -277,6 +289,13 @@ namespace proxy
     	if ( not toSave.empty() )
     		cache_.sendData(toSave);
     }
+
+    void KvalobsProxy::setOldestInProxy( const miutil::miTime & newTime )
+    {
+    	ScopedWriteLock lock(timeMutex_);
+    	oldestInProxy = newTime;
+    }
+
 
 void KvalobsProxy::adaptDataToKvalobs_(KvDataList & out, const kvalobs::kvData & toAdapt) const
 {

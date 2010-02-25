@@ -35,6 +35,7 @@
 #include "CachedDataAccess.h"
 #include "KvalobsDataAccess.h"
 #include "CallbackCollection.h"
+#include "ReadWriteLock.h"
 #include <boost/utility.hpp>
 #include <set>
 #include <puTools/miTime>
@@ -71,7 +72,9 @@ namespace kvservice
         void cacheData(const KvDataList &data);
 
         /**
-         * Add parameter to store in cache database
+         * Add parameter to store in cache database.
+         *
+         * @warning Not thread-safe!
          */
         void addInteresting( int param )
         {
@@ -88,28 +91,27 @@ namespace kvservice
           db_populate( hours );
         }
 
-        const miutil::miTime & getOldestInProxy() const
-        {
-          return oldestInProxy;
-        }
-
-        void setOldestInProxy( const miutil::miTime & newTime )
-        {
-          oldestInProxy = newTime;
-        }
+        void setOldestInProxy( const miutil::miTime & newTime );
 
       private:
         void adaptDataToKvalobs_(KvDataList & out, const kvalobs::kvData & data) const;
 
         std::set<int> interestingParameters_;
         
+        // We only adapt and send a single set of data to kvalobs at a time
+        boost::mutex sendDataMutex_;
+
+        /**
+         * Protect oldestInProxy variable. We assume that modifications to
+         * oldestInProxy are rare and have no requirement for fast action.
+         * Therefore we use an unfair lock, which causes starvation.
+         */
+		mutable RWMutex timeMutex_;
         miutil::miTime oldestInProxy;
 
         CachedDataAccess cache_;
         KvalobsDataAccess kvalobs_;
 
-        typedef boost::recursive_mutex::scoped_lock Lock;
-        mutable boost::recursive_mutex kv_mutex;
 
         class Cleaner;
         Cleaner * cleaner_;

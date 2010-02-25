@@ -63,28 +63,28 @@ void CachedDataAccess::getData(KvDataList &data, int station,
 	else
 		alt_sensor = sensor + '0';
 
-	ostringstream s;
-	s << "select * from data where stationid=" << station << " and paramid="
+	ostringstream query;
+	query << "select * from data where stationid=" << station << " and paramid="
 			<< paramid << " and typeid=" << type
 	//<< " and sensor=" << ((sensor < 10) ? (sensor + '0') : sensor)
 			<< " and (sensor=" << sensor << " or sensor=" << alt_sensor << ")"
 			<< " and level=" << lvl;
 	if (from < to)
-		s << " and (obstime>\'" << from << "\' and obstime<=\'" << to << "\')";
+		query << " and (obstime>\'" << from << "\' and obstime<=\'" << to << "\')";
 	else if (from == to)
-		s << " and obstime=\'" << from << "\'";
+		query << " and obstime=\'" << from << "\'";
 	else
 		// This is really an error, but...
-		s << " and (obstime>\'" << to << "\' and obstime<=\'" << from << "\')";
+		query << " and (obstime>\'" << to << "\' and obstime<=\'" << from << "\')";
 
-	//LOGDEBUG( s.str() );
+	//LOGDEBUG( query.str() );
 
 	try
 	{
 		auto_ptr<Result> res;
 		{
-			Lock lock(proxy_mutex);
-			res.reset(connection_.get().execQuery(s.str()));
+			Mutex::scoped_lock lock(proxy_mutex);
+			res.reset(connection_.get().execQuery(query.str()));
 		}
 		while (res->hasNext())
 			data.push_back(kvalobs::kvData(res->next()));
@@ -104,7 +104,7 @@ CKvalObs::CDataSource::Result_var CachedDataAccess::sendData(
 	{
 		string insertQuery = "insert into data values " + d->toSend();
 
-		Lock lock(proxy_mutex);
+		Mutex::scoped_lock lock(proxy_mutex);
 		try
 		{
 			connection_.get().exec(insertQuery);
@@ -134,9 +134,8 @@ CKvalObs::CDataSource::Result_var CachedDataAccess::sendData(
 void CachedDataAccess::clear()
 {
 	LOGDEBUG("Deleting all entries in cache database");
-	Lock lock(proxy_mutex);
+	Mutex::scoped_lock lock(proxy_mutex);
 	connection_.get().exec("delete from data");
-	LOGINFO("Cache cleared");
 }
 
 void CachedDataAccess::deleteOldData(const miutil::miTime & olderThanThis)
@@ -144,7 +143,7 @@ void CachedDataAccess::deleteOldData(const miutil::miTime & olderThanThis)
 	ostringstream query;
 	query << "delete from data where obstime < \'" << olderThanThis << "\';";
 
-	Lock lock(proxy_mutex);
+	Mutex::scoped_lock lock(proxy_mutex);
 	connection_.get().exec(query.str());
 }
 
