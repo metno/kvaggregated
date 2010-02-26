@@ -60,12 +60,7 @@ void AgregatorRunner::run()
 	try
 	{
 		while (not stopping())
-		{
-			awaitData(1);
-	//		miutil::miTime now = miutil::miTime::nowTime();
-	//		if (now.date() > lastCleaned and now.clock() > miClock(2, 15, 0))
-	//			db_cleanup();
-		}
+			processData();
 	}
 	catch (std::exception & e)
 	{
@@ -85,10 +80,10 @@ void AgregatorRunner::onStop()
 	incomingHandler.stopThreads();
 }
 
-void AgregatorRunner::awaitData(int timeout)
+void AgregatorRunner::processData()
 {
-	boost::scoped_ptr<dnmi::thread::CommandBase> base(queue.get(timeout));
-	if (!base.get())
+	boost::scoped_ptr<dnmi::thread::CommandBase> base(queue.get(1));
+	if ( ! base )
 		return;
 	kvservice::DataEvent *data =
 			dynamic_cast<kvservice::DataEvent *> (base.get());

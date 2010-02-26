@@ -60,7 +60,7 @@ protected:
     virtual void run();
     virtual void onStop();
 
-    void awaitData(int timeout);
+    void processData();
 
     dnmi::thread::CommandQue queue;
     kvservice::proxy::internal::IncomingHandler incomingHandler;

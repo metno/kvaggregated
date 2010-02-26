@@ -105,23 +105,6 @@ std::auto_ptr<FLogStream> createLog(const std::string & logFile, milog::LogLevel
 	return ret;
 }
 
-//Connection * getProxyDatabaseConnection(const std::string & databaseFile)
-//{
-//	// Proxy database
-//	DriverManager manager;
-//	std::string proxyID;
-//	const string dbDriverPath = kvPath("pkglibdir") + "/db/";
-//	if (!manager.loadDriver(dbDriverPath + "sqlite3driver.so", proxyID))
-//		throw std::runtime_error("Error when loading database driver: " + manager.getErr() );
-//
-//	Connection * dbConn = manager.connect(proxyID, databaseFile);
-//
-//	if (!dbConn)
-//		throw std::runtime_error("Cant create a database connection to " + databaseFile);
-//
-//	return dbConn;
-//}
-
 miutil::conf::ConfSection * getConfSection()
 {
 	string myconf = "kvAgregated.conf";
