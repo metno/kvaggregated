@@ -13,3 +13,5 @@ database.sqlite:
 	. $(srcdir)/kvAgregateDbInit.sh $@ 
 
 EXTRA_DIST = kvAgregateDbInit.sh
+
+include mk/debian.mk 

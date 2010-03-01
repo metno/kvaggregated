@@ -1,0 +1,17 @@
+Source: kvagregated
+Section: science
+Priority: optional
+Maintainer: Vegard Bones <vegard.bones@met.no>
+Build-Depends: debhelper (>= 5), autotools-dev
+Standards-Version: 3.7.2
+
+Package: kvagregated
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Create aggregate observations for kvalobs
+ When run in daemon mode, kvAgregated will connect to and listen for data 
+ which it can generate aggregate values for. It will then send those aggregated
+ values back to kvalobs, but with a negative typeid.
+ .
+ In non-daemon mode, it may do the same, but instead of listening it will 
+ process all data for a given time period.
