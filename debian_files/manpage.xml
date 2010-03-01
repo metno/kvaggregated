@@ -37,7 +37,7 @@ and docbook-xsl in your Build-Depends control field.
   <!ENTITY dhemail     "<email>vegard.bones@met.no</email>">
   <!ENTITY dhusername  "Vegard Bønes">
   <!ENTITY dhucpackage "<refentrytitle>KVAGREGATED</refentrytitle>">
-  <!ENTITY dhpackage   "kvagregated">
+  <!ENTITY dhpackage   "kvAgregated">
 
   <!ENTITY debian      "<productname>Debian</productname>">
   <!ENTITY gnu         "<acronym>GNU</acronym>">
@@ -45,84 +45,108 @@ and docbook-xsl in your Build-Depends control field.
 ]>
 
 <refentry>
-  <refentryinfo>
-    <address>
+	<refentryinfo>
+		<address>
       &dhemail;
-    </address>
-    <copyright>
-      <year>2007</year>
-      <holder>&dhusername;</holder>
-    </copyright>
+		</address>
+		<copyright>
+			<year>2007</year>
+			<holder>&dhusername;
+			</holder>
+		</copyright>
     &dhdate;
-  </refentryinfo>
-  <refmeta>
+	</refentryinfo>
+	<refmeta>
     &dhucpackage;
 
     &dhsection;
-  </refmeta>
-  <refnamediv>
-    <refname>&dhpackage;</refname>
+	</refmeta>
+	<refnamediv>
+		<refname>&dhpackage;
+		</refname>
 
-    <refpurpose>Generate agregated values from te kvalobs database</refpurpose>
-  </refnamediv>
-  <refsynopsisdiv>
-    <cmdsynopsis>
-      <command>&dhpackage;</command>
+		<refpurpose>Create aggregate observations for kvalobs</refpurpose>
+	</refnamediv>
+	<refsynopsisdiv>
+		<cmdsynopsis>
+			<command>&dhpackage;
+			</command>
 
-      <arg><option>--help <replaceable>that</replaceable></option></arg>
-    </cmdsynopsis>
-  </refsynopsisdiv>
-  <refsect1>
-    <title>DESCRIPTION</title>
+			<arg>
+				<option>--help</option>
+			</arg>
+		</cmdsynopsis>
+	</refsynopsisdiv>
+	<refsect1>
+		<title>DESCRIPTION</title>
 
-    <para>This manual page documents briefly the
-      <command>&dhpackage;</command>.</para>
+		<para>
+			This manual page documents briefly the
+			<command>&dhpackage;
+			</command>
+			.
+		</para>
 
-    <para>This manual page was written for the &debian; distribution
-      because the original program does not have a manual page.
-		To get information about options, run the program with --help.</para>
+		<para>This
+			manual page was written for the &debian;
+			distribution
+			because the original program does not have a manual page.
+			To get information about options, run the program with --help.
+		</para>
 
-    <para><command>&dhpackage;</command> is a program that generates agregated 
-    value from measured ones, such as accumulated precipitation for the past 
-    24 hours, based on 24 hour values.</para>
+		<para>When run in daemon mode, kvAgregated will connect to and listen
+			for data
+			which it can generate aggregate values for. It will then send those
+			aggregated
+			values back to kvalobs, but with a negative typeid.</para>
 
-  </refsect1>
-  <refsect1>
-    <title>OPTIONS</title>
+		<para>In non-daemon mode, it may do the same, but instead of listening
+			it will
+			process all data for a given time period.</para>
 
-    <variablelist>
-      <varlistentry>
-        <term><option>-h</option>
-          <option>--help</option>
-        </term>
-        <listitem>
-          <para>Show summary of options.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term><option>-v</option>
-          <option>--version</option>
-        </term>
-        <listitem>
-          <para>Show version of program.</para>
-        </listitem>
-      </varlistentry>
-    </variablelist>
-  </refsect1>
-  <refsect1>
-    <title>AUTHOR</title>
+	</refsect1>
+	<refsect1>
+		<title>OPTIONS</title>
 
-    <para>This manual page was written by &dhusername; &dhemail; for
-      the &debian; system (but may be used by others).  Permission is
-      granted to copy, distribute and/or modify this document under
-      the terms of the &gnu; General Public License, Version 2 any 
-	  later version published by the Free Software Foundation.
-    </para>
-	<para>
-	  On Debian systems, the complete text of the GNU General Public
-	  License can be found in /usr/share/common-licenses/GPL.
+		<variablelist>
+			<varlistentry>
+				<term>
+					<option>-h</option>
+					<option>--help</option>
+				</term>
+				<listitem>
+					<para>Show summary of options.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+					<option>-v</option>
+					<option>--version</option>
+				</term>
+				<listitem>
+					<para>Show version of program.</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+	</refsect1>
+	<refsect1>
+		<title>AUTHOR</title>
+
+		<para>This
+			manual page was written by &dhusername; &dhemail;
+			for
+			the &debian;
+			system (but may be used by others). Permission is
+			granted to copy, distribute and/or modify this document under
+			the terms of the &gnu;
+			General Public License, Version 2 any
+			later version published by the Free Software Foundation.
+		</para>
+		<para>
+			On Debian systems, the complete text of the GNU General Public
+			License can be found in /usr/share/common-licenses/GPL.
 	</para>
 
-  </refsect1>
+	</refsect1>
 </refentry>
 
