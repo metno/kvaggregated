@@ -62,7 +62,7 @@ namespace agregator
    * virtual method and therefore must be overridden, the methods have a
    * default implementation. The protected methods are invoked in the
    * following order: \a getTimeSpan, \a getRelevantObsList,
-   * \a shouldProcess, \a generateKvData, \a getDataObject,
+   * \a shouldProcess, \a generateKvData,
    * \a saveObsInDB. See the documentation of these
    * methods for further details.
    *
@@ -196,28 +196,6 @@ namespace agregator
     generateKvData( const kvDataList &data, const kvalobs::kvData &trigger ) =0;
 
     /**
-     * \brief Get a data object for the created agregate.
-     *
-     * Return an agregate object for sending to kvalobs.
-     * 
-     * \param trigger  The piece of data which triggered the call to
-     * this object.
-     *
-     * \param obsTime The time for the generated object.
-     *
-     * \param agregateValue The agregated value for the observation. This may
-     * have the value \c invalidParam.
-     * 
-     * \return The agregate data object to be sent to kvalobs, or an
-     * empty object kvDataObj.clean() if the object is so similar to
-     * what already exists in kvalobs that it should not be sent.
-     */
-    virtual kvalobs::kvData 
-    getDataObject( const kvalobs::kvData &trigger,
-		   const miutil::miTime &obsTime,
-		   float agregateValue );
-
-    /**
      * \brief This is the kvalobs internal value for errors. 
      *
      * If an error occurs which means that a correct value for an
@@ -238,6 +216,28 @@ namespace agregator
     std::string name;
 
   private:
+    /**
+     * \brief Get a data object for the created agregate.
+     *
+     * Return an agregate object for sending to kvalobs.
+     *
+     * \param trigger  The piece of data which triggered the call to
+     * this object.
+     *
+     * \param obsTime The time for the generated object.
+     *
+     * \param agregateValue The agregated value for the observation. This may
+     * have the value \c invalidParam.
+     *
+     * \return The agregate data object to be sent to kvalobs, or an
+     * empty object kvDataObj.clean() if the object is so similar to
+     * what already exists in kvalobs that it should not be sent.
+     */
+    kvalobs::kvData
+    getDataObject_( const kvalobs::kvData &trigger,
+		   const miutil::miTime &obsTime,
+		   float agregateValue );
+
     const int read_param;
     const int write_param;
     const int interesting_hours;

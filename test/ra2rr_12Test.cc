@@ -30,7 +30,7 @@
  */
 
 #include "AbstractAgregatorTest.h"
-#include <ra2rr_12.h>
+#include <agregator/ra2rr_12.h>
 #include <kvalobs/kvDataOperations.h>
 #include <iterator>
 

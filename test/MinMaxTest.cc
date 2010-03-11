@@ -30,7 +30,7 @@
 */
 
 #include "AbstractAgregatorTest.h"
-#include <minmax.h>
+#include <agregator/minmax.h>
 #include <times.h>
 #include <kvalobs/kvDataOperations.h>
 #include <algorithm>
@@ -76,6 +76,37 @@ TEST_F(MinMaxTest, testNormal)
 	EXPECT_FLOAT_EQ( 3, d->corrected() );
 	EXPECT_FLOAT_EQ( 3, d->original() );
 }
+
+TEST_F(MinMaxTest, testModifiedValue)
+{
+	AbstractAgregator::kvDataList data;
+	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 19:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 20:00:00" ) );
+	data.push_back( dataFactory.getData( 3, 1, "2007-06-05 21:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 22:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 23:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 00:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 01:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 02:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 03:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 05:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
+
+	kvalobs::correct(data.front(), -42);
+
+	AbstractAgregator::kvDataList::const_iterator p = data.begin();
+	++p;
+
+	AbstractAgregator::kvDataPtr d = agregatorToTest.process( *p, data );
+	ASSERT_TRUE( d.get() );
+
+	EXPECT_EQ( 2, d->paramID() );
+	EXPECT_FLOAT_EQ( -42, d->corrected() );
+	EXPECT_FLOAT_EQ( 3, d->original() );
+}
+
 
 TEST_F(MinMaxTest, testIncompleteData)
 {

@@ -31,7 +31,7 @@
 #ifndef __agregator__AgregatorHandler_h__
 #define __agregator__AgregatorHandler_h__
 
-#include "AbstractAgregator.h"
+#include "agregator/AbstractAgregator.h"
 #include "proxy/Callback.h"
 #include "proxy/KvalobsProxy.h"
 #include <map>

@@ -104,7 +104,7 @@ namespace agregator
 
 
   kvalobs::kvData
-  AbstractAgregator::getDataObject( const kvData &trigger,
+  AbstractAgregator::getDataObject_( const kvData &trigger,
                                     const miTime &obsTime,
                                     float agregateValue )
   {
@@ -187,7 +187,7 @@ namespace agregator
 	    // Create a data object for saving
 	    miTime t = miTime( times.second.date(), miClock( times.second.hour(), 0, 0 ) );
 
-		return return_type( new kvData( getDataObject( data, t, agregateValue ) ) ); 
+		return return_type( new kvData( getDataObject_( data, t, agregateValue ) ) );
 	}
 
 }

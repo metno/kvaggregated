@@ -2,7 +2,7 @@
 #define ABSTRACTAGREGATORTEST_H_
 
 #include <gtest/gtest.h>
-#include <AbstractAgregator.h>
+#include <agregator/AbstractAgregator.h>
 #include <boost/shared_ptr.hpp>
 
 

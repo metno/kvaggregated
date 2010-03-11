@@ -45,9 +45,9 @@
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include "minmax.h"
-#include "rr.h"
-#include "ra2rr_12.h"
+#include "agregator/minmax.h"
+#include "agregator/rr.h"
+#include "agregator/ra2rr_12.h"
 #include <memory>
 
 using namespace std;
