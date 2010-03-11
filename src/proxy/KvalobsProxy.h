@@ -38,7 +38,7 @@
 #include "ReadWriteLock.h"
 #include <boost/utility.hpp>
 #include <set>
-#include <puTools/miTime>
+#include <puTools/miTime.h>
 #include <dnmithread/CommandQue.h>
 #include <decodeutility/kvDataFormatter.h>
 #include <boost/thread/recursive_mutex.hpp>

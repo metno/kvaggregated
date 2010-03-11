@@ -31,8 +31,8 @@
 #include "AbstractAgregator.h"
 //#include "AgregatorHandler.h"
 #include <kvalobs/kvDataOperations.h>
-#include <puTools/miTime>
-#include <puTools/miString>
+#include <puTools/miTime.h>
+#include <puTools/miString.h>
 #include <milog/milog.h>
 #include <decodeutility/kvDataFormatter.h>
 #include <sstream>

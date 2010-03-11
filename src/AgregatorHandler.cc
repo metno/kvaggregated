@@ -146,7 +146,7 @@ void AgregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvDat
 				}
 			}
 			++it;
-		} catch (exception & e)
+		} catch (std::exception & e)
 		{
 			LOGFATAL(typeid( e ).name() << ":\n\t" << e.what());
 			throw ;
@@ -192,18 +192,18 @@ namespace
 	};
 }
 
-list<kvalobs::kvData>
+std::list<kvalobs::kvData>
 AgregatorHandler::getRelevantObsList( const kvalobs::kvData & data,
 		const AbstractAgregator::TimeSpan & obsTimes ) const
 {
-	list<kvalobs::kvData> ret;
+	std::list<kvalobs::kvData> ret;
 
 	proxy_.getData( ret, data.stationID(), obsTimes.first, obsTimes.second,
 			data.paramID(), data.typeID(), data.sensor(), data.level() );
 
-	for_each(ret.begin(), ret.end(), assertObsTimeMatches(obsTimes));
+	std::for_each(ret.begin(), ret.end(), assertObsTimeMatches(obsTimes));
 
-	list<kvalobs::kvData>::iterator find = std::find_if(ret.begin(), ret.end(), std::bind1st(kvalobs::compare::same_kvData(), data));
+	std::list<kvalobs::kvData>::iterator find = std::find_if(ret.begin(), ret.end(), std::bind1st(kvalobs::compare::same_kvData(), data));
 	if ( find == ret.end() )
 		ret.push_back(data);
 	else

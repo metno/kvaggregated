@@ -32,7 +32,7 @@
 #define __agregator__GenerateZero_h__
 
 #include <vector>
-#include <puTools/miTime>
+#include <puTools/miTime.h>
 
 namespace kvalobs 
 {

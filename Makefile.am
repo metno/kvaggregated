@@ -1,8 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src
-
-
 bin_SCRIPTS = kvAgregateDbInit.sh
 
 pkgstatedir = $(localstatedir)/$(PACKAGE)/agregate
@@ -13,5 +10,11 @@ database.sqlite:
 	. $(srcdir)/kvAgregateDbInit.sh $@ 
 
 EXTRA_DIST = kvAgregateDbInit.sh
+
+
+bin_PROGRAMS = kvAgregated
+include src/kvAgregated.mk
+include test/kvAgregated.mk
+
 
 include mk/debian.mk 

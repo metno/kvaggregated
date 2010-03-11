@@ -34,7 +34,7 @@
 #include "AbstractAgregator.h"
 #include "paramID.h"
 #include <kvalobs/kvData.h>
-#include <puTools/miClock>
+#include <puTools/miClock.h>
 #include <set>
 
 namespace boost {
