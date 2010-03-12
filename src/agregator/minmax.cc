@@ -47,22 +47,23 @@ MinMax::MinMax(int readParam, int writeParam, int interestingHours, const set<
 {
 }
 
+
+
 float MinMax::generateKvData(const kvDataList &data, const kvData &trigger)
 {
 	if (int(data.size()) != interestingHours())
 		throw std::logic_error("incorrect size of input data list");
 
-	float val = trigger.corrected();
-
 	TimeSpan ts = getTimeSpan(trigger);
 
+	std::vector<float> values;
 	for (kvDataList::const_iterator it = data.begin(); it != data.end(); ++it)
 	{
 		if (it->obstime() > ts.first and it->obstime() <= ts.second)
 		{
 			if (not valid(*it))
 				return invalidParam;
-			val = function(val, it->corrected());
+			values.push_back(it->corrected());
 		}
 		else
 		{
@@ -73,7 +74,15 @@ float MinMax::generateKvData(const kvDataList &data, const kvData &trigger)
 			throw std::logic_error(errMsg.str());
 		}
 	}
-
-	return val;
+	return calculate(values);
 }
+
+float MinMax::calculate(const std::vector<float> & source) const
+{
+	float ret = source.front();
+	for ( std::vector<float>::const_iterator it = source.begin(); it != source.end(); ++ it )
+		ret = function(ret, * it);
+	return ret;
+}
+
 }

@@ -34,6 +34,7 @@
 #include "AbstractAgregator.h"
 #include "paramID.h"
 #include <kvalobs/kvData.h>
+#include <vector>
 
 namespace agregator
 {
@@ -78,6 +79,8 @@ public:
 
 	virtual float generateKvData(const kvDataList &data,
 			const kvalobs::kvData &trigger);
+
+	virtual float calculate(const std::vector<float> & source) const;
 };
 
 /**

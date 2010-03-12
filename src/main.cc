@@ -47,7 +47,11 @@
 
 #include "agregator/minmax.h"
 #include "agregator/rr.h"
+#include "agregator/rr_1.h"
+#include "agregator/rr_12.h"
+#include "agregator/rr_24.h"
 #include "agregator/ra2rr_12.h"
+#include "agregator/ra2rr_12_forward.h"
 #include <memory>
 
 using namespace std;

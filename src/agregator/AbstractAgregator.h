@@ -195,6 +195,8 @@ namespace agregator
     virtual float 
     generateKvData( const kvDataList &data, const kvalobs::kvData &trigger ) =0;
 
+    virtual float calculate(const std::vector<float> & source) const = 0;
+
     /**
      * \brief This is the kvalobs internal value for errors. 
      *

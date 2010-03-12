@@ -30,7 +30,8 @@
 */
 #include "GenerateZero.h"
 #include "AgregatorHandler.h"
-#include "agregator/rr.h"
+#include "paramID.h"
+#include "agregator/rr_1.h"
 #include <algorithm>
 #include <sstream>
 #include <kvalobs/kvObsPgm.h>

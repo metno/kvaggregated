@@ -78,6 +78,8 @@ protected:
     float agregate( const kvalobs::kvData & from, const kvalobs::kvData & to, const kvalobs::kvData * oneDayAgo ) const;
 
     virtual int timeOffset() const { return -12; }
+
+	virtual float calculate(const std::vector<float> & source) const;
 };
 
 
@@ -86,26 +88,6 @@ protected:
  */
 typedef ra2rr_12 ra2rr_12_backward;
 
-
-/**
- * \brief Calculates RR_12 for the time after observation.
- *
- * If a RA observation arrives more than 12 hours too late, or it is
- * corrected more than 12 hours after its validity, recalculations
- * must be made forwards as well as backwards in time.
- *
- * This class handles agregation forward in time (compared to the
- * incoming observation).
- */
-class ra2rr_12_forward : public ra2rr_12
-{
-public:
-  ra2rr_12_forward( );
-
-  virtual const TimeSpan getTimeSpan( const kvalobs::kvData &data ) const;
-
-  virtual int timeOffset() const { return 12; }
-};
 }
 
 #endif // __agregator_ra2rr_12_h__

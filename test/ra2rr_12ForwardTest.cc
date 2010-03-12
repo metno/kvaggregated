@@ -30,7 +30,7 @@
 */
 
 #include "AbstractAgregatorTest.h"
-#include <agregator/ra2rr_12.h>
+#include <agregator/ra2rr_12_forward.h>
 #include <kvalobs/kvDataOperations.h>
 
 using namespace kvalobs;

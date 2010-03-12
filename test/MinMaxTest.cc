@@ -77,7 +77,7 @@ TEST_F(MinMaxTest, testNormal)
 	EXPECT_FLOAT_EQ( 3, d->original() );
 }
 
-TEST_F(MinMaxTest, testModifiedValue)
+TEST_F(MinMaxTest, DISABLED_testModifiedValue)
 {
 	AbstractAgregator::kvDataList data;
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
