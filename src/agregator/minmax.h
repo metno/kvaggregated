@@ -77,8 +77,9 @@ public:
 	MinMax(int readParam, int writeParam, int interestingHours, const std::set<
 			miutil::miClock> &generateWhen, Func minmax);
 
-	virtual float generateKvData(const kvDataList &data,
-			const kvalobs::kvData &trigger);
+    virtual bool shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations );
+
+	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
 
 	virtual float calculate(const std::vector<float> & source) const;
 };

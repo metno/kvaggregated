@@ -35,6 +35,7 @@
 #include <puTools/miString.h>
 #include <milog/milog.h>
 #include <decodeutility/kvDataFormatter.h>
+#include <boost/functional.hpp>
 #include <sstream>
 #include <vector>
 #include <list>
@@ -190,4 +191,28 @@ namespace agregator
 		return return_type( new kvData( getDataObject_( data, t, agregateValue ) ) );
 	}
 
+	float AbstractAgregator::generateKvData(const kvDataList &data, const kvData &trigger)
+	{
+		LogContext context("generateKvData");
+
+//		kvDataList workList;
+//		const TimeSpan timeSpan = getTimeSpan(trigger);
+//		for ( kvDataList::const_iterator it = data.begin(); it != data.end(); ++ it )
+//			if ( timeSpan.first < it->obstime() and timeSpan.second >= it->obstime() )
+//				workList.push_back(* it);
+
+		kvDataList relevantData;
+		extractUsefulData(relevantData, data, trigger);
+
+
+		std::vector<float> values;
+		for ( kvDataList::const_iterator it = relevantData.begin(); it != relevantData.end(); ++ it )
+			values.push_back(it->corrected());
+
+		kvDataList::const_iterator find = std::find_if(relevantData.begin(), relevantData.end(), boost::not1(valid));
+		if ( find != relevantData.end() )
+			return invalidParam;
+
+		return calculate(values);
+	}
 }

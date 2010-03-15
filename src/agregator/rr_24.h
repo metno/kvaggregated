@@ -62,8 +62,7 @@ public:
 	virtual bool shouldProcess(const kvalobs::kvData &trigger,
 			const kvDataList &observations);
 
-	virtual float generateKvData(const kvDataList &data,
-			const kvalobs::kvData &trigger);
+	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
 };
 }
 

@@ -66,11 +66,11 @@ public:
 	rr(int readParam, int writeParam, int interestingHours, const std::set<
 			miutil::miClock> &generateWhen);
 
-	virtual float generateKvData(const kvDataList &data,
-			const kvalobs::kvData &trigger);
+protected:
+	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
 
-private:
-	float calculate(const std::vector<float> & source) const;
+	virtual float calculate(const std::vector<float> & source) const;
+
 };
 
 }

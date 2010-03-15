@@ -71,18 +71,6 @@ bool rr_1::shouldProcess(const kvData &trigger, const kvDataList &observations)
 	return generate;
 }
 
-float rr_1::generateKvData(const kvDataList &data, const kvData &trigger)
-{
-	std::vector<float> values;
-	for (kvDataList::const_iterator it = data.begin(); it != data.end(); it++)
-	{
-		if (not valid(*it))
-			return invalidParam;
-		values.push_back(it->corrected());
-	}
-	return calculate(values);
-}
-
 float rr_1::calculate(const std::vector<float> & source) const
 {
 	float sum = 0;
@@ -91,4 +79,10 @@ float rr_1::calculate(const std::vector<float> & source) const
 			sum += 0;
 	return sum;
 }
+
+void rr_1::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
+{
+	out = dataIn;
+}
+
 }

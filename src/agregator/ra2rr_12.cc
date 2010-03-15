@@ -93,48 +93,6 @@ bool ra2rr_12::shouldProcess(const kvData & trigger,
 	return false;
 }
 
-float ra2rr_12::generateKvData(const kvDataList &data, const kvData & trigger)
-{
-	if (!valid(trigger))
-		return invalidParam;
-
-	const kvData * to = &trigger;
-
-	miTime t = to->obstime();
-	t.addHour(timeOffset());
-
-	kvDataList::const_iterator find = find_if(data.begin(), data.end(),
-			has_obstime(t));
-	if (find == data.end())
-		throw runtime_error("Could not find other relevant RA observation");
-	const kvData * from = &*find;
-
-	if (from->obstime() > to->obstime())
-		swap(from, to);
-
-	t = to->obstime();
-	t.addDay(-1);
-	kvDataList::const_iterator oneDayAgo = find_if(data.begin(), data.end(),
-			has_obstime(t));
-
-	return agregate(*from, *to, oneDayAgo == data.end() ? 0 : &*oneDayAgo);
-}
-
-float ra2rr_12::agregate(const kvData & from, const kvData & to,
-		const kvData * oneDayAgo) const
-{
-	if (not (valid(from) and valid(to)))
-		return invalidParam;
-
-	std::vector<float> corrected;
-	if ( oneDayAgo )
-		corrected.push_back(oneDayAgo->corrected());
-	corrected.push_back(from.corrected());
-	corrected.push_back(to.corrected());
-
-	return calculate(corrected);
-}
-
 float ra2rr_12::calculate(const std::vector<float> & source) const
 {
 	const float zero = 0.01;
@@ -169,6 +127,33 @@ float ra2rr_12::calculate(const std::vector<float> & source) const
 		return 0;
 
 	return result;
+}
+
+void ra2rr_12::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
+{
+	kvDataList ret;
+	for ( kvDataList::const_iterator it = dataIn.begin(); it != dataIn.end(); ++ it )
+		if ( hasObsHour<6>(* it) or hasObsHour<18>(* it) )
+			ret.push_back(* it);
+
+	ret.sort(lt_obstime());
+
+	if ( ret.size() == 2 )
+	{
+		const miutil::miTime & t1 = ret.front().obstime();
+		const miutil::miTime & t2 = ret.back().obstime();
+		std::cout << miutil::miTime::hourDiff(t1, t2) << std::endl;
+		if ( std::abs(miutil::miTime::hourDiff(t1, t2)) != std::abs(timeOffset()) )
+			throw runtime_error("Missing middle period for ra generation");
+	}
+	else if ( ret.size() != 3 )
+	{
+		std::ostringstream msg;
+		msg << "Unexpected number of observations: " << ret.size();
+		throw runtime_error(msg.str());
+	}
+
+	out.swap(ret);
 }
 
 }

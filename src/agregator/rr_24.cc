@@ -52,8 +52,7 @@ bool rr_24::shouldProcess(const kvData &trigger, const kvDataList &observations)
 	if (when.find(time.clock()) == when.end())
 		return false;
 
-	for (std::set<miClock>::const_iterator genTime = when.begin(); genTime
-			!= when.end(); genTime++)
+	for (std::set<miClock>::const_iterator genTime = when.begin(); genTime != when.end(); genTime++)
 	{
 		kvDataList::const_iterator search = observations.begin();
 		while (search != observations.end())
@@ -69,25 +68,21 @@ bool rr_24::shouldProcess(const kvData &trigger, const kvDataList &observations)
 	return true;
 }
 
-float rr_24::generateKvData(const kvDataList &data, const kvData &trigger)
+void rr_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
 {
-	if (not valid(trigger))
-		return invalidParam;
-
-	const std::set<miClock> &when = sixAmSixPm;
-	kvDataList relevant;
+	const std::set<miClock> & when = sixAmSixPm;
 
 	for (std::set<miClock>::const_iterator it = when.begin(); it != when.end(); it++)
 	{
-		for (kvDataList::const_iterator dataIt = data.begin(); dataIt
-				!= data.end(); dataIt++)
+		std::cout << * it << std::endl;
+		for (kvDataList::const_iterator dataIt = dataIn.begin(); dataIt != dataIn.end(); dataIt++)
 		{
 			miTime t = dataIt->obstime();
 			if (t.clock() == *it)
-				relevant.push_back(*dataIt);
+				out.push_back(*dataIt);
 		}
 	}
-	return rr::generateKvData(relevant, trigger);
 }
+
 
 }

@@ -71,15 +71,12 @@ public:
     virtual bool shouldProcess( const kvalobs::kvData &trigger,
                                 const kvDataList &observations );
 
-    virtual float generateKvData( const kvDataList &data,
-                                  const kvalobs::kvData &trigger );
-                                  
 protected:
-    float agregate( const kvalobs::kvData & from, const kvalobs::kvData & to, const kvalobs::kvData * oneDayAgo ) const;
-
     virtual int timeOffset() const { return -12; }
 
 	virtual float calculate(const std::vector<float> & source) const;
+
+	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
 };
 
 

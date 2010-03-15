@@ -40,41 +40,28 @@ using namespace kvalobs;
 
 namespace agregator
 {
-MinMax::MinMax(int readParam, int writeParam, int interestingHours, const set<
-		miClock> &generateWhen, Func minmax) :
+MinMax::MinMax(int readParam, int writeParam, int interestingHours, const set<miClock> &generateWhen, Func minmax) :
 	AbstractAgregator(readParam, writeParam, interestingHours, generateWhen),
 			function(minmax)
 {
 }
 
-
-
-float MinMax::generateKvData(const kvDataList &data, const kvData &trigger)
+bool MinMax::shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations )
 {
-	if (int(data.size()) != interestingHours())
-		throw std::logic_error("incorrect size of input data list");
+	if ( ! AbstractAgregator::shouldProcess(trigger, observations) )
+		return false;
 
-	TimeSpan ts = getTimeSpan(trigger);
+	TimeSpan time = getTimeSpan(trigger);
+	for ( kvDataList::const_iterator it = observations.begin(); it != observations.end(); ++ it )
+		if ( it->obstime() <= time.first or time.second < it->obstime() )
+			return false;
+	return true;
+}
 
-	std::vector<float> values;
-	for (kvDataList::const_iterator it = data.begin(); it != data.end(); ++it)
-	{
-		if (it->obstime() > ts.first and it->obstime() <= ts.second)
-		{
-			if (not valid(*it))
-				return invalidParam;
-			values.push_back(it->corrected());
-		}
-		else
-		{
-			std::ostringstream errMsg;
-			errMsg << "invalid date for input data: " << it->obstime()
-					<< ". Date should be in range (" << ts.first << ", "
-					<< ts.second << "].";
-			throw std::logic_error(errMsg.str());
-		}
-	}
-	return calculate(values);
+
+void MinMax::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
+{
+	out = dataIn;
 }
 
 float MinMax::calculate(const std::vector<float> & source) const

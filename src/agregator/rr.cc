@@ -48,25 +48,17 @@ using namespace boost;
 namespace agregator
 {
 
-// rr:
-
 rr::rr(int readParam, int writeParam, int interestingHours,
 		const set<miClock> &generateWhen) :
 	AbstractAgregator(readParam, writeParam, interestingHours, generateWhen)
 {
 }
 
-float rr::generateKvData(const kvDataList &data, const kvData &trigger)
+void rr::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
 {
-	std::vector<float> values;
-	for (kvDataList::const_iterator it = data.begin(); it != data.end(); it++)
-	{
-		if (not valid(*it))
-			return invalidParam;
-		values.push_back(it->corrected());
-	}
-	return calculate(values);
+	out = dataIn;
 }
+
 
 float rr::calculate(const std::vector<float> & source) const
 {
@@ -84,5 +76,6 @@ float rr::calculate(const std::vector<float> & source) const
 		return -1;
 	return sum;
 }
+
 
 }

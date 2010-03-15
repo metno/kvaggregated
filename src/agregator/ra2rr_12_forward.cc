@@ -37,8 +37,7 @@ ra2rr_12_forward::ra2rr_12_forward()
 	name += "-Forward";
 }
 
-const ra2rr_12_forward::TimeSpan ra2rr_12_forward::getTimeSpan(
-		const kvalobs::kvData &data) const
+const ra2rr_12_forward::TimeSpan ra2rr_12_forward::getTimeSpan(const kvalobs::kvData &data) const
 {
 	TimeSpan ts = ra2rr_12::getTimeSpan(data);
 	ts.first.addHour(timeOffset() + 1);

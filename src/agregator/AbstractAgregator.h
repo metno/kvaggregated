@@ -61,10 +61,9 @@ namespace agregator
    * object. Apart from the method \a generateKvData, which is a pure
    * virtual method and therefore must be overridden, the methods have a
    * default implementation. The protected methods are invoked in the
-   * following order: \a getTimeSpan, \a getRelevantObsList,
-   * \a shouldProcess, \a generateKvData,
-   * \a saveObsInDB. See the documentation of these
-   * methods for further details.
+   * following order: \a getTimeSpan, \a shouldProcess, and
+   * \a generateKvData. See the documentation for these methods for further
+   * details.
    *
    * \warning The contents of this class is not thread-safe. Care
    * should therefore be used if a subclass is to use multiple
@@ -121,7 +120,7 @@ namespace agregator
      * \brief Get the value for paramID which we are interested in
      * reading.
      */
-    inline int readParam()        const { return read_param; }
+    int readParam()        const { return read_param; }
 
     /**
      * \brief Get the value for paramID which we are interested in
@@ -193,7 +192,9 @@ namespace agregator
      * "original") field of the agregate data object to be made.
      */
     virtual float 
-    generateKvData( const kvDataList &data, const kvalobs::kvData &trigger ) =0;
+    generateKvData( const kvDataList &data, const kvalobs::kvData &trigger );
+
+	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const =0;
 
     virtual float calculate(const std::vector<float> & source) const = 0;
 
