@@ -183,6 +183,7 @@ int main(int argc, char **argv)
 
 		// Proxy database
 		kvservice::proxy::CallbackCollection callbacks;
+		LOGINFO("Using proxy database <" << conf.proxyDatabaseName() << ">");
 		kvservice::proxy::KvalobsProxy proxy(conf.proxyDatabaseName(), callbacks, conf.repopulateDatabase());
 
 		AgregatorHandler handler(callbacks, proxy);
