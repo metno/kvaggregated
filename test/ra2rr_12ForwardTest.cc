@@ -110,7 +110,6 @@ TEST_F(ra2rr_12ForwardTest, test12hZero)
     const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
     data.push_back( dataFactory.getData( 210.1, RA, "2007-06-05 06:00:00" ) );
     data.push_back( dataFactory.getData( 210.1, RA, "2007-06-05 18:00:00" ) );
-    data.push_back( dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00" ) );
     data.push_back( dataFactory.getData( 209.0, RA, "2007-06-04 18:00:00" ) ); // note obstime earliest
 
     AbstractAgregator::kvDataPtr d = agregator.process( data.front(), data );
@@ -126,7 +125,6 @@ TEST_F(ra2rr_12ForwardTest, test12hNegative)
     const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
     data.push_back( dataFactory.getData( 210.1, RA, "2007-06-05 06:00:00" ) );
     data.push_back( dataFactory.getData( 209.0, RA, "2007-06-05 18:00:00" ) );
-    data.push_back( dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00" ) );
     data.push_back( dataFactory.getData( 209.0, RA, "2007-06-04 18:00:00" ) ); // note obstime earliest
 
     AbstractAgregator::kvDataPtr d = agregator.process( data.front(), data );
@@ -142,7 +140,6 @@ TEST_F(ra2rr_12ForwardTest, test12hPositive24hNegative)
     const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
     data.push_back( dataFactory.getData( 210.1, RA, "2007-06-05 06:00:00" ) );
     data.push_back( dataFactory.getData( 211.2, RA, "2007-06-05 18:00:00" ) );
-    data.push_back( dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00" ) ); //unused
     data.push_back( dataFactory.getData( 214.4, RA, "2007-06-04 18:00:00" ) ); // note obstime earliest
 
     AbstractAgregator::kvDataPtr d = agregator.process( data.front(), data );
@@ -158,7 +155,6 @@ TEST_F(ra2rr_12ForwardTest, test12hPositive24hZero)
     const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
     data.push_back( dataFactory.getData( 210.1, RA, "2007-06-05 06:00:00" ) );
     data.push_back( dataFactory.getData( 211.2, RA, "2007-06-05 18:00:00" ) );
-    data.push_back( dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00" ) ); //unused
     data.push_back( dataFactory.getData( 211.2, RA, "2007-06-04 18:00:00" ) ); // note obstime earliest
 
     AbstractAgregator::kvDataPtr d = agregator.process( data.front(), data );
