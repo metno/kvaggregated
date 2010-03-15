@@ -58,12 +58,12 @@ namespace agregator
    * In order to do this, a set of protected virtual methods have been
    * defined, which can be overridden by subclasses. All these methods
    * will be automatically invoked by the AbstractAgregator
-   * object. Apart from the method \a generateKvData, which is a pure
-   * virtual method and therefore must be overridden, the methods have a
-   * default implementation. The protected methods are invoked in the
-   * following order: \a getTimeSpan, \a shouldProcess, and
-   * \a generateKvData. See the documentation for these methods for further
-   * details.
+   * object. Apart from the method \a extractUsefulData and \a calculate,
+   * which are pure virtual methods and therefore must be overridden, the
+   * methods have a default implementation. The protected methods are invoked
+   * in the following order: \a getTimeSpan, \a shouldProcess,
+   * \a extractUsefulData and \a process. See the documentation for these
+   * methods for further details.
    *
    * \warning The contents of this class is not thread-safe. Care
    * should therefore be used if a subclass is to use multiple
@@ -181,21 +181,22 @@ namespace agregator
 		   const kvDataList &observations );
 
     /**
-     * \brief Do the actual agregation.
+     * Extract exactly all data which is needed for aggregating.
      *
-     * \param data The list of data from which an agregate is to be made.
+     * @throws exception if unable to find all needed data
      *
-     * \param trigger The piece of data which triggered the call to
-     * this object.
-     *
-     * \return The value to put in the "corrected" (and possibly
-     * "original") field of the agregate data object to be made.
+     * @param out The needed data goes here
+     * @param dataIn source data to select from
+     * @param trigger the piece of data which caused this aggregation to start.
      */
-    virtual float 
-    generateKvData( const kvDataList &data, const kvalobs::kvData &trigger );
-
 	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const =0;
 
+	/**
+	 * Do the actual aggregation.
+	 *
+	 * @param source base data for aggregating
+	 * @return the aggregated value
+	 */
     virtual float calculate(const std::vector<float> & source) const = 0;
 
     /**
@@ -240,6 +241,20 @@ namespace agregator
     getDataObject_( const kvalobs::kvData &trigger,
 		   const miutil::miTime &obsTime,
 		   float agregateValue );
+
+    /**
+     * \brief Do the actual agregation.
+     *
+     * \param data The list of data from which an agregate is to be made.
+     *
+     * \param trigger The piece of data which triggered the call to
+     * this object.
+     *
+     * \return The value to put in the "corrected" (and possibly
+     * "original") field of the agregate data object to be made.
+     */
+    float generateKvData_( const kvDataList &data, const kvalobs::kvData &trigger );
+
 
     const int read_param;
     const int write_param;

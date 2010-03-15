@@ -167,7 +167,7 @@ namespace agregator
 	    float agregateValue;
 	    try
 	    {
-	      agregateValue = generateKvData( observations, data );
+	      agregateValue = generateKvData_( observations, data );
 	    }
 	    catch ( exception & err )
 	    {
@@ -191,7 +191,7 @@ namespace agregator
 		return return_type( new kvData( getDataObject_( data, t, agregateValue ) ) );
 	}
 
-	float AbstractAgregator::generateKvData(const kvDataList &data, const kvData &trigger)
+	float AbstractAgregator::generateKvData_(const kvDataList &data, const kvData &trigger)
 	{
 		LogContext context("generateKvData");
 
