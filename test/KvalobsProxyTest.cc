@@ -92,6 +92,7 @@ TEST_F(KvalobsProxyTest, sameDataShouldOnlyBeSentOnce)
 	proxy->sendData(sampleData);
 }
 
+/// If the database contains invalidated data, we can overwrite it
 TEST_F(KvalobsProxyTest, canOverwriteInvalidData)
 {
 	EXPECT_CALL(* kvApp, sendDataToKv(_,"kv2kvDecoder")).
@@ -100,6 +101,7 @@ TEST_F(KvalobsProxyTest, canOverwriteInvalidData)
 	kvservice::KvDataList modifiedList = sampleData;
 	std::for_each(modifiedList.begin(), modifiedList.end(), kvalobs::reject);
 
+	// Send in a bunch of invalidated data
 	proxy->sendData(modifiedList);
 
 	// This should overwrite old invalid data:
@@ -122,6 +124,7 @@ TEST_F(KvalobsProxyTest, canOverwriteInvalidData2)
 	kvservice::KvDataList modifiedList = sampleData;
 	std::for_each(modifiedList.begin(), modifiedList.end(), kvalobs::reject);
 
+	// Send in a bunch of invalidated data
 	proxy->sendData(modifiedList);
 
 	// This should overwrite old invalid data:
@@ -129,4 +132,29 @@ TEST_F(KvalobsProxyTest, canOverwriteInvalidData2)
 
 	// No invocation of KvApp::sendDataToKv should be made:
 	proxy->sendData(sampleData);
+}
+
+TEST_F(KvalobsProxyTest, canModifyOriginalValue)
+{
+	EXPECT_CALL(* kvApp, sendDataToKv(_,"kv2kvDecoder")).
+			Times(2);
+
+	kvservice::KvDataList missingData;
+	missingData.push_back(factory.getMissing(1));
+	proxy->sendData(missingData);
+
+	kvservice::KvDataList existingData;
+	existingData.push_back(factory.getData(1, 1));
+	proxy->sendData(existingData);
+
+	kvservice::KvDataList proxyStore;
+	proxy->getData(proxyStore, 1, "2010-02-10 00:00:00", "2010-02-11 00:00:00", 1, 2, 0,0);
+
+	ASSERT_EQ(1, proxyStore.size());
+	const kvalobs::kvData & data = proxyStore.front();
+	EXPECT_EQ(1, data.original());
+	EXPECT_EQ(1, data.corrected());
+
+	EXPECT_FALSE(kvalobs::original_missing(data));
+	EXPECT_TRUE(kvalobs::valid(data));
 }

@@ -77,7 +77,7 @@ TEST_F(MinMaxTest, testNormal)
 	EXPECT_FLOAT_EQ( 3, d->original() );
 }
 
-TEST_F(MinMaxTest, DISABLED_testModifiedValue)
+TEST_F(MinMaxTest, testModifiedValue)
 {
 	AbstractAgregator::kvDataList data;
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
@@ -105,6 +105,96 @@ TEST_F(MinMaxTest, DISABLED_testModifiedValue)
 	EXPECT_EQ( 2, d->paramID() );
 	EXPECT_FLOAT_EQ( -42, d->corrected() );
 	EXPECT_FLOAT_EQ( 3, d->original() );
+}
+
+TEST_F(MinMaxTest, testRejectedValue)
+{
+	AbstractAgregator::kvDataList data;
+	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 19:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 20:00:00" ) );
+	data.push_back( dataFactory.getData( 3, 1, "2007-06-05 21:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 22:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 23:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 00:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 01:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 02:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 03:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 05:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
+
+	kvalobs::reject(data.front());
+
+	AbstractAgregator::kvDataList::const_iterator p = data.begin();
+	++p;
+
+	AbstractAgregator::kvDataPtr d = agregatorToTest.process( *p, data );
+	ASSERT_TRUE( d.get() );
+
+	EXPECT_EQ( 2, d->paramID() );
+	EXPECT_TRUE( rejected(* d) );
+	EXPECT_FLOAT_EQ( 3, d->original() );
+}
+
+TEST_F(MinMaxTest, testMissingValueCorrected)
+{
+	AbstractAgregator::kvDataList data;
+	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
+	data.push_back( dataFactory.getMissing( 1, "2007-06-05 19:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 20:00:00" ) );
+	data.push_back( dataFactory.getData( 3, 1, "2007-06-05 21:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 22:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 23:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 00:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 01:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 02:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 03:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 05:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
+
+	kvalobs::correct(data.front(), -42);
+
+	AbstractAgregator::kvDataList::const_iterator p = data.begin();
+	++p;
+
+	AbstractAgregator::kvDataPtr d = agregatorToTest.process( *p, data );
+	ASSERT_TRUE( d.get() );
+
+	EXPECT_EQ( 2, d->paramID() );
+	EXPECT_TRUE( original_missing(* d) );
+	EXPECT_FLOAT_EQ( -42, d->corrected() );
+}
+
+TEST_F(MinMaxTest, testOneValueMissingOtherRejected)
+{
+	AbstractAgregator::kvDataList data;
+	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 19:00:00" ) );
+	data.push_back( dataFactory.getMissing( 1, "2007-06-05 20:00:00" ) );
+	data.push_back( dataFactory.getData( 3, 1, "2007-06-05 21:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 22:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 23:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 00:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 01:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 02:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 03:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 05:00:00" ) );
+	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
+
+	kvalobs::reject(data.front());
+
+	AbstractAgregator::kvDataList::const_iterator p = data.begin();
+	++p;
+
+	AbstractAgregator::kvDataPtr d = agregatorToTest.process( *p, data );
+	ASSERT_TRUE( d.get() );
+
+	EXPECT_EQ( 2, d->paramID() );
+	EXPECT_TRUE( original_missing(* d) );
+	EXPECT_TRUE( not valid(* d) );
 }
 
 

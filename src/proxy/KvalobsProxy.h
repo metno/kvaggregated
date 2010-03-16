@@ -94,7 +94,8 @@ namespace kvservice
         void setOldestInProxy( const miutil::miTime & newTime );
 
       private:
-        void adaptDataToKvalobs_(KvDataList & out, const kvalobs::kvData & data) const;
+        /// True if the given data's values (original or corrected) are different from kvalobs'
+        bool updatesKvalobs_(const kvalobs::kvData & data) const;
 
         std::set<int> interestingParameters_;
         

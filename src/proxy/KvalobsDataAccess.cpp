@@ -29,7 +29,7 @@
 
 #include "KvalobsDataAccess.h"
 #include "KvDataReceiver.h"
-#include <decodeutility/kvDataFormatter.h>
+#include <decodeutility/kvalobsdataserializer.h>
 #include <kvcpp/KvApp.h>
 #include <milog/milog.h>
 
@@ -101,8 +101,15 @@ CKvalObs::CDataSource::Result_var KvalobsDataAccess::sendData(const KvDataList &
 	if ( ! KvApp::kvApp )
 		throw std::runtime_error("No kvalobs connection");
 
-	miutil::miString msg = decodeutility::kvdataformatter::createString(data);
+	kvalobs::serialize::KvalobsData toSend;
+	toSend.insert(data.begin(), data.end());
+	toSend.overwrite(true);
+
+	std::string msg = kvalobs::serialize::KvalobsDataSerializer::serialize(toSend);
+
+//	miutil::miString msg = decodeutility::kvdataformatter::createString(data);
 	LOGINFO( "Sending data to kvalobs:\n" << msg );
+
 	return KvApp::kvApp->sendDataToKv(msg.c_str(), "kv2kvDecoder");
 }
 

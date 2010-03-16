@@ -197,18 +197,38 @@ namespace proxy
 
     namespace
     {
+    bool differentCorrected(const kvData & a, const kvData & b)
+	{
+		bool va = valid(a);
+		bool vb = valid(b);
+		if (va != vb)
+			return true;
+		if (va and vb)
+		{
+			float diff = abs(a.corrected() - b.corrected());
+			return diff > 0.04999;
+		}
+		return false;
+	}
+
+    bool differentOriginal(const kvData & a, const kvData & b)
+	{
+		bool va = not original_missing(a);
+		bool vb = not original_missing(b);
+		if (va != vb)
+			return true;
+		if (va and vb)
+		{
+			float diff = abs(a.original() - b.original());
+			return diff > 0.04999;
+		}
+		return false;
+	}
+
+
     bool different_( const kvData & a, const kvData & b )
     {
-      bool va = valid( a );
-      bool vb = valid( b );
-      if ( va != vb )
-        return true;
-      if ( va and vb )
-      {
-        float diff = abs( a.corrected() - b.corrected() );
-        return diff > 0.04999;
-      }
-      return false;
+    	return differentCorrected(a,b) or differentOriginal(a,b);
     }
     }
 
@@ -224,7 +244,9 @@ namespace proxy
 			if ( interestingParameters_.find(it->paramID()) == interestingParameters_.end() )
 				continue;
 
-			adaptDataToKvalobs_(l, * it);
+//			adaptDataToKvalobs_(l, * it);
+			if ( updatesKvalobs_(* it) )
+				l.push_back(* it);
 		}
 		if (l.empty())
 		{
@@ -238,7 +260,7 @@ namespace proxy
 		CKvalObs::CDataSource::Result_var res = kvalobs_.sendData(l);
 
 		if (res->res == CKvalObs::CDataSource::OK)
-			cacheData(data);
+			cacheData(l);
 		else
 			LOGERROR("Error when sending data to kvalobs: " << res->message);
 
@@ -297,34 +319,15 @@ namespace proxy
     }
 
 
-void KvalobsProxy::adaptDataToKvalobs_(KvDataList & out, const kvalobs::kvData & toAdapt) const
+bool KvalobsProxy::updatesKvalobs_(const kvalobs::kvData & data) const
 {
 	KvDataList dl;
-	getData(dl, toAdapt.stationID(), toAdapt.obstime(), toAdapt.obstime(),
-			toAdapt.paramID(), toAdapt.typeID(), toAdapt.sensor(), toAdapt.level());
+	getData(dl, data.stationID(), data.obstime(), data.obstime(),
+			data.paramID(), data.typeID(), data.sensor(), data.level());
 
 	if (dl.empty())
-	{
-		LOGDEBUG( "No matching entries in kvalobs - sending unmodified." );
-		out.push_back(toAdapt);
-		return;
-	}
-
-	kvData & d = dl.front();
-	LOGDEBUG( "Matching entry:\n" << decodeutility::kvdataformatter::createString( d ) );
-
-	if (not different_(d, toAdapt))
-	{
-		LOGDEBUG( "New data matches old - will not send correction" );
-		return;
-	}
-
-	if (valid(toAdapt))
-		correct(d, toAdapt.corrected());
-	else
-		reject(d);
-
-	out.push_back(d);
+		return true;
+	return different_(dl.front(), data);
 }
 
 }

@@ -107,7 +107,7 @@ namespace agregator
   kvalobs::kvData
   AbstractAgregator::getDataObject_( const kvData &trigger,
                                     const miTime &obsTime,
-                                    float agregateValue )
+                                    float original, float corrected )
   {
     int typeID = trigger.typeID();
     if ( typeID > 0 )
@@ -115,10 +115,17 @@ namespace agregator
 
     kvDataFactory f( trigger.stationID(), obsTime, typeID, trigger.sensor(), trigger.level() );
 
-    if ( agregateValue == invalidParam )
-      return f.getMissing( write_param );
+    kvalobs::kvData ret =
+    		original == invalidParam ?
+    				f.getMissing(write_param) :
+    				f.getData( original, write_param );
 
-    return f.getData( agregateValue, write_param );
+    if ( corrected == invalidParam )
+    	reject(ret);
+    else if ( original != corrected )
+    	correct(ret, corrected);
+
+    return ret;
   }
 
   
@@ -164,10 +171,22 @@ namespace agregator
 	    LOGINFO( "Agregating " << decodeutility::kvdataformatter::createString(data) );
 	
 	    // Call abstract method to get agregate value:
-	    float agregateValue;
 	    try
 	    {
-	      agregateValue = generateKvData_( observations, data );
+			kvDataList relevantData;
+			extractUsefulData(relevantData, observations, data);
+
+			float original = generateOriginal_(relevantData);
+			float corrected = generateCorrected_(relevantData);
+
+			//original = corrected; // revert to old behaviour
+
+		    TimeSpan times = getTimeSpan( data );
+
+		    // Create a data object for saving
+		    miTime t = miTime( times.second.date(), miClock( times.second.hour(), 0, 0 ) );
+
+			return return_type( new kvData( getDataObject_( data, t, original, corrected ) ) );
 	    }
 	    catch ( exception & err )
 	    {
@@ -182,37 +201,32 @@ namespace agregator
 	      LOGERROR( "Unrecognized error" );
 	      return return_type( 0 );
 	    }
-	
-	    TimeSpan times = getTimeSpan( data );
-	    
-	    // Create a data object for saving
-	    miTime t = miTime( times.second.date(), miClock( times.second.hour(), 0, 0 ) );
-
-		return return_type( new kvData( getDataObject_( data, t, agregateValue ) ) );
 	}
 
-	float AbstractAgregator::generateKvData_(const kvDataList &data, const kvData &trigger)
-	{
-		LogContext context("generateKvData");
-
-//		kvDataList workList;
-//		const TimeSpan timeSpan = getTimeSpan(trigger);
-//		for ( kvDataList::const_iterator it = data.begin(); it != data.end(); ++ it )
-//			if ( timeSpan.first < it->obstime() and timeSpan.second >= it->obstime() )
-//				workList.push_back(* it);
-
-		kvDataList relevantData;
-		extractUsefulData(relevantData, data, trigger);
-
-
-		std::vector<float> values;
-		for ( kvDataList::const_iterator it = relevantData.begin(); it != relevantData.end(); ++ it )
-			values.push_back(it->corrected());
-
-		kvDataList::const_iterator find = std::find_if(relevantData.begin(), relevantData.end(), boost::not1(valid));
-		if ( find != relevantData.end() )
+    float AbstractAgregator::generateOriginal_(const kvDataList & data) const
+    {
+		kvDataList::const_iterator find = std::find_if(data.begin(), data.end(), original_missing);
+		if ( find != data.end() )
 			return invalidParam;
 
+		std::vector<float> values;
+		for ( kvDataList::const_iterator it = data.begin(); it != data.end(); ++ it )
+			values.push_back(it->original());
+
 		return calculate(values);
-	}
+    }
+
+    float AbstractAgregator::generateCorrected_(const kvDataList & data) const
+    {
+		kvDataList::const_iterator find = std::find_if(data.begin(), data.end(), boost::not1(valid));
+		if ( find != data.end() )
+			return invalidParam;
+
+		std::vector<float> values;
+		for ( kvDataList::const_iterator it = data.begin(); it != data.end(); ++ it )
+			values.push_back(it->corrected());
+
+		return calculate(values);
+    }
+
 }

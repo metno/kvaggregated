@@ -240,21 +240,10 @@ namespace agregator
     kvalobs::kvData
     getDataObject_( const kvalobs::kvData &trigger,
 		   const miutil::miTime &obsTime,
-		   float agregateValue );
+		   float original, float corrected );
 
-    /**
-     * \brief Do the actual agregation.
-     *
-     * \param data The list of data from which an agregate is to be made.
-     *
-     * \param trigger The piece of data which triggered the call to
-     * this object.
-     *
-     * \return The value to put in the "corrected" (and possibly
-     * "original") field of the agregate data object to be made.
-     */
-    float generateKvData_( const kvDataList &data, const kvalobs::kvData &trigger );
-
+    float generateOriginal_(const kvDataList & data) const;
+    float generateCorrected_(const kvDataList & data) const;
 
     const int read_param;
     const int write_param;
