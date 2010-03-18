@@ -1,7 +1,6 @@
 AC_PREREQ([2.61])
 AC_INIT([kvAgregated], [2.0.7], [kvoss@met.no])
 
-
 AC_CONFIG_SRCDIR([src/main.cc])
 AC_CONFIG_HEADER([config.h])
 
@@ -31,7 +30,8 @@ AX_BOOST_FILESYSTEM
 if test -z $BOOST_FILESYSTEM_LIB; then AC_MSG_ERROR([Unable to find boost filesystem library]); fi
 AX_BOOST_PROGRAM_OPTIONS
 if test -z $BOOST_PROGRAM_OPTIONS_LIB; then AC_MSG_ERROR([Unable to find boost program_options library]); fi
- 
+
+DOCBOOK_TO_MAN 
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -39,7 +39,7 @@ AC_C_CONST
 AC_TYPE_SIZE_T
 
 
-AM_INIT_AUTOMAKE(-Wall -Werror subdir-objects)
+AM_INIT_AUTOMAKE([-Wall -Werror subdir-objects foreign])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
