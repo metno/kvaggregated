@@ -25,7 +25,11 @@ endif
 ifneq "$(wildcard /usr/share/misc/config.guess)" ""
 	cp -f /usr/share/misc/config.guess config.guess
 endif
-	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man LDFLAGS="-Wl,-z,defs"
+	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) \
+	--prefix=/usr \
+	--localstatedir=/var \
+	--mandir=\$${prefix}/share/man \
+	LDFLAGS="-Wl,-z,defs"
 
 
 build: build-stamp
@@ -45,7 +49,7 @@ clean:
 	rm -f build-stamp 
 
 	# Add here commands to clean up after the build process.
-	-$(MAKE) distclean
+	[ ! -f Makefile ] || $(MAKE) distclean
 	rm -f config.sub config.guess
 
 	dh_clean 
@@ -68,8 +72,8 @@ binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-	dh_installchangelogs ChangeLog
-	dh_installdocs
+	dh_installchangelogs
+	dh_installdocs -XNEWS
 #	dh_installexamples
 #	dh_install
 #	dh_installmenu
