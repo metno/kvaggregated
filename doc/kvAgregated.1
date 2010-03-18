@@ -1,0 +1,57 @@
+.\"     Title: KVAGREGATED
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: March  1, 2010
+.\"    Manual: 
+.\"    Source: 
+.\"
+.TH "KVAGREGATED" "1" "March 1, 2010" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+kvAgregated
+		 - Create aggregate observations for kvalobs
+.SH "SYNOPSIS"
+.HP 12
+\fBkvAgregated
+			\fR [\fB\-\-help\fR]
+.SH "DESCRIPTION"
+.PP
+This manual page documents briefly the
+\fBkvAgregated \fR
+\.
+.PP
+This manual page was written for the
+Debian(TM)
+distribution because the original program does not have a manual page\. To get information about options, run the program with \-\-help\.
+.PP
+When run in daemon mode, kvAgregated will connect to and listen for data which it can generate aggregate values for\. It will then send those aggregated values back to kvalobs, but with a negative typeid\.
+.PP
+In non\-daemon mode, it may do the same, but instead of listening it will process all data for a given time period\.
+.SH "OPTIONS"
+.PP
+\fB\-h\fR \fB\-\-help\fR
+.RS 4
+Show summary of options\.
+.RE
+.PP
+\fB\-v\fR \fB\-\-version\fR
+.RS 4
+Show version of program\.
+.RE
+.SH "AUTHOR"
+.PP
+This manual page was written by Vegard Bønes
+<vegard\.bones@met\.no>
+for the
+Debian(TM)
+system (but may be used by others)\. Permission is granted to copy, distribute and/or modify this document under the terms of the
+GNU
+General Public License, Version 2 any later version published by the Free Software Foundation\.
+.PP
+On Debian systems, the complete text of the GNU General Public License can be found in /usr/share/common\-licenses/GPL\.
+.SH "COPYRIGHT"
+Copyright \(co 2007 Vegard Bønes
+.br
