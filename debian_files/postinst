@@ -17,11 +17,17 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+. /usr/share/debconf/confmodule
+
+#Debconf 
+db_get kvalobs/user && KV_USER="$RET"
 
 case "$1" in
     configure)
     	rm -f /var/lib/kvagregated/database.sqlite
+    	mkdir -p -m775 /var/lib/kvagregated/
     	/usr/bin/kvAgregateDbInit /var/lib/kvagregated/database.sqlite
+    	chown -R $KV_USER:$KV_USER /var/lib/kvagregated/
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

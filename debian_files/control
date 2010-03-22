@@ -7,7 +7,7 @@ Standards-Version: 3.7.3
 
 Package: kvagregated
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, kvalobsuser
 Description: Create aggregate observations for kvalobs
  When run in daemon mode, kvAgregated will connect to and listen for data 
  which it can generate aggregate values for. It will then send those aggregated
