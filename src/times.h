@@ -49,6 +49,8 @@ namespace agregator {
   const std::set<miutil::miClock> allHours( hours, &hours[24] );
   const std::set<miutil::miClock> sixAmSixPm( &hours[12], &hours[14] );
   const std::set<miutil::miClock> sixAm( &hours[12], &hours[13] );
+
+  const std::set<miutil::miClock> elevenPm( &hours[23], &hours[24] );
 }
 
 #endif // __agregator__times_h__

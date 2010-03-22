@@ -36,9 +36,12 @@ namespace agregator {
   enum { RR_01 = 105, RR_1   = 106, 
 	 RR_12 = 109, RR_24  = 110,
 	 RA    = 104,
+	 TA    = 211, TA_24 = 211024,
 	 TAN   = 213, TAN_12 = 214,
 	 TAX   = 215, TAX_12 = 216,
-	 TGN   = 223, TGN_12 = 224
+	 TGN   = 223, TGN_12 = 224,
+	 UU    = 262, UU_24 = 262024,
+	 NN    =  15, NN_24 = 16
   };
 }
 

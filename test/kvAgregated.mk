@@ -12,7 +12,9 @@ kvAgregatedTest_SOURCES = \
 	test/ra2rr_12Test.cc \
 	test/AgregatorConfigurationTest.cc \
 	test/KvalobsProxyTest.cc \
-	test/AgregatorHandlerTest.cc
+	test/AgregatorHandlerTest.cc \
+	test/MeanValueAgregatorTest.cc \
+	test/nn_24Test.cc
 	
 
 kvAgregatedTest_CPPFLAGS = \
@@ -26,4 +28,4 @@ kvAgregatedTest_LDADD = \
 	$(gtest_LIBS) \
 	$(gmock_LIBS)
 
-CLEANFILES = kvAgregatedTest
+CLEANFILES += kvAgregatedTest

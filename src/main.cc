@@ -44,6 +44,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 
 #include "agregator/minmax.h"
 #include "agregator/rr.h"
@@ -52,6 +53,9 @@
 #include "agregator/rr_24.h"
 #include "agregator/ra2rr_12.h"
 #include "agregator/ra2rr_12_forward.h"
+#include "agregator/ta_24.h"
+#include "agregator/uu_24.h"
+#include "agregator/nn_24.h"
 #include <memory>
 
 using namespace std;
@@ -99,11 +103,20 @@ void runDaemon(AgregatorRunner & runner)
 	KvApp::kvApp->run();
 }
 
-std::auto_ptr<FLogStream> createLog(const std::string & logFile, milog::LogLevel level, int maxSize)
+std::auto_ptr<FLogStream> createLog(const std::string & logFileName, milog::LogLevel level, int maxSize)
 {
 	std::auto_ptr<FLogStream> ret(new FLogStream(9, maxSize));
 
-	ret->open(kvPath("localstatedir") + "/log/" + logFile);
+	boost::filesystem::path logDir = kvPath("localstatedir") + "/log/";
+	boost::filesystem::path logFile = logDir/logFileName;
+
+	if ( not exists(logDir) )
+		create_directories(logDir);
+	else
+		if ( not is_directory(logDir) )
+			throw std::runtime_error("Log directory is a file! " + logDir.string());
+
+	ret->open(logFile.string());
 	ret->loglevel(level);
 	LogManager::instance()->addStream(ret.get());
 	return ret;
@@ -165,61 +178,76 @@ int main(int argc, char **argv)
 	if (result != AgregatorConfiguration::No_Action)
 		return result;
 
-	// Logging
-	milog::Logger::logger().logLevel( milog::INFO );
-	std::auto_ptr<FLogStream> fine = createLog("kvAgregated.log", INFO, 1024 * 1024);
-	std::auto_ptr<FLogStream> error = createLog("kvAgregated.warn.log", INFO, 100 * 1024);
 
 	try
 	{
-		// PidFile
-		dnmi::file::PidFileHelper pidFile;
-		if (conf.runInDaemonMode())
-			setupPidFile(pidFile);
-
-		// KvApp
-		boost::scoped_ptr<miutil::conf::ConfSection> confSec(getConfSection());
-		KvApp app(argc, argv, confSec.get());
-
-		// Proxy database
-		kvservice::proxy::CallbackCollection callbacks;
-		LOGINFO("Using proxy database <" << conf.proxyDatabaseName() << ">");
-		kvservice::proxy::KvalobsProxy proxy(conf.proxyDatabaseName(), callbacks, conf.repopulateDatabase());
-
-		AgregatorHandler handler(callbacks, proxy);
-		handler.setParameterFilter(conf.parameters());
-		handler.setStationFilter(conf.stations());
-		handler.setTypeFilter(conf.types());
-
-		// Standard times
-		set<miClock> six;
-		six.insert(miClock(6, 0, 0));
-		six.insert(miClock(18, 0, 0));
-
-		// Add handlers
-		MinMax tan12 = min(TAN, TAN_12, 12, six);
-		handler.addHandler(&tan12);
-		MinMax tax12 = max(TAX, TAX_12, 12, six);
-		handler.addHandler(&tax12);
-		MinMax tgn12 = min(TGN, TGN_12, 12, six);
-		handler.addHandler(&tgn12);
-		boost::scoped_ptr<rr_1> rr1(conf.runInDaemonMode() ? new rr_1 : (rr_1 *) 0);
-		if ( rr1 )
-			handler.addHandler(rr1.get());
-		rr_12 rr12 = rr_12();
-		handler.addHandler(&rr12);
-		rr_24 rr24 = rr_24();
-		handler.addHandler(&rr24);
-		ra2rr_12_backward ra2rr_b;
-		handler.addHandler(&ra2rr_b);
-		ra2rr_12_forward ra2rr_f;
-		handler.addHandler(&ra2rr_f);
+		// Logging
+		milog::Logger::logger().logLevel( milog::INFO );
+		std::auto_ptr<FLogStream> fine = createLog("kvAgregated.log", INFO, 1024 * 1024);
+		std::auto_ptr<FLogStream> error = createLog("kvAgregated.warn.log", INFO, 100 * 1024);
 
 		try
 		{
-		    runAgregator(conf, proxy, callbacks);
+			// PidFile
+			dnmi::file::PidFileHelper pidFile;
+			if (conf.runInDaemonMode())
+				setupPidFile(pidFile);
+
+			// KvApp
+			boost::scoped_ptr<miutil::conf::ConfSection> confSec(getConfSection());
+			KvApp app(argc, argv, confSec.get());
+
+			// Proxy database
+			kvservice::proxy::CallbackCollection callbacks;
+			LOGINFO("Using proxy database <" << conf.proxyDatabaseName() << ">");
+			kvservice::proxy::KvalobsProxy proxy(conf.proxyDatabaseName(), callbacks, conf.repopulateDatabase());
+
+			AgregatorHandler handler(callbacks, proxy);
+			handler.setParameterFilter(conf.parameters());
+			handler.setStationFilter(conf.stations());
+			handler.setTypeFilter(conf.types());
+
+			// Standard times
+			set<miClock> six;
+			six.insert(miClock(6, 0, 0));
+			six.insert(miClock(18, 0, 0));
+
+			// Add handlers
+			MinMax tan12 = min(TAN, TAN_12, 12, six);
+			handler.addHandler(&tan12);
+			MinMax tax12 = max(TAX, TAX_12, 12, six);
+			handler.addHandler(&tax12);
+			MinMax tgn12 = min(TGN, TGN_12, 12, six);
+			handler.addHandler(&tgn12);
+			boost::scoped_ptr<rr_1> rr1(conf.runInDaemonMode() ? new rr_1 : (rr_1 *) 0);
+			if ( rr1 )
+				handler.addHandler(rr1.get());
+			rr_12 rr12 = rr_12();
+			handler.addHandler(&rr12);
+			rr_24 rr24 = rr_24();
+			handler.addHandler(&rr24);
+			ra2rr_12_backward ra2rr_b;
+			handler.addHandler(&ra2rr_b);
+			ra2rr_12_forward ra2rr_f;
+			handler.addHandler(&ra2rr_f);
+			ta_24 ta24;
+			handler.addHandler(& ta24);
+			uu_24 uu24;
+			handler.addHandler(& uu24);
+			nn_24 nn24;
+			handler.addHandler(& nn24);
+
+			try
+			{
+				runAgregator(conf, proxy, callbacks);
+			}
+			catch (std::exception & e)
+			{
+				LOGFATAL(e.what());
+				return 1;
+			}
 		}
-		catch (std::exception & e)
+		catch ( std::exception & e )
 		{
 			LOGFATAL(e.what());
 			return 1;
@@ -227,7 +255,7 @@ int main(int argc, char **argv)
 	}
 	catch ( std::exception & e )
 	{
-		LOGFATAL(e.what());
+		std::cout << e.what() << std::endl;
 		return 1;
 	}
 }

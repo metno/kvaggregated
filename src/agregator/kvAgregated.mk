@@ -14,4 +14,12 @@ kvAgregated_SOURCES += \
 	src/agregator/rr_12.h \
 	src/agregator/rr_12.cc \
 	src/agregator/rr_24.h \
-	src/agregator/rr_24.cc	
+	src/agregator/rr_24.cc \
+	src/agregator/MeanValueAgregator.h \
+	src/agregator/MeanValueAgregator.cc \
+	src/agregator/ta_24.h \
+	src/agregator/ta_24.cc \
+	src/agregator/uu_24.h \
+	src/agregator/uu_24.cc \
+	src/agregator/nn_24.h \
+	src/agregator/nn_24.cc
