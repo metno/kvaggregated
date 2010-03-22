@@ -15,7 +15,7 @@ AC_PROG_MAKE_SET
 AC_PROG_LN_S
 
 
-PKG_CHECK_MODULES(kvcpp, kvcpp)
+PKG_CHECK_MODULES(kvcpp, libkvcpp)
 PKG_CHECK_MODULES(sqlite3, sqlite3)
 
 GTEST_CHECK
