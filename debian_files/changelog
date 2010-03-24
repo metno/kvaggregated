@@ -1,3 +1,10 @@
+kvagregated (2.0.7-2) unstable; urgency=low
+
+  * Recompile against the new name library names and place for the kvalobs libs.
+
+ -- Borge Moe <borge.moe@met.no>  Wed, 24 Mar 2010 07:55:00 +0100
+
+
 kvagregated (2.0.7-1) unstable; urgency=low
 
   * Initial release (Closes: #0)
