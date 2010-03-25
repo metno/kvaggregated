@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 bin_SCRIPTS = kvAgregateDbInit
 
-pkgstatedir = $(localstatedir)/lib/kvagregated/database.sqlite
+pkgstatedir = $(localstatedir)/lib/kvagregated
 nodist_pkgstate_DATA = database.sqlite
 MOSTLYCLEANFILES = database.sqlite
 

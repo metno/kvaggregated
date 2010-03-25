@@ -44,7 +44,9 @@
 #include <boost/thread/thread.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
+//#include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>   // includes path.hpp
+#include <boost/filesystem/convenience.hpp>
 
 #include "agregator/minmax.h"
 #include "agregator/rr.h"
@@ -71,7 +73,7 @@ namespace
 void setupPidFile(dnmi::file::PidFileHelper & pidFile)
 {
 	//PID-file
-	std::string pidFileName = dnmi::file::createPidFileName(kvPath("localstatedir") + "/run", "kvAgregated");
+	std::string pidFileName = dnmi::file::createPidFileName(kvPath("rundir"), "kvAgregated");
 
 	bool pidfileError;
 	if (dnmi::file::isRunningPidFile(pidFileName, pidfileError))
@@ -107,7 +109,7 @@ std::auto_ptr<FLogStream> createLog(const std::string & logFileName, milog::LogL
 {
 	std::auto_ptr<FLogStream> ret(new FLogStream(9, maxSize));
 
-	boost::filesystem::path logDir = kvPath("localstatedir") + "/log/";
+	boost::filesystem::path logDir = kvPath("logdir");
 	boost::filesystem::path logFile = logDir/logFileName;
 
 	if ( not exists(logDir) )
