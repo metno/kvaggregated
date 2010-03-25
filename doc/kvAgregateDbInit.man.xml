@@ -35,7 +35,7 @@ and docbook-xsl in your Build-Depends control field.
        allowed: see man(7), man(1). -->
   <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
   <!ENTITY dhemail     "<email>vegard.bones@met.no</email>">
-  <!ENTITY dhusername  "Vegard Bønes">
+  <!ENTITY dhusername  "Vegard Bones">
   <!ENTITY dhucpackage "<refentrytitle>KVAGREGATEDBINIT</refentrytitle>">
   <!ENTITY dhpackage   "kvAgregateDbInit">
 

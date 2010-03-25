@@ -1,3 +1,9 @@
+kvagregated (2.1.0-1) unstable; urgency=low
+
+  * new release
+
+ -- Vegard Bones <vegard.bones@met.no>  Thu, 25 Mar 2010 14:18:17 +0100
+
 kvagregated (2.0.7-2) unstable; urgency=low
 
   * Recompile against the new name library names and place for the kvalobs libs.
