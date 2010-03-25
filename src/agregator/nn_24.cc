@@ -34,7 +34,7 @@ namespace agregator
 {
 
 nn_24::nn_24() :
-	MeanValueAgregator(NN, NN_24)
+	MeanValueAgregator(NN, NNM_24)
 {
 }
 
