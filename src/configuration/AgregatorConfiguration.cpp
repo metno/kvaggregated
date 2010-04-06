@@ -175,7 +175,6 @@ std::string AgregatorConfiguration::proxyDatabaseName() const
 	const variable_value & opt = givenOptions_["back-production"];
 	if ( opt.empty() )
 		return kvPath("localstatedir", "kvagregated")+ "/database.sqlite";
-		//return kvPath("localstatedir")+ "/lib/kvagregated/database.sqlite";
 	return opt.as<std::string>();
 }
 
