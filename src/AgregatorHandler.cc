@@ -142,7 +142,7 @@ void AgregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvDat
 					//save(*d);
 					out.push_back(* d);
 					LOGDEBUG("Processing done - not saved yet");
-					process(out, * d);
+					process(out, * d); // processing aggregated values aswell
 				}
 			}
 			++it;
