@@ -1,33 +1,33 @@
 /*
-  Kvalobs - Free Quality Control Software for Meteorological Observations 
+ Kvalobs - Free Quality Control Software for Meteorological Observations
 
-  $Id: AbstractAgregator.cc,v 1.1.2.9 2007/09/27 09:02:15 paule Exp $                                                       
+ $Id: AbstractAgregator.cc,v 1.1.2.9 2007/09/27 09:02:15 paule Exp $
 
-  Copyright (C) 2007 met.no
+ Copyright (C) 2007 met.no
 
-  Contact information:
-  Norwegian Meteorological Institute
-  Box 43 Blindern
-  0313 OSLO
-  NORWAY
-  email: kvalobs-dev@met.no
+ Contact information:
+ Norwegian Meteorological Institute
+ Box 43 Blindern
+ 0313 OSLO
+ NORWAY
+ email: kvalobs-dev@met.no
 
-  This file is part of KVALOBS
+ This file is part of KVALOBS
 
-  KVALOBS is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License as 
-  published by the Free Software Foundation; either version 2 
-  of the License, or (at your option) any later version.
-  
-  KVALOBS is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  General Public License for more details.
-  
-  You should have received a copy of the GNU General Public License along 
-  with KVALOBS; if not, write to the Free Software Foundation Inc., 
-  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
+ KVALOBS is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ KVALOBS is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along
+ with KVALOBS; if not, write to the Free Software Foundation Inc.,
+ 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 #include "AbstractAgregator.h"
 //#include "AgregatorHandler.h"
 #include "useinfoAggregate.h"
@@ -55,204 +55,201 @@ using namespace boost;
 
 namespace agregator
 {
-  AbstractAgregator::AbstractAgregator( int readParam, int writeParam,
-                                        int interestingHours,
-                                        const set<miClock> &generateWhen )
-        : name( "Agregator(" + lexical_cast<string>( readParam )
-                + ", " + lexical_cast<string>( writeParam ) + ")" )
-        , read_param( readParam )
-        , write_param( writeParam )
-        , interesting_hours( interestingHours )
-        , generate_when( generateWhen )
-  {}
+AbstractAgregator::AbstractAgregator(int readParam, int writeParam,
+		int interestingHours, const set<miClock> &generateWhen) :
+	name("Agregator(" + lexical_cast<string> (readParam) + ", " + lexical_cast<
+			string> (writeParam) + ")"), read_param(readParam), write_param(
+			writeParam), interesting_hours(interestingHours), generate_when(
+			generateWhen)
+{
+}
 
+AbstractAgregator::~AbstractAgregator()
+{
+}
 
-  AbstractAgregator::~AbstractAgregator()
-  {}
+const AbstractAgregator::TimeSpan AbstractAgregator::getTimeSpan(
+		const kvData & data) const
+{
+	// Find out what times of day we are interested in:
+	miTime time = data.obstime();
+	miDate date = time.date();
+	set<miClock>::const_iterator it = generate_when.lower_bound(time.clock());
+	if (it == generate_when.end())
+	{
+		it = generate_when.begin();
+		date.addDay();
+	}
+	miTime genTime(date, *it);
+	miTime startTime = genTime;
+	startTime.addHour(-interesting_hours);
 
-  const AbstractAgregator::TimeSpan
-  AbstractAgregator::getTimeSpan( const kvData & data ) const
-  {
-    // Find out what times of day we are interested in:
-    miTime time = data.obstime();
-    miDate date = time.date();
-    set<miClock>::const_iterator it =
-        generate_when.lower_bound( time.clock() );
-    if ( it == generate_when.end() )
-    {
-      it = generate_when.begin();
-      date.addDay();
-    }
-    miTime genTime( date, *it );
-    miTime startTime = genTime;
-    startTime.addHour( - interesting_hours );
+	const TimeSpan ret(startTime, genTime);
 
-    const TimeSpan ret( startTime, genTime );
+	return ret;
+}
 
-    return ret;
-  }
+bool AbstractAgregator::shouldProcess(const kvalobs::kvData &trigger,
+		const kvDataList &observations)
+{
+	if ((int) observations.size() < interesting_hours)
+		return false;
+	return true;
+}
 
+kvalobs::kvData AbstractAgregator::getDataObject_(const kvData &trigger,
+		const miTime &obsTime, float original, float corrected)
+{
+	int typeID = trigger.typeID();
+	if (typeID > 0)
+		typeID *= -1;
 
-  bool AbstractAgregator::shouldProcess( const kvalobs::kvData &trigger,
-                                         const kvDataList &observations )
-  {
-    if ( ( int ) observations.size() < interesting_hours )
-      return false;
-    return true;
-  }
+	kvDataFactory f(trigger.stationID(), obsTime, typeID, trigger.sensor(),
+			trigger.level());
 
+	kvalobs::kvData ret = original == invalidParam ? f.getMissing(write_param)
+			: f.getData(original, write_param);
 
-  kvalobs::kvData
-  AbstractAgregator::getDataObject_( const kvData &trigger,
-                                    const miTime &obsTime,
-                                    float original, float corrected )
-  {
-    int typeID = trigger.typeID();
-    if ( typeID > 0 )
-      typeID *= -1;
+	if (corrected == invalidParam)
+		reject(ret);
+	else if (original != corrected)
+		correct(ret, corrected);
 
-    kvDataFactory f( trigger.stationID(), obsTime, typeID, trigger.sensor(), trigger.level() );
+	return ret;
+}
 
-    kvalobs::kvData ret =
-    		original == invalidParam ?
-    				f.getMissing(write_param) :
-    				f.getData( original, write_param );
-
-    if ( corrected == invalidParam )
-    	reject(ret);
-    else if ( original != corrected )
-    	correct(ret, corrected);
-
-    return ret;
-  }
-
-  
-  	bool AbstractAgregator::isInterestedIn( const kvalobs::kvData &data ) const
-  	{
-		// Are we still supposed to run?
-		if ( KvApp::kvApp )
-		  if ( KvApp::kvApp->shutdown() )
+bool AbstractAgregator::isInterestedIn(const kvalobs::kvData &data) const
+{
+	// Are we still supposed to run?
+	if (KvApp::kvApp)
+		if (KvApp::kvApp->shutdown())
 			return false;
-		
-		LogContext context( name + " Station=" + lexical_cast<string>( data.stationID() ) );
-		
-		// What time range should we use as base data?
-		TimeSpan times = getTimeSpan( data );
-		
-		// Immediatly return if we obviously are supposed to agregate
-		if ( data.obstime().hour() != 6 and data.obstime().hour() != 18 )
+
+	LogContext context(name + " Station=" + lexical_cast<string> (
+			data.stationID()));
+
+	// What time range should we use as base data?
+	TimeSpan times = getTimeSpan(data);
+
+	// Immediatly return if we obviously are supposed to agregate
+	if (data.obstime().hour() != 6 and data.obstime().hour() != 18)
+	{
+		miTime t = miTime::nowTime();
+		t.addMin(30);
+		if (data.obstime() < t)
 		{
-		  miTime t = miTime::nowTime();
-		  t.addMin( 30 );
-		  if ( data.obstime() < t )
-		  {
-		    t.addHour( 2 );
-		    if ( times.second > t )
-		    {
-		      return false;
-		    }
-		  }
+			t.addHour(2);
+			if (times.second > t)
+			{
+				return false;
+			}
 		}
-		return true;
-  	}
-  	
-	std::auto_ptr<kvalobs::kvData> AbstractAgregator::process( const kvalobs::kvData & data, const std::list<kvalobs::kvData> & observations )
+	}
+	return true;
+}
+
+std::auto_ptr<kvalobs::kvData> AbstractAgregator::process(
+		const kvalobs::kvData & data,
+		const std::list<kvalobs::kvData> & observations)
+{
+	typedef std::auto_ptr<kvalobs::kvData> return_type;
+
+	if (not shouldProcess(data, observations))
 	{
-	  typedef std::auto_ptr<kvalobs::kvData> return_type;
-		
-	    if ( not shouldProcess( data, observations ) )
-	    {
-	      LOGDEBUG( "Will not process" );
-	      return return_type( 0 );
-	    }
-	    
-	    LOGINFO( "Agregating " << decodeutility::kvdataformatter::createString(data) );
-	
-	    // Call abstract method to get agregate value:
-	    try
-	    {
-			kvDataList relevantData;
-			extractUsefulData(relevantData, observations, data);
-
-			float original = generateOriginal_(relevantData);
-			float corrected = generateCorrected_(relevantData);
-			kvalobs::kvUseInfo ui = calculateUseInfo(relevantData);
-
-			//original = corrected; // revert to old behaviour
-
-		    TimeSpan times = getTimeSpan( data );
-
-		    // Create a data object for saving
-		    miTime t = miTime( times.second.date(), miClock( times.second.hour(), 0, 0 ) );
-
-		    return_type ret( new kvData( getDataObject_( data, t, original, corrected ) ) );
-		    ret->useinfo(ui);
-
-			return ret;
-	    }
-	    catch ( exception & err )
-	    {
-	      if ( err.what() [ 0 ] != '\0' )
-	      {
-	        LOGERROR( err.what() );
-	      }
-	      return return_type( 0 );
-	    }
-	    catch ( ... )
-	    {
-	      LOGERROR( "Unrecognized error" );
-	      return return_type( 0 );
-	    }
+		LOGDEBUG( "Will not process" );
+		return return_type(0);
 	}
 
-	namespace
+	LOGINFO( "Agregating " << decodeutility::kvdataformatter::createString(data) );
+
+	// Call abstract method to get agregate value:
+	try
 	{
-	std::string base(const kvalobs::kvUseInfo & ui)
+		kvDataList relevantData;
+		extractUsefulData(relevantData, observations, data);
+
+		float original = generateOriginal_(relevantData);
+		float corrected = generateCorrected_(relevantData);
+		kvalobs::kvUseInfo ui = calculateUseInfo(relevantData);
+
+		//original = corrected; // revert to old behaviour
+
+		TimeSpan times = getTimeSpan(data);
+
+		// Create a data object for saving
+		miTime t = miTime(times.second.date(), miClock(times.second.hour(), 0,
+				0));
+
+		return_type ret(
+				new kvData(getDataObject_(data, t, original, corrected)));
+		ret->useinfo(ui);
+
+		return ret;
+	} catch (exception & err)
 	{
-		return ui.flagstring().substr(0, 5);
-	}
-	kvalobs::kvUseInfo ui(const std::string & base)
+		if (err.what()[0] != '\0')
+		{
+			LOGERROR( err.what() );
+		}
+		return return_type(0);
+	} catch (...)
 	{
-		static char ui[17] = "_____00000000000";
-		std::copy(base.begin(), base.end(), ui);
-		return kvalobs::kvUseInfo(ui);
+		LOGERROR( "Unrecognized error" );
+		return return_type(0);
 	}
-	}
+}
 
-    kvalobs::kvUseInfo AbstractAgregator::calculateUseInfo(const kvDataList & sourceData) const
-    {
-    	std::vector<kvalobs::kvUseInfo> ui;
-    	for ( kvDataList::const_iterator it = sourceData.begin(); it != sourceData.end(); ++ it )
-    		ui.push_back(it->useinfo());
+namespace
+{
+std::string base(const kvalobs::kvUseInfo & ui)
+{
+	return ui.flagstring().substr(0, 5);
+}
+kvalobs::kvUseInfo ui(const std::string & base)
+{
+	static char ui[17] = "_____00000000000";
+	std::copy(base.begin(), base.end(), ui);
+	return kvalobs::kvUseInfo(ui);
+}
+}
 
-    	return aggregateUseFlag(ui);
-    }
+kvalobs::kvUseInfo AbstractAgregator::calculateUseInfo(
+		const kvDataList & sourceData) const
+{
+	std::vector<kvalobs::kvUseInfo> ui;
+	for (kvDataList::const_iterator it = sourceData.begin(); it
+			!= sourceData.end(); ++it)
+		ui.push_back(it->useinfo());
 
+	return aggregateUseFlag(ui);
+}
 
-    float AbstractAgregator::generateOriginal_(const kvDataList & data) const
-    {
-		kvDataList::const_iterator find = std::find_if(data.begin(), data.end(), original_missing);
-		if ( find != data.end() )
-			return invalidParam;
+float AbstractAgregator::generateOriginal_(const kvDataList & data) const
+{
+	kvDataList::const_iterator find = std::find_if(data.begin(), data.end(),
+			original_missing);
+	if (find != data.end())
+		return invalidParam;
 
-		std::vector<float> values;
-		for ( kvDataList::const_iterator it = data.begin(); it != data.end(); ++ it )
-			values.push_back(it->original());
+	std::vector<float> values;
+	for (kvDataList::const_iterator it = data.begin(); it != data.end(); ++it)
+		values.push_back(it->original());
 
-		return calculate(values);
-    }
+	return calculate(values);
+}
 
-    float AbstractAgregator::generateCorrected_(const kvDataList & data) const
-    {
-		kvDataList::const_iterator find = std::find_if(data.begin(), data.end(), boost::not1(valid));
-		if ( find != data.end() )
-			return invalidParam;
+float AbstractAgregator::generateCorrected_(const kvDataList & data) const
+{
+	kvDataList::const_iterator find = std::find_if(data.begin(), data.end(),
+			boost::not1(valid));
+	if (find != data.end())
+		return invalidParam;
 
-		std::vector<float> values;
-		for ( kvDataList::const_iterator it = data.begin(); it != data.end(); ++ it )
-			values.push_back(it->corrected());
+	std::vector<float> values;
+	for (kvDataList::const_iterator it = data.begin(); it != data.end(); ++it)
+		values.push_back(it->corrected());
 
-		return calculate(values);
-    }
+	return calculate(values);
+}
 
 }
