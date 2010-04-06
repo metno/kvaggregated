@@ -84,19 +84,8 @@ void IncomingHandler::HandlerThread::operator()()
 				continue;
 			}
 
-			try
-			{
-				data = handler.queue.front();
-				handler.queue.pop_front();
-			} catch (std::exception & e)
-			{
-				LOGERROR( "Error when getting data: " << e.what() );
-				continue;
-			} catch (...)
-			{
-				LOGERROR( "Error when getting data: Unknown reason" );
-				continue;
-			}
+			data = handler.queue.front();
+			handler.queue.pop_front();
 		}
 
 		try
