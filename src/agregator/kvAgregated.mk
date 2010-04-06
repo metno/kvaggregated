@@ -22,4 +22,6 @@ kvAgregated_SOURCES += \
 	src/agregator/uu_24.h \
 	src/agregator/uu_24.cc \
 	src/agregator/nn_24.h \
-	src/agregator/nn_24.cc
+	src/agregator/nn_24.cc \
+	src/agregator/useinfoAggregate.h \
+	src/agregator/useinfoAggregate.cc

@@ -33,7 +33,13 @@
 
 int main(int argc, char* argv[])
 {
-	milog::Logger::logger().logLevel( milog::FATAL );
+	bool doLog = false;
+	for ( int i = 1; i < argc; ++ i )
+		if ( ! strcmp("--log", argv[i]) )
+			doLog = true;
+
+	if ( not doLog )
+		milog::Logger::logger().logLevel( milog::FATAL );
 
 	testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();

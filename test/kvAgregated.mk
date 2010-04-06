@@ -14,7 +14,9 @@ kvAgregatedTest_SOURCES = \
 	test/KvalobsProxyTest.cc \
 	test/AgregatorHandlerTest.cc \
 	test/MeanValueAgregatorTest.cc \
-	test/nn_24Test.cc
+	test/nn_24Test.cc \
+	test/FlagInheritanceTest.cc
+	
 	
 
 kvAgregatedTest_CPPFLAGS = \

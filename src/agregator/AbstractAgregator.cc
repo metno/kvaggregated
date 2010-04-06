@@ -30,6 +30,7 @@
 */
 #include "AbstractAgregator.h"
 //#include "AgregatorHandler.h"
+#include "useinfoAggregate.h"
 #include <kvalobs/kvDataOperations.h>
 #include <puTools/miTime.h>
 #include <puTools/miString.h>
@@ -43,9 +44,6 @@
 #include <stdexcept>
 #include <cmath>
 #include <boost/lexical_cast.hpp>
-
-//#define NDEBUG
-#include <cassert>
 
 using namespace std;
 using namespace kvservice;
@@ -178,6 +176,7 @@ namespace agregator
 
 			float original = generateOriginal_(relevantData);
 			float corrected = generateCorrected_(relevantData);
+			kvalobs::kvUseInfo ui = calculateUseInfo(relevantData);
 
 			//original = corrected; // revert to old behaviour
 
@@ -186,7 +185,10 @@ namespace agregator
 		    // Create a data object for saving
 		    miTime t = miTime( times.second.date(), miClock( times.second.hour(), 0, 0 ) );
 
-			return return_type( new kvData( getDataObject_( data, t, original, corrected ) ) );
+		    return_type ret( new kvData( getDataObject_( data, t, original, corrected ) ) );
+		    ret->useinfo(ui);
+
+			return ret;
 	    }
 	    catch ( exception & err )
 	    {
@@ -202,6 +204,30 @@ namespace agregator
 	      return return_type( 0 );
 	    }
 	}
+
+	namespace
+	{
+	std::string base(const kvalobs::kvUseInfo & ui)
+	{
+		return ui.flagstring().substr(0, 5);
+	}
+	kvalobs::kvUseInfo ui(const std::string & base)
+	{
+		static char ui[17] = "_____00000000000";
+		std::copy(base.begin(), base.end(), ui);
+		return kvalobs::kvUseInfo(ui);
+	}
+	}
+
+    kvalobs::kvUseInfo AbstractAgregator::calculateUseInfo(const kvDataList & sourceData) const
+    {
+    	std::vector<kvalobs::kvUseInfo> ui;
+    	for ( kvDataList::const_iterator it = sourceData.begin(); it != sourceData.end(); ++ it )
+    		ui.push_back(it->useinfo());
+
+    	return aggregateUseFlag(ui);
+    }
+
 
     float AbstractAgregator::generateOriginal_(const kvDataList & data) const
     {

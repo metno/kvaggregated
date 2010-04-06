@@ -199,6 +199,8 @@ namespace agregator
 	 */
     virtual float calculate(const std::vector<float> & source) const = 0;
 
+    kvalobs::kvUseInfo calculateUseInfo(const kvDataList & sourceData) const;
+
     /**
      * \brief This is the kvalobs internal value for errors. 
      *
