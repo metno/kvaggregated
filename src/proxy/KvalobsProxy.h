@@ -1,33 +1,33 @@
 /*
-  Kvalobs - Free Quality Control Software for Meteorological Observations 
+ Kvalobs - Free Quality Control Software for Meteorological Observations
 
-  $Id: KvalobsProxy.h,v 1.1.2.7 2007/09/27 09:02:16 paule Exp $                                                       
+ $Id: KvalobsProxy.h,v 1.1.2.7 2007/09/27 09:02:16 paule Exp $
 
-  Copyright (C) 2007 met.no
+ Copyright (C) 2007 met.no
 
-  Contact information:
-  Norwegian Meteorological Institute
-  Box 43 Blindern
-  0313 OSLO
-  NORWAY
-  email: kvalobs-dev@met.no
+ Contact information:
+ Norwegian Meteorological Institute
+ Box 43 Blindern
+ 0313 OSLO
+ NORWAY
+ email: kvalobs-dev@met.no
 
-  This file is part of KVALOBS
+ This file is part of KVALOBS
 
-  KVALOBS is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License as 
-  published by the Free Software Foundation; either version 2 
-  of the License, or (at your option) any later version.
-  
-  KVALOBS is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  General Public License for more details.
-  
-  You should have received a copy of the GNU General Public License along 
-  with KVALOBS; if not, write to the Free Software Foundation Inc., 
-  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
+ KVALOBS is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ KVALOBS is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along
+ with KVALOBS; if not, write to the Free Software Foundation Inc.,
+ 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 #ifndef __kvservice__proxy__KvalobsProxy_h__
 #define __kvservice__proxy__KvalobsProxy_h__
 
@@ -45,80 +45,78 @@
 #include <boost/shared_ptr.hpp>
 #include <vector>
 
-
-
 namespace kvservice
 {
-  namespace proxy
-  {
-    class KvalobsProxy : public DataAccess, boost::noncopyable
-    {
-      public:
-        KvalobsProxy( const std::string & proxyDatabaseName, CallbackCollection & callbacks, bool repopulate = false );
-        ~KvalobsProxy( );
+namespace proxy
+{
+class KvalobsProxy: public DataAccess, boost::noncopyable
+{
+public:
+	KvalobsProxy(const std::string & proxyDatabaseName,
+			CallbackCollection & callbacks, bool repopulate = false);
+	~KvalobsProxy();
 
-        /**
-         * Get kvalobs data. The source is either the database, or the proxy database
-         */
-        void getData( KvDataList &data, int station,
-                      const miutil::miTime &from, const miutil::miTime &to,
-                      int paramid, int type, int sensor, int lvl ) const;
+	/**
+	 * Get kvalobs data. The source is either the database, or the proxy database
+	 */
+	void getData(KvDataList &data, int station, const miutil::miTime &from,
+			const miutil::miTime &to, int paramid, int type, int sensor,
+			int lvl) const;
 
-        /**
-         * Send data to kvalobs. Data will also be stored in proxy database
-         */
-        CKvalObs::CDataSource::Result_var sendData( const KvDataList &data );
+	/**
+	 * Send data to kvalobs. Data will also be stored in proxy database
+	 */
+	CKvalObs::CDataSource::Result_var sendData(const KvDataList &data);
 
-        void cacheData(const KvDataList &data);
+	void cacheData(const KvDataList &data);
 
-        /**
-         * Add parameter to store in cache database.
-         *
-         * @warning Not thread-safe!
-         */
-        void addInteresting( int param )
-        {
-          interestingParameters_.insert( param );
-        }
+	/**
+	 * Add parameter to store in cache database.
+	 *
+	 * @warning Not thread-safe!
+	 */
+	void addInteresting(int param)
+	{
+		interestingParameters_.insert(param);
+	}
 
-        // Operations on proxy:
-        void db_clear();
-        void db_cleanup();
-        void db_populate( int hours = 24 );
-        void db_repopulate( int hours = 24 )
-        {
-          db_clear();
-          db_populate( hours );
-        }
+	// Operations on proxy:
+	void db_clear();
+	void db_cleanup();
+	void db_populate(int hours = 24);
+	void db_repopulate(int hours = 24)
+	{
+		db_clear();
+		db_populate(hours);
+	}
 
-        void setOldestInProxy( const miutil::miTime & newTime );
+	void setOldestInProxy(const miutil::miTime & newTime);
 
-      private:
-        /// True if the given data's values (original or corrected) are different from kvalobs'
-        bool updatesKvalobs_(const kvalobs::kvData & data) const;
+private:
+	/// True if the given data's values (original or corrected) are different from kvalobs'
+	bool updatesKvalobs_(const kvalobs::kvData & data) const;
 
-        std::set<int> interestingParameters_;
-        
-        // We only adapt and send a single set of data to kvalobs at a time
-        boost::mutex sendDataMutex_;
+	std::set<int> interestingParameters_;
 
-        /**
-         * Protect oldestInProxy variable. We assume that modifications to
-         * oldestInProxy are rare and have no requirement for fast action.
-         * Therefore we use an unfair lock, which causes starvation.
-         */
-		mutable RWMutex timeMutex_;
-        miutil::miTime oldestInProxy;
+	// We only adapt and send a single set of data to kvalobs at a time
+	boost::mutex sendDataMutex_;
 
-        CachedDataAccess cache_;
-        KvalobsDataAccess kvalobs_;
+	/**
+	 * Protect oldestInProxy variable. We assume that modifications to
+	 * oldestInProxy are rare and have no requirement for fast action.
+	 * Therefore we use an unfair lock, which causes starvation.
+	 */
+	mutable RWMutex timeMutex_;
+	miutil::miTime oldestInProxy;
 
+	CachedDataAccess cache_;
+	KvalobsDataAccess kvalobs_;
 
-        class Cleaner;
-        Cleaner * cleaner_;
-        boost::thread * cleanerThread_;
-    };
-  }
+	class Cleaner;
+	Cleaner * cleaner_;
+	boost::thread * cleanerThread_;
+};
+}
 }
 
 #endif // __kvservice__proxy__KvalobsProxy_h__
