@@ -54,12 +54,6 @@ public:
 
 	void process(kvservice::KvDataList & out, const kvalobs::kvData & data);
 
-	void save(const kvalobs::kvData & d)
-	{
-		kvservice::KvDataList dl;
-		dl.push_back(d);
-		save(dl);
-	}
 	void save(const kvservice::KvDataList & dataList);
 
 	void setParameterFilter(const std::vector<int> & allowedParameters)
