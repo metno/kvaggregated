@@ -299,16 +299,14 @@ void KvalobsProxy::getData(KvDataList &data, int station,
 		miTime p_from = oldestInProxy.undef() ? from : max(from, oldestInProxy);
 		LOGDEBUG( "Fetching times " << p_from << " - " << to << " from proxy" );
 		KvDataList proxyData;
-		cache_.getData(proxyData, station, p_from, to, paramid, type, sensor,
-				lvl);
-		for (KvDataList::const_iterator it = proxyData.begin(); it
-				!= proxyData.end(); ++it)
+		cache_.getData(proxyData, station, p_from, to, paramid, type, sensor, lvl);
+		for (KvDataList::const_iterator it = proxyData.begin(); it != proxyData.end(); ++it)
 		{
-			KvDataList::const_iterator find = find_if(data.begin(), data.end(),
-					bind1st(kvalobs::compare::same_kvData(), *it));
+			KvDataList::const_iterator find = find_if(data.begin(), data.end(),	bind1st(kvalobs::compare::same_kvData(), *it));
 			if (find == data.end())
 				data.push_back(*it);
 		}
+		LOGDEBUG( "Data from proxy :\n" << decodeutility::kvdataformatter::createString( proxyData ) );
 	}
 }
 
