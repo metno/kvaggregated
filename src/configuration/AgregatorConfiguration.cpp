@@ -172,7 +172,7 @@ bool AgregatorConfiguration::daemonMode() const
 
 std::string AgregatorConfiguration::proxyDatabaseName() const
 {
-	const variable_value & opt = givenOptions_["back-production"];
+	const variable_value & opt = givenOptions_["proxy-database-name"];
 	if ( opt.empty() )
 		return kvPath("localstatedir", "kvagregated")+ "/database.sqlite";
 	return opt.as<std::string>();

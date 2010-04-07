@@ -96,7 +96,6 @@ namespace agregator
     }
     catch( std::exception & e ) {
         LOGFATAL( e.what() );
-        assert( 0 );
     }
   }
 

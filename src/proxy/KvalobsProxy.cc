@@ -248,8 +248,7 @@ CKvalObs::CDataSource::Result_var KvalobsProxy::sendData(const KvDataList &data)
 
 	for (CIKvDataList it = data.begin(); it != data.end(); it++)
 	{
-		if (interestingParameters_.find(it->paramID())
-				== interestingParameters_.end())
+		if (interestingParameters_.find(it->paramID()) == interestingParameters_.end())
 			continue;
 
 		//			adaptDataToKvalobs_(l, * it);
@@ -288,7 +287,7 @@ void KvalobsProxy::getData(KvDataList &data, int station,
 	{
 		miTime k_from = from;
 		miTime k_to = oldestInProxy.undef() ? to : min(to, oldestInProxy);
-		//LOGDEBUG( "Fetching times " << from << " - " << k_to << " from kvalobs" );
+		LOGDEBUG( "Fetching times " << from << " - " << k_to << " from kvalobs" );
 		kvalobs_.getData(data, station, k_from, k_to, paramid, type, sensor,
 				lvl);
 		LOGDEBUG( "Data from kvalobs :\n" << decodeutility::kvdataformatter::createString( data ) );
@@ -298,7 +297,7 @@ void KvalobsProxy::getData(KvDataList &data, int station,
 	if (oldestInProxy.undef() or to > oldestInProxy)
 	{
 		miTime p_from = oldestInProxy.undef() ? from : max(from, oldestInProxy);
-		//LOGDEBUG( "Fetching times " << p_from << " - " << to << " from proxy" );
+		LOGDEBUG( "Fetching times " << p_from << " - " << to << " from proxy" );
 		KvDataList proxyData;
 		cache_.getData(proxyData, station, p_from, to, paramid, type, sensor,
 				lvl);
