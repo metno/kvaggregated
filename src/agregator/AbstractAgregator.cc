@@ -98,7 +98,7 @@ bool AbstractAgregator::shouldProcess(const kvalobs::kvData &trigger,
 }
 
 kvalobs::kvData AbstractAgregator::getDataObject_(const kvData &trigger,
-		const miTime &obsTime, float original, float corrected)
+		const miTime &obsTime, float original, float corrected, const kvalobs::kvUseInfo & ui)
 {
 	int typeID = trigger.typeID();
 	if (typeID > 0)
@@ -114,6 +114,8 @@ kvalobs::kvData AbstractAgregator::getDataObject_(const kvData &trigger,
 		reject(ret);
 	else if (original != corrected)
 		correct(ret, corrected);
+
+	ret.useinfo(ui);
 
 	return ret;
 }
@@ -181,8 +183,7 @@ std::auto_ptr<kvalobs::kvData> AbstractAgregator::process(
 				0));
 
 		return_type ret(
-				new kvData(getDataObject_(data, t, original, corrected)));
-		ret->useinfo(ui);
+				new kvData(getDataObject_(data, t, original, corrected, ui)));
 
 		return ret;
 	} catch (exception & err)

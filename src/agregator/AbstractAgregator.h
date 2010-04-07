@@ -253,7 +253,7 @@ private:
 	 */
 	kvalobs::kvData
 	getDataObject_(const kvalobs::kvData &trigger,
-			const miutil::miTime &obsTime, float original, float corrected);
+			const miutil::miTime &obsTime, float original, float corrected, const kvalobs::kvUseInfo & ui);
 
 	float generateOriginal_(const kvDataList & data) const;
 	float generateCorrected_(const kvDataList & data) const;
