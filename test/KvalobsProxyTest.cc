@@ -82,6 +82,11 @@ TEST_F(KvalobsProxyTest, createWithoutKvApp)
 	ASSERT_THROW(KvalobsProxy proxy(":memory:", callbacks), std::runtime_error);
 }
 
+TEST_F(KvalobsProxyTest, nonExistingDatabaseFile)
+{
+	EXPECT_THROW(new KvalobsProxy("/no/such/file", callbacks), std::runtime_error);
+}
+
 TEST_F(KvalobsProxyTest, sameDataShouldOnlyBeSentOnce)
 {
 	EXPECT_CALL(* kvApp, sendDataToKv(_,"kv2kvDecoder")).

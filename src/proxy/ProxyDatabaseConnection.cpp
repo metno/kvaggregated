@@ -30,12 +30,15 @@
 #include "ProxyDatabaseConnection.h"
 #include <kvdb/dbdrivermgr.h>
 #include <kvalobs/kvPath.h>
+#include <boost/filesystem/operations.hpp>
 #include <stdexcept>
 
 namespace
 {
 // Holds all created connections
 dnmi::db::DriverManager driverManager;
+
+const std::string memoryDatabaseName = ":memory:";
 }
 
 ProxyDatabaseConnection::ProxyDatabaseConnection(const std::string & databaseProxyFile, bool createDatabase)
@@ -46,12 +49,20 @@ ProxyDatabaseConnection::ProxyDatabaseConnection(const std::string & databasePro
 	if ( ! driverManager.loadDriver(dbDriverPath + "sqlite3driver.so", proxyID) )
 		throw std::runtime_error("Error when loading database driver: " + driverManager.getErr() );
 
+	if ( databaseProxyFile != memoryDatabaseName )
+	{
+		if ( not boost::filesystem::exists(databaseProxyFile) and not createDatabase )
+			throw std::runtime_error(databaseProxyFile + ": no such file");
+		if ( boost::filesystem::is_directory(databaseProxyFile) )
+			throw std::runtime_error(databaseProxyFile + " is a directory");
+	}
+
 	connection_ = driverManager.connect(proxyID, databaseProxyFile);
 
-	if ( ! connection_)
+	if ( ! connection_ or not connection_->isConnected() )
 		throw std::runtime_error("Cant create a database connection to " + databaseProxyFile);
 
-	if ( createDatabase or databaseProxyFile == ":memory:")
+	if ( createDatabase or databaseProxyFile == memoryDatabaseName)
 		createDatabase_();
 }
 

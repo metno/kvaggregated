@@ -288,8 +288,7 @@ void KvalobsProxy::getData(KvDataList &data, int station,
 		miTime k_from = from;
 		miTime k_to = oldestInProxy.undef() ? to : min(to, oldestInProxy);
 		LOGDEBUG( "Fetching times " << from << " - " << k_to << " from kvalobs" );
-		kvalobs_.getData(data, station, k_from, k_to, paramid, type, sensor,
-				lvl);
+		kvalobs_.getData(data, station, k_from, k_to, paramid, type, sensor, lvl);
 		LOGDEBUG( "Data from kvalobs :\n" << decodeutility::kvdataformatter::createString( data ) );
 	}
 
