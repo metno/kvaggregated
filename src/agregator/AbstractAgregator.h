@@ -211,6 +211,13 @@ protected:
 	 */
 	virtual float calculate(const std::vector<float> & source) const = 0;
 
+	/**
+	 * Calculate value for new useinfo flag, based on the source data, which
+	 * aggregation was made on.
+	 *
+	 * \warning Unless AGGREGATE_USEINFO is defined, this method will never be
+	 *          called explicitly.
+	 */
 	kvalobs::kvUseInfo calculateUseInfo(const kvDataList & sourceData) const;
 
 	/**

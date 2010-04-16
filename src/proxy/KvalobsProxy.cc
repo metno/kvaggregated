@@ -234,8 +234,12 @@ bool differentUseInfo(const kvData & a, const kvData & b)
 
 bool different_(const kvData & a, const kvData & b)
 {
-	return differentCorrected(a, b) or differentOriginal(a, b)
-			or differentUseInfo(a, b);
+	return differentCorrected(a, b)
+			or differentOriginal(a, b)
+#ifdef AGGREGATE_USEINFO
+			or differentUseInfo(a, b)
+#endif
+	;
 }
 }
 

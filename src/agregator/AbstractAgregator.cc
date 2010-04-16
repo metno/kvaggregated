@@ -172,7 +172,11 @@ std::auto_ptr<kvalobs::kvData> AbstractAgregator::process(
 
 		float original = generateOriginal_(relevantData);
 		float corrected = generateCorrected_(relevantData);
+#ifdef AGGREGATE_USEINFO
 		kvalobs::kvUseInfo ui = calculateUseInfo(relevantData);
+#else
+		kvalobs::kvUseInfo ui;
+#endif
 
 		//original = corrected; // revert to old behaviour
 
@@ -198,20 +202,6 @@ std::auto_ptr<kvalobs::kvData> AbstractAgregator::process(
 		LOGERROR( "Unrecognized error" );
 		return return_type(0);
 	}
-}
-
-namespace
-{
-std::string base(const kvalobs::kvUseInfo & ui)
-{
-	return ui.flagstring().substr(0, 5);
-}
-kvalobs::kvUseInfo ui(const std::string & base)
-{
-	static char ui[17] = "_____00000000000";
-	std::copy(base.begin(), base.end(), ui);
-	return kvalobs::kvUseInfo(ui);
-}
 }
 
 kvalobs::kvUseInfo AbstractAgregator::calculateUseInfo(
