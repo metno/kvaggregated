@@ -34,7 +34,7 @@ namespace agregator
 {
 
 ta_24::ta_24() :
-		MeanValueAgregator(TA, TAM_24)
+		MeanValueAggregator(TA, TAM_24)
 {
 }
 

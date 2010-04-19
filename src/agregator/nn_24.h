@@ -30,12 +30,12 @@
 #ifndef NN_24_H_
 #define NN_24_H_
 
-#include "MeanValueAgregator.h"
+#include "MeanValueAggregator.h"
 
 namespace agregator
 {
 
-class nn_24: public MeanValueAgregator
+class nn_24: public MeanValueAggregator
 {
 public:
 	nn_24();

@@ -36,11 +36,11 @@
 namespace agregator
 {
 
-class MeanValueAgregator: public AbstractAgregator
+class MeanValueAggregator: public AbstractAgregator
 {
 public:
-	MeanValueAgregator(int readParam, int writeParam);
-	virtual ~MeanValueAgregator();
+	MeanValueAggregator(int readParam, int writeParam);
+	virtual ~MeanValueAggregator();
 
     virtual bool shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations );
 

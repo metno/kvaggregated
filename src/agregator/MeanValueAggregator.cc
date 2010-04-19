@@ -27,23 +27,23 @@
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "MeanValueAgregator.h"
+#include "MeanValueAggregator.h"
 #include "times.h"
 #include <numeric>
 
 namespace agregator
 {
 
-MeanValueAgregator::MeanValueAgregator(int readParam, int writeParam) :
+MeanValueAggregator::MeanValueAggregator(int readParam, int writeParam) :
 		AbstractAgregator(readParam, writeParam, 24, elevenPm)
 {
 }
 
-MeanValueAgregator::~MeanValueAgregator()
+MeanValueAggregator::~MeanValueAggregator()
 {
 }
 
-bool MeanValueAgregator::shouldProcess( const kvalobs::kvData &trigger, const kvDataList & observations )
+bool MeanValueAggregator::shouldProcess( const kvalobs::kvData &trigger, const kvDataList & observations )
 {
 	kvDataList::size_type size = observations.size();
 	switch ( size )
@@ -60,12 +60,12 @@ bool MeanValueAgregator::shouldProcess( const kvalobs::kvData &trigger, const kv
 }
 
 
-void MeanValueAgregator::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
+void MeanValueAggregator::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
 {
 	out = dataIn;
 }
 
-float MeanValueAgregator::calculate(const std::vector<float> & source) const
+float MeanValueAggregator::calculate(const std::vector<float> & source) const
 {
 	return std::accumulate(source.begin(), source.end(), 0.0) / source.size();
 }

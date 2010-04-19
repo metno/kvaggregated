@@ -30,12 +30,12 @@
 #ifndef UU_24_H_
 #define UU_24_H_
 
-#include "MeanValueAgregator.h"
+#include "MeanValueAggregator.h"
 
 namespace agregator
 {
 
-class uu_24: public MeanValueAgregator
+class uu_24: public MeanValueAggregator
 {
 public:
 	uu_24();

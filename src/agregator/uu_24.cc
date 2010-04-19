@@ -35,7 +35,7 @@ namespace agregator
 {
 
 uu_24::uu_24() :
-		MeanValueAgregator(UU, UUM_24)
+		MeanValueAggregator(UU, UUM_24)
 {
 }
 

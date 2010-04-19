@@ -29,10 +29,10 @@
 
 #include "AbstractAgregatorTest.h"
 #include <paramID.h>
-#include <agregator/MeanValueAgregator.h>
+#include <agregator/MeanValueAggregator.h>
 #include <kvalobs/kvDataOperations.h>
 
-using agregator::MeanValueAgregator;
+using agregator::MeanValueAggregator;
 
 class MeanValueAgregatorTest : public AbstractAgregatorTest
 {
@@ -43,10 +43,10 @@ protected:
 	{}
 
 	kvalobs::kvDataFactory factory;
-	MeanValueAgregator agregator;
+	MeanValueAggregator agregator;
 };
 
-INSTANTIATE_TEST_CASE_P(MeanValueAgregatorTest, AbstractAgregatorTest, testing::Values(AgregatorPtr(new MeanValueAgregator(1,2))));
+INSTANTIATE_TEST_CASE_P(MeanValueAgregatorTest, AbstractAgregatorTest, testing::Values(AgregatorPtr(new MeanValueAggregator(1,2))));
 
 
 TEST_F(MeanValueAgregatorTest, standard24hAgregate)
@@ -56,7 +56,7 @@ TEST_F(MeanValueAgregatorTest, standard24hAgregate)
 	for ( miutil::miTime t = "2010-03-15 07:00:00"; t <= factory.obstime(); t.addHour() )
 		data.push_back(factory.getData(++ i, 1, t));
 
-	MeanValueAgregator::kvDataPtr result = agregator.process(data.front(), data);
+	MeanValueAggregator::kvDataPtr result = agregator.process(data.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -72,7 +72,7 @@ TEST_F(MeanValueAgregatorTest, missingValue)
 
 	kvalobs::reject(data.front());
 
-	MeanValueAgregator::kvDataPtr result = agregator.process(data.front(), data);
+	MeanValueAggregator::kvDataPtr result = agregator.process(data.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -89,7 +89,7 @@ TEST_F(MeanValueAgregatorTest, observationEach3Hours)
 
 	kvalobs::reject(data.front());
 
-	MeanValueAgregator::kvDataPtr result = agregator.process(data.front(), data);
+	MeanValueAggregator::kvDataPtr result = agregator.process(data.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
