@@ -28,7 +28,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <agregator/useinfoAggregate.h>
+#include <aggregator/useinfoAggregate.h>
 #include <times.h>
 #include <kvalobs/kvDataOperations.h>
 

@@ -48,16 +48,16 @@
 #include <boost/filesystem/operations.hpp>   // includes path.hpp
 #include <boost/filesystem/convenience.hpp>
 
-#include "agregator/minmax.h"
-#include "agregator/rr.h"
-#include "agregator/rr_1.h"
-#include "agregator/rr_12.h"
-#include "agregator/rr_24.h"
-#include "agregator/ra2rr_12.h"
-#include "agregator/ra2rr_12_forward.h"
-#include "agregator/ta_24.h"
-#include "agregator/uu_24.h"
-#include "agregator/nn_24.h"
+#include "aggregator/minmax.h"
+#include "aggregator/rr.h"
+#include "aggregator/rr_1.h"
+#include "aggregator/rr_12.h"
+#include "aggregator/rr_24.h"
+#include "aggregator/ra2rr_12.h"
+#include "aggregator/ra2rr_12_forward.h"
+#include "aggregator/ta_24.h"
+#include "aggregator/uu_24.h"
+#include "aggregator/nn_24.h"
 #include <memory>
 
 using namespace std;

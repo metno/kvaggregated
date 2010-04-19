@@ -31,7 +31,7 @@
 #include "GenerateZero.h"
 #include "AggregatorHandler.h"
 #include "paramID.h"
-#include "agregator/rr_1.h"
+#include "aggregator/rr_1.h"
 #include <algorithm>
 #include <sstream>
 #include <kvalobs/kvObsPgm.h>

@@ -30,7 +30,7 @@
 */
 
 #include "AbstractAggregatorTest.h"
-#include <agregator/ra2rr_12_forward.h>
+#include <aggregator/ra2rr_12_forward.h>
 #include <kvalobs/kvDataOperations.h>
 
 using namespace kvalobs;
@@ -41,7 +41,7 @@ class ra2rr_12ForwardTest : public AbstractAggregatorTest
 {
 protected:
     enum { RR_12 = 109, RA = 104 };
-	ra2rr_12_forward agregator;
+	ra2rr_12_forward aggregator;
 };
 
 // This class does not follow the default time span of most other tests
@@ -51,7 +51,7 @@ TEST_F(ra2rr_12ForwardTest, testGetTimeSpanAtGenerationPoint)
 {
 	const kvalobs::kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
 	const AbstractAggregator::TimeSpan timeSpan = 
-	agregator.getTimeSpan(dataFactory.getData( 15, 1 ));
+	aggregator.getTimeSpan(dataFactory.getData( 15, 1 ));
 	EXPECT_EQ(miutil::miTime("2007-06-05 18:00:00"), timeSpan.first );
 	EXPECT_EQ(miutil::miTime("2007-06-06 18:00:00"), timeSpan.second );
 }
@@ -61,7 +61,7 @@ TEST_F(ra2rr_12ForwardTest, testGetTimeSpan)
 {
 	const kvalobs::kvDataFactory dataFactory( 42, "2007-06-06 03:00:00", 302 );
 	const AbstractAggregator::TimeSpan timeSpan = 
-	agregator.getTimeSpan(dataFactory.getData( 15, 1 ));
+	aggregator.getTimeSpan(dataFactory.getData( 15, 1 ));
 	EXPECT_EQ(miutil::miTime("2007-06-05 18:00:00"), timeSpan.first );
 	EXPECT_EQ(miutil::miTime("2007-06-06 18:00:00"), timeSpan.second );
 }
@@ -73,12 +73,12 @@ TEST_F(ra2rr_12ForwardTest, testExpressedInterest)
 
     const kvDataFactory dataFactory( 42, t, 302 );
 
-    ASSERT_TRUE( agregator.isInterestedIn( dataFactory.getData( 0, RA ) ) );
+    ASSERT_TRUE( aggregator.isInterestedIn( dataFactory.getData( 0, RA ) ) );
 
     // TODO: complete this test:
     //	t = miutil::miTime::nowTime();
     //	t.addHour( 1 );
-    //	ASSERT_TRUE( not agregator.isInterestedIn( dataFactory.getData( 0, RA, t ) ) );
+    //	ASSERT_TRUE( not aggregator.isInterestedIn( dataFactory.getData( 0, RA, t ) ) );
 }
 
 TEST_F(ra2rr_12ForwardTest, testNotEnoughData)
@@ -87,7 +87,7 @@ TEST_F(ra2rr_12ForwardTest, testNotEnoughData)
     const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
     data.push_back( dataFactory.getData( 213.3, RA ) );
 
-    AbstractAggregator::kvDataPtr d = agregator.process( data.front(), data );
+    AbstractAggregator::kvDataPtr d = aggregator.process( data.front(), data );
     ASSERT_TRUE( not d.get() );
 }
 
@@ -99,7 +99,7 @@ TEST_F(ra2rr_12ForwardTest, testDataMarkedAsMissing)
     data.push_back( dataFactory.getMissing( RA, "2007-06-05 18:00:00" ) );
     data.push_back( dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00" ) );
 
-    AbstractAggregator::kvDataPtr d = agregator.process( data.front(), data );
+    AbstractAggregator::kvDataPtr d = aggregator.process( data.front(), data );
     ASSERT_TRUE( d.get() );
     ASSERT_TRUE( missing( * d ) );
 }
@@ -112,7 +112,7 @@ TEST_F(ra2rr_12ForwardTest, test12hZero)
     data.push_back( dataFactory.getData( 210.1, RA, "2007-06-05 18:00:00" ) );
     data.push_back( dataFactory.getData( 209.0, RA, "2007-06-04 18:00:00" ) ); // note obstime earliest
 
-    AbstractAggregator::kvDataPtr d = agregator.process( data.front(), data );
+    AbstractAggregator::kvDataPtr d = aggregator.process( data.front(), data );
     ASSERT_TRUE( d.get() );
     EXPECT_EQ( miutil::miTime("2007-06-05 18:00:00"), d->obstime() );
     EXPECT_FLOAT_EQ( 0, d->corrected() );
@@ -127,7 +127,7 @@ TEST_F(ra2rr_12ForwardTest, test12hNegative)
     data.push_back( dataFactory.getData( 209.0, RA, "2007-06-05 18:00:00" ) );
     data.push_back( dataFactory.getData( 209.0, RA, "2007-06-04 18:00:00" ) ); // note obstime earliest
 
-    AbstractAggregator::kvDataPtr d = agregator.process( data.front(), data );
+    AbstractAggregator::kvDataPtr d = aggregator.process( data.front(), data );
     ASSERT_TRUE( d.get() );
     EXPECT_EQ( miutil::miTime("2007-06-05 18:00:00"), d->obstime() );
     EXPECT_FLOAT_EQ( 0, d->corrected() );
@@ -142,7 +142,7 @@ TEST_F(ra2rr_12ForwardTest, test12hPositive24hNegative)
     data.push_back( dataFactory.getData( 211.2, RA, "2007-06-05 18:00:00" ) );
     data.push_back( dataFactory.getData( 214.4, RA, "2007-06-04 18:00:00" ) ); // note obstime earliest
 
-    AbstractAggregator::kvDataPtr d = agregator.process( data.front(), data );
+    AbstractAggregator::kvDataPtr d = aggregator.process( data.front(), data );
     ASSERT_TRUE( d.get() );
     EXPECT_EQ( miutil::miTime("2007-06-05 18:00:00"), d->obstime() );
     EXPECT_FLOAT_EQ( 0, d->corrected() );
@@ -157,7 +157,7 @@ TEST_F(ra2rr_12ForwardTest, test12hPositive24hZero)
     data.push_back( dataFactory.getData( 211.2, RA, "2007-06-05 18:00:00" ) );
     data.push_back( dataFactory.getData( 211.2, RA, "2007-06-04 18:00:00" ) ); // note obstime earliest
 
-    AbstractAggregator::kvDataPtr d = agregator.process( data.front(), data );
+    AbstractAggregator::kvDataPtr d = aggregator.process( data.front(), data );
     ASSERT_TRUE( d.get() );
     EXPECT_EQ( miutil::miTime("2007-06-05 18:00:00"), d->obstime() );
     EXPECT_FLOAT_EQ( 0, d->corrected() );
@@ -172,7 +172,7 @@ TEST_F(ra2rr_12ForwardTest, test12hPositive24hPositivePrev12hNegative)
     data.push_back( dataFactory.getData( 211.2, RA, "2007-06-05 18:00:00" ) );
     data.push_back( dataFactory.getData( 210.1, RA, "2007-06-04 18:00:00" ) ); // note obstime earliest
 
-    AbstractAggregator::kvDataPtr d = agregator.process( data.front(), data );
+    AbstractAggregator::kvDataPtr d = aggregator.process( data.front(), data );
     ASSERT_TRUE( d.get() );
     EXPECT_EQ( miutil::miTime("2007-06-05 18:00:00"), d->obstime() );
     EXPECT_NEAR( 1.1, d->corrected(), .00001 );
@@ -187,7 +187,7 @@ TEST_F(ra2rr_12ForwardTest, test12hPositive24hPositivePrev12hZero)
     data.push_back( dataFactory.getData( 211.2, RA, "2007-06-05 18:00:00" ) );
     data.push_back( dataFactory.getData( 211.0, RA, "2007-06-04 18:00:00" ) ); // note obstime earliest
 
-    AbstractAggregator::kvDataPtr d = agregator.process( data.front(), data );
+    AbstractAggregator::kvDataPtr d = aggregator.process( data.front(), data );
     ASSERT_TRUE( d.get() );
     EXPECT_EQ( miutil::miTime("2007-06-05 18:00:00"), d->obstime() );
     EXPECT_NEAR( 0.2, d->corrected(), .00001 );
@@ -202,7 +202,7 @@ TEST_F(ra2rr_12ForwardTest, test12hPositive24hPositivePrev12hPositive)
     data.push_back( dataFactory.getData( 211.2, RA, "2007-06-05 18:00:00" ) );
     data.push_back( dataFactory.getData( 209.0, RA, "2007-06-04 18:00:00" ) ); // note obstime earliest
 
-    AbstractAggregator::kvDataPtr d = agregator.process( data.front(), data );
+    AbstractAggregator::kvDataPtr d = aggregator.process( data.front(), data );
     ASSERT_TRUE( d.get() );
     EXPECT_EQ( miutil::miTime("2007-06-05 18:00:00"), d->obstime() );
     EXPECT_NEAR( 1.1, d->corrected(), .00001 );

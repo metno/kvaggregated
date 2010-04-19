@@ -30,7 +30,7 @@
 */
 
 #include "AbstractAggregatorTest.h"
-#include <agregator/minmax.h>
+#include <aggregator/minmax.h>
 #include <times.h>
 #include <kvalobs/kvDataOperations.h>
 #include <algorithm>

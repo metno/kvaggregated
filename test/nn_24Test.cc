@@ -28,7 +28,7 @@
 */
 
 #include "AbstractAggregatorTest.h"
-#include <agregator/nn_24.h>
+#include <aggregator/nn_24.h>
 #include <kvalobs/kvDataOperations.h>
 
 using aggregator::nn_24;
@@ -41,7 +41,7 @@ protected:
 	{}
 
 	kvalobs::kvDataFactory factory;
-	nn_24 agregator;
+	nn_24 aggregator;
 };
 
 INSTANTIATE_TEST_CASE_P(nn_24Test, AbstractAggregatorTest, testing::Values(AggregatorPtr(new nn_24)));
@@ -50,14 +50,14 @@ INSTANTIATE_TEST_CASE_P(nn_24Test, AbstractAggregatorTest, testing::Values(Aggre
 TEST_F(nn_24Test, moreThanEnoughData)
 {
 	kvservice::KvDataList data;
-	data.push_back(factory.getData(1, agregator.readParam(), "2010-03-18 06:00:00"));
-	data.push_back(factory.getData(2, agregator.readParam(), "2010-03-18 12:00:00"));
-	data.push_back(factory.getData(3, agregator.readParam(), "2010-03-18 18:00:00"));
-	data.push_back(factory.getData(900, agregator.readParam(), "2010-03-18 00:00:00"));
+	data.push_back(factory.getData(1, aggregator.readParam(), "2010-03-18 06:00:00"));
+	data.push_back(factory.getData(2, aggregator.readParam(), "2010-03-18 12:00:00"));
+	data.push_back(factory.getData(3, aggregator.readParam(), "2010-03-18 18:00:00"));
+	data.push_back(factory.getData(900, aggregator.readParam(), "2010-03-18 00:00:00"));
 
 	kvalobs::correct(data.front(), 4);
 
-	nn_24::kvDataPtr result = agregator.process(data.front(), data);
+	nn_24::kvDataPtr result = aggregator.process(data.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -68,10 +68,10 @@ TEST_F(nn_24Test, moreThanEnoughData)
 TEST_F(nn_24Test, tooLittleData)
 {
 	kvservice::KvDataList data;
-	data.push_back(factory.getData(1, agregator.readParam(), "2010-03-18 06:00:00"));
-	data.push_back(factory.getData(3, agregator.readParam(), "2010-03-18 18:00:00"));
+	data.push_back(factory.getData(1, aggregator.readParam(), "2010-03-18 06:00:00"));
+	data.push_back(factory.getData(3, aggregator.readParam(), "2010-03-18 18:00:00"));
 
-	nn_24::kvDataPtr result = agregator.process(data.front(), data);
+	nn_24::kvDataPtr result = aggregator.process(data.front(), data);
 
 	ASSERT_FALSE( result.get() );
 }
@@ -79,11 +79,11 @@ TEST_F(nn_24Test, tooLittleData)
 TEST_F(nn_24Test, missingPeriod6)
 {
 	kvservice::KvDataList data;
-	data.push_back(factory.getData(1, agregator.readParam(), "2010-03-18 09:00:00"));
-	data.push_back(factory.getData(2, agregator.readParam(), "2010-03-18 12:00:00"));
-	data.push_back(factory.getData(3, agregator.readParam(), "2010-03-18 18:00:00"));
+	data.push_back(factory.getData(1, aggregator.readParam(), "2010-03-18 09:00:00"));
+	data.push_back(factory.getData(2, aggregator.readParam(), "2010-03-18 12:00:00"));
+	data.push_back(factory.getData(3, aggregator.readParam(), "2010-03-18 18:00:00"));
 
-	nn_24::kvDataPtr result = agregator.process(data.front(), data);
+	nn_24::kvDataPtr result = aggregator.process(data.front(), data);
 
 	ASSERT_FALSE( result.get() );
 }
@@ -91,11 +91,11 @@ TEST_F(nn_24Test, missingPeriod6)
 TEST_F(nn_24Test, missingPeriod12)
 {
 	kvservice::KvDataList data;
-	data.push_back(factory.getData(1, agregator.readParam(), "2010-03-18 06:00:00"));
-	data.push_back(factory.getData(2, agregator.readParam(), "2010-03-18 15:00:00"));
-	data.push_back(factory.getData(3, agregator.readParam(), "2010-03-18 18:00:00"));
+	data.push_back(factory.getData(1, aggregator.readParam(), "2010-03-18 06:00:00"));
+	data.push_back(factory.getData(2, aggregator.readParam(), "2010-03-18 15:00:00"));
+	data.push_back(factory.getData(3, aggregator.readParam(), "2010-03-18 18:00:00"));
 
-	nn_24::kvDataPtr result = agregator.process(data.front(), data);
+	nn_24::kvDataPtr result = aggregator.process(data.front(), data);
 
 	ASSERT_FALSE( result.get() );
 }
@@ -103,11 +103,11 @@ TEST_F(nn_24Test, missingPeriod12)
 TEST_F(nn_24Test, missingPeriod18)
 {
 	kvservice::KvDataList data;
-	data.push_back(factory.getData(1, agregator.readParam(), "2010-03-18 06:00:00"));
-	data.push_back(factory.getData(2, agregator.readParam(), "2010-03-18 12:00:00"));
-	data.push_back(factory.getData(3, agregator.readParam(), "2010-03-18 14:00:00"));
+	data.push_back(factory.getData(1, aggregator.readParam(), "2010-03-18 06:00:00"));
+	data.push_back(factory.getData(2, aggregator.readParam(), "2010-03-18 12:00:00"));
+	data.push_back(factory.getData(3, aggregator.readParam(), "2010-03-18 14:00:00"));
 
-	nn_24::kvDataPtr result = agregator.process(data.front(), data);
+	nn_24::kvDataPtr result = aggregator.process(data.front(), data);
 
 	ASSERT_FALSE( result.get() );
 }

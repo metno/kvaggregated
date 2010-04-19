@@ -33,7 +33,7 @@ kvAgregated_CPPFLAGS = -D_REENTRANT $(AM_CPPFLAGS)
 
 kvAgregated_LDFLAGS = -rpath $(pkglibdir) -export-dynamic
 
-include src/agregator/kvAgregated.mk
+include src/aggregator/kvAgregated.mk
 include src/configuration/kvAgregated.mk
 include src/proxy/kvAgregated.mk
 
