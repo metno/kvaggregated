@@ -29,7 +29,7 @@
   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "GenerateZero.h"
-#include "AgregatorHandler.h"
+#include "AggregatorHandler.h"
 #include "paramID.h"
 #include "agregator/rr_1.h"
 #include <algorithm>
@@ -113,7 +113,7 @@ namespace aggregator
 	  {
 	    LOGDEBUG( "Station " << it->station );
 	    
-	    kvservice::proxy::Callback * ag = AgregatorHandler::agHandler;
+	    kvservice::proxy::Callback * ag = AggregatorHandler::agHandler;
 	    if ( ! ag )
 	    	return;
 	    	

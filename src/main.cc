@@ -29,7 +29,7 @@
  */
 #include <kvcpp/corba/CorbaKvApp.h>
 #include "AggregatorRunner.h"
-#include "AgregatorHandler.h"
+#include "AggregatorHandler.h"
 #include "BackProduction.h"
 #include "proxy/KvalobsProxy.h"
 #include "configuration/AgregatorConfiguration.h"
@@ -204,7 +204,7 @@ int main(int argc, char **argv)
 			LOGINFO("Using proxy database <" << conf.proxyDatabaseName() << ">");
 			kvservice::proxy::KvalobsProxy proxy(conf.proxyDatabaseName(), callbacks, conf.repopulateDatabase());
 
-			AgregatorHandler handler(callbacks, proxy);
+			AggregatorHandler handler(callbacks, proxy);
 			handler.setParameterFilter(conf.parameters());
 			handler.setStationFilter(conf.stations());
 			handler.setTypeFilter(conf.types());

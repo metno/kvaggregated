@@ -1,7 +1,7 @@
 /*
  Kvalobs - Free Quality Control Software for Meteorological Observations
 
- $Id: AgregatorHandler.cc,v 1.1.2.5 2007/09/27 09:02:15 paule Exp $
+ $Id: AggregatorHandler.cc,v 1.1.2.5 2007/09/27 09:02:15 paule Exp $
 
  Copyright (C) 2007 met.no
 
@@ -28,7 +28,7 @@
  with KVALOBS; if not, write to the Free Software Foundation Inc.,
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-#include "AgregatorHandler.h"
+#include "AggregatorHandler.h"
 #include "KvDataFunctors.h"
 #include "paramID.h"
 #include <kvalobs/kvDataOperations.h>
@@ -40,9 +40,9 @@ using namespace milog;
 
 namespace aggregator
 {
-AgregatorHandler *AgregatorHandler::agHandler = 0;
+AggregatorHandler *AggregatorHandler::agHandler = 0;
 
-AgregatorHandler::AgregatorHandler(CallbackCollection & callbacks, KvalobsProxy & proxy) :
+AggregatorHandler::AggregatorHandler(CallbackCollection & callbacks, KvalobsProxy & proxy) :
 	Callback(callbacks), proxy_(proxy)
 {
 	if (!agHandler)
@@ -52,13 +52,13 @@ AgregatorHandler::AgregatorHandler(CallbackCollection & callbacks, KvalobsProxy 
 				"There can only be one instance of the AgregatorHandler at the same time");
 }
 
-AgregatorHandler::~AgregatorHandler()
+AggregatorHandler::~AggregatorHandler()
 {
 	if (agHandler == this)
 		agHandler = 0;
 }
 
-void AgregatorHandler::addHandler(AbstractAgregator * handler)
+void AggregatorHandler::addHandler(AbstractAgregator * handler)
 {
 	LOGINFO("Adding handler: " << handler->readParam() << " -> "
 			<< handler->writeParam());
@@ -77,7 +77,7 @@ struct largeStationNo
 };
 #endif // AGREGATOR_DEBUG
 
-void AgregatorHandler::newData(KvDataList &data)
+void AggregatorHandler::newData(KvDataList &data)
 {
 #ifdef AGREGATOR_DEBUG
 	data.remove_if( largeStationNo() );
@@ -111,7 +111,7 @@ bool inIncludeList(int val, const std::vector<int> & valList)
 }
 }
 
-void AgregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvData & data)
+void AggregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvData & data)
 {
 	const int paramID = data.paramID();
 
@@ -159,7 +159,7 @@ void AgregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvDat
 	}
 }
 
-void AgregatorHandler::save( const kvservice::KvDataList & dl )
+void AggregatorHandler::save( const kvservice::KvDataList & dl )
 {
 	CKvalObs::CDataSource::Result_var res = proxy_.sendData( dl );
 
@@ -193,7 +193,7 @@ namespace
 }
 
 std::list<kvalobs::kvData>
-AgregatorHandler::getRelevantObsList( const kvalobs::kvData & data,
+AggregatorHandler::getRelevantObsList( const kvalobs::kvData & data,
 		const AbstractAgregator::TimeSpan & obsTimes ) const
 {
 	std::list<kvalobs::kvData> ret;

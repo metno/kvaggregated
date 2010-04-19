@@ -29,7 +29,7 @@
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 #include "AbstractAgregator.h"
-//#include "AgregatorHandler.h"
+//#include "AggregatorHandler.h"
 #include "useinfoAggregate.h"
 #include <kvalobs/kvDataOperations.h>
 #include <puTools/miTime.h>

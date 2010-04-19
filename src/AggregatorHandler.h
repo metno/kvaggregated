@@ -1,7 +1,7 @@
 /*
  Kvalobs - Free Quality Control Software for Meteorological Observations
 
- $Id: AgregatorHandler.h,v 1.1.2.3 2007/09/27 09:02:15 paule Exp $
+ $Id: AggregatorHandler.h,v 1.1.2.3 2007/09/27 09:02:15 paule Exp $
 
  Copyright (C) 2007 met.no
 
@@ -40,15 +40,15 @@ namespace aggregator
 {
 class GenerateZero;
 
-class AgregatorHandler: public kvservice::proxy::Callback
+class AggregatorHandler: public kvservice::proxy::Callback
 {
-	static AgregatorHandler *agHandler;
+	static AggregatorHandler *agHandler;
 	friend class aggregator::GenerateZero;
 
 public:
 
-	AgregatorHandler(kvservice::proxy::CallbackCollection & callbacks, kvservice::proxy::KvalobsProxy &proxy);
-	virtual ~AgregatorHandler();
+	AggregatorHandler(kvservice::proxy::CallbackCollection & callbacks, kvservice::proxy::KvalobsProxy &proxy);
+	virtual ~AggregatorHandler();
 
 	virtual void newData(kvservice::KvDataList &data);
 
