@@ -45,12 +45,12 @@ class CallbackCollection;
 }
 }
 
-class AgregatorRunner : public WorkLoop
+class AggregatorRunner : public WorkLoop
 {
 public:
-	AgregatorRunner(const std::vector<int> & stations, kvservice::proxy::KvalobsProxy & proxy,
+	AggregatorRunner(const std::vector<int> & stations, kvservice::proxy::KvalobsProxy & proxy,
 			kvservice::proxy::CallbackCollection & callbacks);
-	~AgregatorRunner();
+	~AggregatorRunner();
 
     dnmi::thread::CommandQue & getCommandQueue() { return queue; }
     const dnmi::thread::CommandQue & getCommandQueue() const { return queue; }

@@ -35,7 +35,7 @@
 #include <puTools/miTime.h>
 #include <boost/scoped_ptr.hpp>
 
-AgregatorRunner::AgregatorRunner(const std::vector<int> & stations, kvservice::proxy::KvalobsProxy & proxy,
+AggregatorRunner::AggregatorRunner(const std::vector<int> & stations, kvservice::proxy::KvalobsProxy & proxy,
 		kvservice::proxy::CallbackCollection & callbacks) :
 	incomingHandler(proxy, callbacks)
 {
@@ -49,11 +49,11 @@ AgregatorRunner::AgregatorRunner(const std::vector<int> & stations, kvservice::p
     kvservice::KvApp::kvApp->subscribeData( sih, queue );
 }
 
-AgregatorRunner::~AgregatorRunner()
+AggregatorRunner::~AggregatorRunner()
 {
 }
 
-void AgregatorRunner::run()
+void AggregatorRunner::run()
 {
 	milog::LogContext context("AgregatorRunner::run (main loop)");
 	LOGDEBUG( "Running" );
@@ -74,13 +74,13 @@ void AgregatorRunner::run()
 	}
 }
 
-void AgregatorRunner::onStop()
+void AggregatorRunner::onStop()
 {
 	LOGDEBUG( "Stopping AgregatorRunner thread" );
 	incomingHandler.stopThreads();
 }
 
-void AgregatorRunner::processData()
+void AggregatorRunner::processData()
 {
 	boost::scoped_ptr<dnmi::thread::CommandBase> base(queue.get(1));
 	if ( ! base )

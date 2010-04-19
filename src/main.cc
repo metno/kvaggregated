@@ -97,7 +97,7 @@ void setupPidFile(dnmi::file::PidFileHelper & pidFile)
 	pidFile.createPidFile(pidFileName);
 }
 
-void runDaemon(AgregatorRunner & runner)
+void runDaemon(AggregatorRunner & runner)
 {
 	runner.start_thread();
 
@@ -138,7 +138,7 @@ miutil::conf::ConfSection * getConfSection()
 	return confSec;
 }
 
-void runThreadWithBackProduction(BackProduction & back, AgregatorRunner & runner)
+void runThreadWithBackProduction(BackProduction & back, AggregatorRunner & runner)
 {
 	boost::thread t(back);
 	runDaemon(runner);
@@ -148,7 +148,7 @@ void runThreadWithBackProduction(BackProduction & back, AgregatorRunner & runner
 void runAgregator(const AgregatorConfiguration & conf,
 		kvservice::proxy::KvalobsProxy & proxy, kvservice::proxy::CallbackCollection & callbacks)
 {
-	AgregatorRunner runner(conf.stations(), proxy, callbacks);
+	AggregatorRunner runner(conf.stations(), proxy, callbacks);
 	if ( conf.backProduction() )
 	{
 		BackProduction back(proxy, callbacks, runner, conf.backProductionSpec());
