@@ -45,7 +45,7 @@ using namespace kvalobs;
 using namespace kvservice;
 using namespace boost;
 
-namespace agregator
+namespace aggregator
 {
 
 rr::rr(int readParam, int writeParam, int interestingHours,

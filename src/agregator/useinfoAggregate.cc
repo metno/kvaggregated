@@ -34,7 +34,7 @@
 #include <cstring>
 #include <ostream>
 
-namespace agregator
+namespace aggregator
 {
 
 kvalobs::kvUseInfo aggregateUseFlag(const std::vector<kvalobs::kvUseInfo> & source)

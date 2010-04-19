@@ -34,7 +34,7 @@
 #include <kvalobs/kvDataOperations.h>
 
 using namespace kvalobs;
-using namespace agregator;
+using namespace aggregator;
 
 
 class ra2rr_12ForwardTest : public AbstractAgregatorTest

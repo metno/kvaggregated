@@ -31,7 +31,7 @@
 #ifndef __agregator__times_h__
 #define __agregator__times_h__
 
-namespace agregator {
+namespace aggregator {
   static const miutil::miClock hours[24] = {
     miutil::miClock( 0,0,0),  miutil::miClock(12,0,0),
     miutil::miClock( 1,0,0),  miutil::miClock(13,0,0),

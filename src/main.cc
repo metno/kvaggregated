@@ -61,7 +61,7 @@
 #include <memory>
 
 using namespace std;
-using namespace agregator;
+using namespace aggregator;
 using namespace miutil;
 using namespace milog;
 using namespace dnmi::db;

@@ -31,7 +31,7 @@
 #include "times.h"
 #include <numeric>
 
-namespace agregator
+namespace aggregator
 {
 
 MeanValueAggregator::MeanValueAggregator(int readParam, int writeParam) :

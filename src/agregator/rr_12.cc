@@ -30,7 +30,7 @@
 #include "rr_12.h"
 #include "times.h"
 
-namespace agregator
+namespace aggregator
 {
 
 rr_12::rr_12() :

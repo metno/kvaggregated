@@ -37,7 +37,7 @@ using namespace std;
 using namespace miutil;
 using namespace kvalobs;
 
-namespace agregator
+namespace aggregator
 {
 ra2rr_12::ra2rr_12() :
 	AbstractAgregator(RA, RR_12, 25, sixAmSixPm)

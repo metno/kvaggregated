@@ -41,7 +41,7 @@
 #include <utility>
 #include <memory>
 
-namespace agregator
+namespace aggregator
 {
 
 /**

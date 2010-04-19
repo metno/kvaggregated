@@ -34,7 +34,7 @@
 #include "AbstractAgregator.h"
 #include "rr.h"
 
-namespace agregator
+namespace aggregator
 {
 /**
  * \brief Calculate RR_12, based on RA values.

@@ -36,14 +36,14 @@
 #include "proxy/KvalobsProxy.h"
 #include <map>
 
-namespace agregator
+namespace aggregator
 {
 class GenerateZero;
 
 class AgregatorHandler: public kvservice::proxy::Callback
 {
 	static AgregatorHandler *agHandler;
-	friend class agregator::GenerateZero;
+	friend class aggregator::GenerateZero;
 
 public:
 

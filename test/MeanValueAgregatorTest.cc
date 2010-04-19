@@ -32,7 +32,7 @@
 #include <agregator/MeanValueAggregator.h>
 #include <kvalobs/kvDataOperations.h>
 
-using agregator::MeanValueAggregator;
+using aggregator::MeanValueAggregator;
 
 class MeanValueAgregatorTest : public AbstractAgregatorTest
 {

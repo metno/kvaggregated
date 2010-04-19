@@ -38,7 +38,7 @@ namespace boost
 {
 class thread;
 }
-namespace agregator
+namespace aggregator
 {
 
 /**

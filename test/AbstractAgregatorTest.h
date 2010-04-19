@@ -6,7 +6,7 @@
 #include <boost/shared_ptr.hpp>
 
 
-typedef boost::shared_ptr<agregator::AbstractAgregator> AgregatorPtr;
+typedef boost::shared_ptr<aggregator::AbstractAgregator> AgregatorPtr;
 
 class AbstractAgregatorTest : public testing::TestWithParam<AgregatorPtr>
 {};

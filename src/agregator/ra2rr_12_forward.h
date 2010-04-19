@@ -33,7 +33,7 @@
 
 #include "ra2rr_12.h"
 
-namespace agregator
+namespace aggregator
 {
 /**
  * \brief Calculates RR_12 for the time after observation.

@@ -49,7 +49,7 @@ using namespace miutil;
 using namespace milog;
 using namespace boost;
 
-namespace agregator
+namespace aggregator
 {
   GenerateZero::GenerateZero( rr_1 &ag ) 
     : ag(ag)

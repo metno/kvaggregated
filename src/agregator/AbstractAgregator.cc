@@ -53,7 +53,7 @@ using namespace dnmi::db;
 using namespace milog;
 using namespace boost;
 
-namespace agregator
+namespace aggregator
 {
 AbstractAgregator::AbstractAgregator(int readParam, int writeParam,
 		int interestingHours, const set<miClock> &generateWhen) :

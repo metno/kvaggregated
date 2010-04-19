@@ -1,7 +1,7 @@
 #include "AbstractAgregatorTest.h"
 #include <kvalobs/kvDataOperations.h>
 
-using agregator::AbstractAgregator;
+using aggregator::AbstractAgregator;
 
 TEST_P(AbstractAgregatorTest, testGetTimeSpanAtGenerationPoint)
 {

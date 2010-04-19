@@ -32,7 +32,7 @@
 
 #include "MeanValueAggregator.h"
 
-namespace agregator
+namespace aggregator
 {
 
 class nn_24: public MeanValueAggregator

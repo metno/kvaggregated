@@ -38,7 +38,7 @@ using namespace std;
 using namespace miutil;
 using namespace kvalobs;
 
-namespace agregator
+namespace aggregator
 {
 MinMax::MinMax(int readParam, int writeParam, int interestingHours, const set<miClock> &generateWhen, Func minmax) :
 	AbstractAgregator(readParam, writeParam, interestingHours, generateWhen),

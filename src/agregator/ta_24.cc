@@ -30,7 +30,7 @@
 #include "ta_24.h"
 #include "paramID.h"
 
-namespace agregator
+namespace aggregator
 {
 
 ta_24::ta_24() :

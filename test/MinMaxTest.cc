@@ -37,7 +37,7 @@
 #include <iterator>
 
 using namespace kvalobs;
-using namespace agregator;
+using namespace aggregator;
 
 class MinMaxTest : public AbstractAgregatorTest
 {

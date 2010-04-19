@@ -39,7 +39,7 @@ using namespace miutil;
 using namespace kvalobs;
 
 
-namespace agregator
+namespace aggregator
 {
 rr_1::rr_1() :
 	AbstractAgregator(RR_01, RR_1, 1, allHours), threadStopping(false)

@@ -35,7 +35,7 @@ using namespace miutil;
 using namespace kvalobs;
 
 
-namespace agregator
+namespace aggregator
 {
 
 rr_24::rr_24() :

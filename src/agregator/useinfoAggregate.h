@@ -36,7 +36,7 @@
 #include <string>
 #include <iosfwd>
 
-namespace agregator
+namespace aggregator
 {
 
 kvalobs::kvUseInfo aggregateUseFlag(const std::vector<kvalobs::kvUseInfo> & source);

@@ -35,7 +35,7 @@
 #include <iterator>
 
 using namespace kvalobs;
-using namespace agregator;
+using namespace aggregator;
 
 
 class ra2rr_12Test : public AbstractAgregatorTest

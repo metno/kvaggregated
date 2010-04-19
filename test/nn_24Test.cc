@@ -31,7 +31,7 @@
 #include <agregator/nn_24.h>
 #include <kvalobs/kvDataOperations.h>
 
-using agregator::nn_24;
+using aggregator::nn_24;
 
 class nn_24Test : public AbstractAgregatorTest
 {

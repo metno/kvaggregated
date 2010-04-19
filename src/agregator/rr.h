@@ -38,7 +38,7 @@
 #include <set>
 
 
-namespace agregator
+namespace aggregator
 {
 
 /**

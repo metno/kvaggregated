@@ -34,11 +34,11 @@
 
 TEST(FlagInheritanceTest, AllValuesUncheckedUnchecked )
 {
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("99999");
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99999", result);
 }
@@ -46,11 +46,11 @@ TEST(FlagInheritanceTest, AllValuesUncheckedUnchecked )
 TEST(FlagInheritanceTest, Perfect )
 {
 	// case 1
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99000", result);
 }
@@ -58,12 +58,12 @@ TEST(FlagInheritanceTest, Perfect )
 TEST(FlagInheritanceTest, SuspiciousUnchanged )
 {
 	// case 2a
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[3] = "00109";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99109", result);
 }
@@ -71,14 +71,14 @@ TEST(FlagInheritanceTest, SuspiciousUnchanged )
 TEST(FlagInheritanceTest, SuspiciousUnchanged_inheritHighestUncertainty )
 {
 	// case 2a
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[1] = "00109";
 	l[3] = "00209";
 	l[4] = "00109";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99209", result);
 }
@@ -86,13 +86,13 @@ TEST(FlagInheritanceTest, SuspiciousUnchanged_inheritHighestUncertainty )
 TEST(FlagInheritanceTest, SomeSuspiciousChanged )
 {
 	// case 2b
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[3] = "00219";
 	l[4] = "00109";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99109", result);
 }
@@ -100,13 +100,13 @@ TEST(FlagInheritanceTest, SomeSuspiciousChanged )
 TEST(FlagInheritanceTest, AllSuspiciousManuallyChanged )
 {
 	// case 2b0
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[3] = "00227";
 	l[4] = "00119";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99027", result);
 }
@@ -114,13 +114,13 @@ TEST(FlagInheritanceTest, AllSuspiciousManuallyChanged )
 TEST(FlagInheritanceTest, AllSuspiciousManuallyChangedOneAutomaticallyChanged )
 {
 	// case 2b1
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[2] = "00217";
 	l[4] = "00169";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99169", result);
 }
@@ -128,12 +128,12 @@ TEST(FlagInheritanceTest, AllSuspiciousManuallyChangedOneAutomaticallyChanged )
 TEST(FlagInheritanceTest, OneUncheckedAllOthersGood )
 {
 	// case 3a
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[2] = "99999";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99999", result);
 }
@@ -141,13 +141,13 @@ TEST(FlagInheritanceTest, OneUncheckedAllOthersGood )
 TEST(FlagInheritanceTest, OneUncheckedSuspiciousUnchanged )
 {
 	// case 3b-2a
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[0] = "99999";
 	l[3] = "00109";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99109", result);
 }
@@ -155,7 +155,7 @@ TEST(FlagInheritanceTest, OneUncheckedSuspiciousUnchanged )
 TEST(FlagInheritanceTest, OneUncheckedSuspiciousUnchanged_inheritHighestUncertainty )
 {
 	// case 3b-2a
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[0] = "99999";
@@ -163,7 +163,7 @@ TEST(FlagInheritanceTest, OneUncheckedSuspiciousUnchanged_inheritHighestUncertai
 	l[3] = "00209";
 	l[4] = "00109";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99209", result);
 }
@@ -171,14 +171,14 @@ TEST(FlagInheritanceTest, OneUncheckedSuspiciousUnchanged_inheritHighestUncertai
 TEST(FlagInheritanceTest, OneUncheckedSomeSuspiciousChanged )
 {
 	// case 3b-2b
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[0] = "99999";
 	l[3] = "00219";
 	l[4] = "00109";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99109", result);
 }
@@ -186,14 +186,14 @@ TEST(FlagInheritanceTest, OneUncheckedSomeSuspiciousChanged )
 TEST(FlagInheritanceTest, OneUncheckedAllSuspiciousManuallyChanged )
 {
 	// case 3b-2b0
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[0] = "99999";
 	l[3] = "00227";
 	l[4] = "00119";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99027", result);
 }
@@ -201,14 +201,14 @@ TEST(FlagInheritanceTest, OneUncheckedAllSuspiciousManuallyChanged )
 TEST(FlagInheritanceTest, OneUncheckedAllSuspiciousManuallyChangedOneAutomaticallyChanged )
 {
 	// case 3b-2b1
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[0] = "99999";
 	l[2] = "00217";
 	l[4] = "00169";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99169", result);
 }
@@ -216,12 +216,12 @@ TEST(FlagInheritanceTest, OneUncheckedAllSuspiciousManuallyChangedOneAutomatical
 TEST(FlagInheritanceTest, OneMissingOriginalAllOtherGood )
 {
 	// case 4
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[4] = "98999"; // Missing original value
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("98999", result);
 }
@@ -229,13 +229,13 @@ TEST(FlagInheritanceTest, OneMissingOriginalAllOtherGood )
 TEST(FlagInheritanceTest, OneMissingOriginalOneSuspicious )
 {
 	// case 4
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[4] = "98999"; // Missing original value
 	l[3] = "00209";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("98999", result);
 }
@@ -243,12 +243,12 @@ TEST(FlagInheritanceTest, OneMissingOriginalOneSuspicious )
 TEST(FlagInheritanceTest, OneRejectedAllOtherGood )
 {
 	// case 5
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[4] = "99389"; // rejected
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99989", result);
 }
@@ -256,13 +256,13 @@ TEST(FlagInheritanceTest, OneRejectedAllOtherGood )
 TEST(FlagInheritanceTest, OneRejectedAllOtherGoodOneSuspicious )
 {
 	// case 5
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[4] = "99389"; // rejected
 	l[3] = "00209";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99989", result);
 }
@@ -270,13 +270,13 @@ TEST(FlagInheritanceTest, OneRejectedAllOtherGoodOneSuspicious )
 TEST(FlagInheritanceTest, OneRejectedOneMissing )
 {
 	// case 4/5
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[3] = "99389"; // rejected
 	l[4] = "98999"; // Missing original value
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("98999", result);
 }
@@ -284,12 +284,12 @@ TEST(FlagInheritanceTest, OneRejectedOneMissing )
 TEST(FlagInheritanceTest, OneManuallyInterpolatedNoSuspicious)
 {
 	// case 6a
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[2] = "98929";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("98029", result);
 }
@@ -297,12 +297,12 @@ TEST(FlagInheritanceTest, OneManuallyInterpolatedNoSuspicious)
 TEST(FlagInheritanceTest, OneAutomaticallyInterpolatedNoSuspicious)
 {
 	// case 6a
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[2] = "98949";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("98147", result);
 }
@@ -310,12 +310,12 @@ TEST(FlagInheritanceTest, OneAutomaticallyInterpolatedNoSuspicious)
 TEST(FlagInheritanceTest, OneManuallyCorrectedNoSuspicious)
 {
 	// case 6b
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[2] = "99319";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99019", result);
 }
@@ -323,12 +323,12 @@ TEST(FlagInheritanceTest, OneManuallyCorrectedNoSuspicious)
 TEST(FlagInheritanceTest, OneAutomaticallyCorrectedNoSuspicious)
 {
 	// case 6b
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[2] = "99337";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99137", result);
 }
@@ -336,13 +336,13 @@ TEST(FlagInheritanceTest, OneAutomaticallyCorrectedNoSuspicious)
 TEST(FlagInheritanceTest, OneManuallyInterpolatedSomeSuspicious)
 {
 	// case 6c
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[2] = "98929";
 	l[4] = "00109";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99109", result);
 }
@@ -350,13 +350,13 @@ TEST(FlagInheritanceTest, OneManuallyInterpolatedSomeSuspicious)
 TEST(FlagInheritanceTest, OneAutomaticallyInterpolatedSomeSuspicious)
 {
 	// case 6c
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[2] = "98949";
 	l[4] = "00109";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99109", result);
 }
@@ -364,7 +364,7 @@ TEST(FlagInheritanceTest, OneAutomaticallyInterpolatedSomeSuspicious)
 TEST(FlagInheritanceTest, OneAutomaticallyCorrectedSomeSuspicious)
 {
 	// case 6c/2a
-	agregator::UseList l;
+	aggregator::UseList l;
 	for ( int i = 0; i < 6; ++ i)
 		l.push_back("00000");
 	l[1] = "00109";
@@ -372,7 +372,7 @@ TEST(FlagInheritanceTest, OneAutomaticallyCorrectedSomeSuspicious)
 	l[4] = "00109";
 	l[2] = "99337";
 
-	agregator::BaseUseInfo result = aggregate(l);
+	aggregator::BaseUseInfo result = aggregate(l);
 
 	EXPECT_EQ("99209", result);
 }

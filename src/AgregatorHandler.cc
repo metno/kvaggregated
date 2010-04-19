@@ -38,7 +38,7 @@ using namespace kvservice;
 using namespace kvservice::proxy;
 using namespace milog;
 
-namespace agregator
+namespace aggregator
 {
 AgregatorHandler *AgregatorHandler::agHandler = 0;
 

@@ -30,7 +30,7 @@
 #include "nn_24.h"
 #include "paramID.h"
 
-namespace agregator
+namespace aggregator
 {
 
 nn_24::nn_24() :

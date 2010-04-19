@@ -31,7 +31,7 @@
 #include "paramID.h"
 
 
-namespace agregator
+namespace aggregator
 {
 
 uu_24::uu_24() :

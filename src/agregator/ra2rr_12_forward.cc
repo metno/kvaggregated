@@ -29,7 +29,7 @@
 
 #include "ra2rr_12_forward.h"
 
-namespace agregator
+namespace aggregator
 {
 
 ra2rr_12_forward::ra2rr_12_forward()

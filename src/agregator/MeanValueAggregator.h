@@ -33,7 +33,7 @@
 #include "AbstractAgregator.h"
 
 
-namespace agregator
+namespace aggregator
 {
 
 class MeanValueAggregator: public AbstractAgregator

@@ -39,7 +39,7 @@ namespace kvalobs
   class kvObsPgm;
 }
 
-namespace agregator
+namespace aggregator
 {
   class rr_1;
 

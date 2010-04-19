@@ -33,7 +33,7 @@
 
 #include "rr.h"
 
-namespace agregator
+namespace aggregator
 {
 
 /**

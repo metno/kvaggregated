@@ -31,7 +31,7 @@
 #ifndef __agregator_paramID_h__
 #define __agregator_paramID_h__
 
-namespace agregator {
+namespace aggregator {
 
   enum { RR_01 = 105, RR_1   = 106, 
 	 RR_12 = 109, RR_24  = 110,

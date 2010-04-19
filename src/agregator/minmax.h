@@ -36,7 +36,7 @@
 #include <kvalobs/kvData.h>
 #include <vector>
 
-namespace agregator
+namespace aggregator
 {
 /**
  * \brief A min or max function.
