@@ -27,7 +27,7 @@
   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "AgregatorConfiguration.h"
+#include "AggregatorConfiguration.h"
 #include <kvalobs/kvPath.h>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
@@ -36,7 +36,7 @@
 
 using namespace boost::program_options;
 
-void AgregatorConfiguration::setup_()
+void AggregatorConfiguration::setup_()
 {
 	options_description mode("Working mode");
 
@@ -66,19 +66,19 @@ void AgregatorConfiguration::setup_()
 }
 
 
-AgregatorConfiguration::AgregatorConfiguration() :
+AggregatorConfiguration::AggregatorConfiguration() :
 		messageStream_(std::cout), errorStream_(std::clog), availableOptions_("Available options")
 {
 	setup_();
 }
 
-AgregatorConfiguration::AgregatorConfiguration(std::ostream & messageStream, std::ostream & errorStream) :
+AggregatorConfiguration::AggregatorConfiguration(std::ostream & messageStream, std::ostream & errorStream) :
 		messageStream_(messageStream), errorStream_(errorStream), availableOptions_("Available options")
 {
 	setup_();
 }
 
-AgregatorConfiguration::~AgregatorConfiguration()
+AggregatorConfiguration::~AggregatorConfiguration()
 {
 }
 
@@ -110,7 +110,7 @@ void getOptionList(Iterator out, const std::string & option, const variables_map
 }
 }
 
-AgregatorConfiguration::ParseResult AgregatorConfiguration::parse(int & argc, char ** argv)
+AggregatorConfiguration::ParseResult AggregatorConfiguration::parse(int & argc, char ** argv)
 {
 	try
 	{
@@ -140,24 +140,24 @@ AgregatorConfiguration::ParseResult AgregatorConfiguration::parse(int & argc, ch
 	}
 }
 
-std::ostream & AgregatorConfiguration::version(std::ostream & s) const
+std::ostream & AggregatorConfiguration::version(std::ostream & s) const
 {
 	return s << "kvAgregated (kvalobs) " << VERSION << std::endl;
 }
 
 
-std::ostream & AgregatorConfiguration::help(std::ostream & s) const
+std::ostream & AggregatorConfiguration::help(std::ostream & s) const
 {
 	return version(s) << "\nData agregation daemon for kvalobs.\n\n" << availableOptions_ << std::endl;
 }
 
 
-bool AgregatorConfiguration::backProduction() const
+bool AggregatorConfiguration::backProduction() const
 {
 	return givenOptions_.count("back-production");
 }
 
-std::string AgregatorConfiguration::backProductionSpec() const
+std::string AggregatorConfiguration::backProductionSpec() const
 {
 	const variable_value & opt = givenOptions_["back-production"];
 	if ( opt.empty() )
@@ -165,12 +165,12 @@ std::string AgregatorConfiguration::backProductionSpec() const
 	return opt.as<std::string>();
 }
 
-bool AgregatorConfiguration::daemonMode() const
+bool AggregatorConfiguration::daemonMode() const
 {
 	return givenOptions_.count("daemon-mode");
 }
 
-std::string AgregatorConfiguration::proxyDatabaseName() const
+std::string AggregatorConfiguration::proxyDatabaseName() const
 {
 	const variable_value & opt = givenOptions_["proxy-database-name"];
 	if ( opt.empty() )
@@ -179,7 +179,7 @@ std::string AgregatorConfiguration::proxyDatabaseName() const
 }
 
 
-bool AgregatorConfiguration::repopulateDatabase() const
+bool AggregatorConfiguration::repopulateDatabase() const
 {
 	return givenOptions_.count("repopulate");
 }

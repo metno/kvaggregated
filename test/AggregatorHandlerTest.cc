@@ -30,7 +30,7 @@
 #include <gtest/gtest.h>
 
 
-TEST(AgregatorHandlerTest, test)
+TEST(AggregatorHandlerTest, test)
 {
 
 }

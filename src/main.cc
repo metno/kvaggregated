@@ -32,7 +32,7 @@
 #include "AggregatorHandler.h"
 #include "BackProduction.h"
 #include "proxy/KvalobsProxy.h"
-#include "configuration/AgregatorConfiguration.h"
+#include "configuration/AggregatorConfiguration.h"
 #include <kvalobs/kvStation.h>
 #include <milog/milog.h>
 #include <milog/FLogStream.h>
@@ -145,7 +145,7 @@ void runThreadWithBackProduction(BackProduction & back, AggregatorRunner & runne
 	t.join();
 }
 
-void runAgregator(const AgregatorConfiguration & conf,
+void runAgregator(const AggregatorConfiguration & conf,
 		kvservice::proxy::KvalobsProxy & proxy, kvservice::proxy::CallbackCollection & callbacks)
 {
 	AggregatorRunner runner(conf.stations(), proxy, callbacks);
@@ -174,10 +174,10 @@ void runAgregator(const AgregatorConfiguration & conf,
 
 int main(int argc, char **argv)
 {
-	AgregatorConfiguration conf;
-	AgregatorConfiguration::ParseResult result = conf.parse(argc, argv);
+	AggregatorConfiguration conf;
+	AggregatorConfiguration::ParseResult result = conf.parse(argc, argv);
 
-	if (result != AgregatorConfiguration::No_Action)
+	if (result != AggregatorConfiguration::No_Action)
 		return result;
 
 

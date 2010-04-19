@@ -37,12 +37,12 @@
 #include <vector>
 #include <iosfwd>
 
-class AgregatorConfiguration
+class AggregatorConfiguration
 {
 public:
-	AgregatorConfiguration();
-	AgregatorConfiguration(std::ostream & messageStream, std::ostream & errorStream);
-	~AgregatorConfiguration();
+	AggregatorConfiguration();
+	AggregatorConfiguration(std::ostream & messageStream, std::ostream & errorStream);
+	~AggregatorConfiguration();
 
 	enum ParseResult
 	{

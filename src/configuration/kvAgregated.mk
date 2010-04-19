@@ -1,3 +1,3 @@
 kvAgregated_SOURCES += \
-	src/configuration/AgregatorConfiguration.h \
-	src/configuration/AgregatorConfiguration.cpp
+	src/configuration/AggregatorConfiguration.h \
+	src/configuration/AggregatorConfiguration.cpp

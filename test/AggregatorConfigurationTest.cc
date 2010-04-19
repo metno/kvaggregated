@@ -28,63 +28,63 @@
 */
 
 #include <gtest/gtest.h>
-#include <configuration/AgregatorConfiguration.h>
+#include <configuration/AggregatorConfiguration.h>
 #include <sstream>
 
-class AgregatorConfigurationTest : public testing::Test
+class AggregatorConfigurationTest : public testing::Test
 {
 protected:
-	AgregatorConfiguration config;
+	AggregatorConfiguration config;
 	std::ostringstream msg;
 	std::ostringstream err;
 
-	AgregatorConfigurationTest() :
+	AggregatorConfigurationTest() :
 		config(msg, err)
 	{}
 
-	AgregatorConfiguration::ParseResult parse(int & argc, const char ** argv)
+	AggregatorConfiguration::ParseResult parse(int & argc, const char ** argv)
 	{
 		return config.parse(argc, const_cast<char **>(argv));
 	}
 };
 
-TEST_F(AgregatorConfigurationTest, helpString)
+TEST_F(AggregatorConfigurationTest, helpString)
 {
 	int argc = 2;
 	const char * argv[] = {"test", "--help"};
 
-	EXPECT_EQ(AgregatorConfiguration::Exit_Success, parse(argc, argv));
+	EXPECT_EQ(AggregatorConfiguration::Exit_Success, parse(argc, argv));
 
 	EXPECT_TRUE(not msg.str().empty());
 	EXPECT_TRUE(err.str().empty());
 }
 
-TEST_F(AgregatorConfigurationTest, daemonModeLongOption)
+TEST_F(AggregatorConfigurationTest, daemonModeLongOption)
 {
 	int argc = 2;
 	const char * argv[] = {"test", "--daemon-mode"};
 
-	EXPECT_EQ(AgregatorConfiguration::No_Action, parse(argc, argv));
+	EXPECT_EQ(AggregatorConfiguration::No_Action, parse(argc, argv));
 
 	ASSERT_TRUE(config.daemonMode());
 }
 
-TEST_F(AgregatorConfigurationTest, daemonModeShortOption)
+TEST_F(AggregatorConfigurationTest, daemonModeShortOption)
 {
 	int argc = 2;
 	const char * argv[] = {"test", "-d"};
 
-	EXPECT_EQ(AgregatorConfiguration::No_Action, parse(argc, argv));
+	EXPECT_EQ(AggregatorConfiguration::No_Action, parse(argc, argv));
 
 	ASSERT_TRUE(config.daemonMode());
 }
 
-TEST_F(AgregatorConfigurationTest, stationListSingle)
+TEST_F(AggregatorConfigurationTest, stationListSingle)
 {
 	int argc = 2;
 	const char * argv[] = {"test", "-s1"};
 
-	EXPECT_EQ(AgregatorConfiguration::No_Action, parse(argc, argv));
+	EXPECT_EQ(AggregatorConfiguration::No_Action, parse(argc, argv));
 
 	const std::vector<int> & stations = config.stations();
 	ASSERT_FALSE(stations.empty());
@@ -95,12 +95,12 @@ TEST_F(AgregatorConfigurationTest, stationListSingle)
 }
 
 
-TEST_F(AgregatorConfigurationTest, stationList)
+TEST_F(AggregatorConfigurationTest, stationList)
 {
 	int argc = 2;
 	const char * argv[] = {"test", "-s1,2,3"};
 
-	EXPECT_EQ(AgregatorConfiguration::No_Action, parse(argc, argv));
+	EXPECT_EQ(AggregatorConfiguration::No_Action, parse(argc, argv));
 
 	const std::vector<int> & stations = config.stations();
 	ASSERT_FALSE(stations.empty());
@@ -111,12 +111,12 @@ TEST_F(AgregatorConfigurationTest, stationList)
 		EXPECT_EQ(i +1, stations[i]);
 }
 
-TEST_F(AgregatorConfigurationTest, stationListManyTimes)
+TEST_F(AggregatorConfigurationTest, stationListManyTimes)
 {
 	int argc = 3;
 	const char * argv[] = {"test", "-s1,2,3", "-s4"};
 
-	EXPECT_EQ(AgregatorConfiguration::No_Action, parse(argc, argv));
+	EXPECT_EQ(AggregatorConfiguration::No_Action, parse(argc, argv));
 
 	const std::vector<int> & stations = config.stations();
 	ASSERT_FALSE(stations.empty());

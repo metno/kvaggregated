@@ -10,9 +10,9 @@ kvAgregatedTest_SOURCES = \
 	test/MinMaxTest.cc \
 	test/ra2rr_12ForwardTest.cc \
 	test/ra2rr_12Test.cc \
-	test/AgregatorConfigurationTest.cc \
+	test/AggregatorConfigurationTest.cc \
 	test/KvalobsProxyTest.cc \
-	test/AgregatorHandlerTest.cc \
+	test/AggregatorHandlerTest.cc \
 	test/MeanValueAgregatorTest.cc \
 	test/nn_24Test.cc \
 	test/FlagInheritanceTest.cc
