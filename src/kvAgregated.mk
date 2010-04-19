@@ -1,8 +1,8 @@
 kvAgregated_SOURCES = \
 	src/WorkLoop.h \
 	src/WorkLoop.cpp \
-	src/AgregatorRunner.h \
-	src/AgregatorRunner.cpp \
+	src/AggregatorRunner.h \
+	src/AggregatorRunner.cpp \
 	src/AgregatorHandler.h \
 	src/AgregatorHandler.cc \
 	src/KvDataFunctors.h \

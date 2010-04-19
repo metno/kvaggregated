@@ -28,7 +28,7 @@
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 #include <kvcpp/corba/CorbaKvApp.h>
-#include "AgregatorRunner.h"
+#include "AggregatorRunner.h"
 #include "AgregatorHandler.h"
 #include "BackProduction.h"
 #include "proxy/KvalobsProxy.h"

@@ -27,7 +27,7 @@
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "AgregatorRunner.h"
+#include "AggregatorRunner.h"
 #include "proxy/CallbackCollection.h"
 #include <kvcpp/kvevents.h>
 #include <kvcpp/KvApp.h>
