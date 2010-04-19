@@ -31,7 +31,7 @@
 #ifndef RR_1_H_
 #define RR_1_H_
 
-#include "AbstractAgregator.h"
+#include "AbstractAggregator.h"
 
 
 namespace boost
@@ -53,7 +53,7 @@ namespace aggregator
  * day's RR_01 aggregation has already been done.
  *
  */
-class rr_1: public AbstractAgregator
+class rr_1: public AbstractAggregator
 {
 	boost::thread *thread;
 	bool threadStopping;

@@ -1,9 +1,9 @@
-#include "AbstractAgregatorTest.h"
+#include "AbstractAggregatorTest.h"
 #include <kvalobs/kvDataOperations.h>
 
-using aggregator::AbstractAgregator;
+using aggregator::AbstractAggregator;
 
-TEST_P(AbstractAgregatorTest, testGetTimeSpanAtGenerationPoint)
+TEST_P(AbstractAggregatorTest, testGetTimeSpanAtGenerationPoint)
 {
 	const std::set<miutil::miClock> & generateWhen = GetParam()->generateWhen();
 	const miutil::miClock toTest(* generateWhen.begin());
@@ -11,7 +11,7 @@ TEST_P(AbstractAgregatorTest, testGetTimeSpanAtGenerationPoint)
 	miutil::miTime time(miutil::miDate("2007-06-06"),toTest);
 	const kvalobs::kvData d = dataFactory.getData( 15, 1, time );
 	
-	const AbstractAgregator::TimeSpan timeSpan = GetParam()->getTimeSpan(d);
+	const AbstractAggregator::TimeSpan timeSpan = GetParam()->getTimeSpan(d);
 
 	ASSERT_EQ(time, timeSpan.second);
 	
@@ -20,7 +20,7 @@ TEST_P(AbstractAgregatorTest, testGetTimeSpanAtGenerationPoint)
 }
 
 
-TEST_P(AbstractAgregatorTest, testGetTimeSpan)
+TEST_P(AbstractAggregatorTest, testGetTimeSpan)
 {
 	const std::set<miutil::miClock> & generateWhen = GetParam()->generateWhen();
 	const miutil::miClock toTest(* generateWhen.begin());
@@ -31,7 +31,7 @@ TEST_P(AbstractAgregatorTest, testGetTimeSpan)
 	triggerTime.addHour(-1);
 	const kvalobs::kvData d = dataFactory.getData( 15, 1, triggerTime );
 	
-	const AbstractAgregator::TimeSpan timeSpan = GetParam()->getTimeSpan(d);
+	const AbstractAggregator::TimeSpan timeSpan = GetParam()->getTimeSpan(d);
 	
 	ASSERT_EQ(time, timeSpan.second);
 	

@@ -27,13 +27,13 @@
   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "AbstractAgregatorTest.h"
+#include "AbstractAggregatorTest.h"
 #include <agregator/nn_24.h>
 #include <kvalobs/kvDataOperations.h>
 
 using aggregator::nn_24;
 
-class nn_24Test : public AbstractAgregatorTest
+class nn_24Test : public AbstractAggregatorTest
 {
 protected:
 	nn_24Test() :
@@ -44,7 +44,7 @@ protected:
 	nn_24 agregator;
 };
 
-INSTANTIATE_TEST_CASE_P(nn_24Test, AbstractAgregatorTest, testing::Values(AgregatorPtr(new nn_24)));
+INSTANTIATE_TEST_CASE_P(nn_24Test, AbstractAggregatorTest, testing::Values(AggregatorPtr(new nn_24)));
 
 
 TEST_F(nn_24Test, moreThanEnoughData)

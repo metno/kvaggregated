@@ -40,7 +40,7 @@ using namespace kvalobs;
 namespace aggregator
 {
 ra2rr_12::ra2rr_12() :
-	AbstractAgregator(RA, RR_12, 25, sixAmSixPm)
+	AbstractAggregator(RA, RR_12, 25, sixAmSixPm)
 {
 }
 

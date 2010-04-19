@@ -27,14 +27,14 @@
   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "AbstractAgregatorTest.h"
+#include "AbstractAggregatorTest.h"
 #include <paramID.h>
 #include <agregator/MeanValueAggregator.h>
 #include <kvalobs/kvDataOperations.h>
 
 using aggregator::MeanValueAggregator;
 
-class MeanValueAgregatorTest : public AbstractAgregatorTest
+class MeanValueAgregatorTest : public AbstractAggregatorTest
 {
 protected:
 	MeanValueAgregatorTest() :
@@ -46,7 +46,7 @@ protected:
 	MeanValueAggregator agregator;
 };
 
-INSTANTIATE_TEST_CASE_P(MeanValueAgregatorTest, AbstractAgregatorTest, testing::Values(AgregatorPtr(new MeanValueAggregator(1,2))));
+INSTANTIATE_TEST_CASE_P(MeanValueAgregatorTest, AbstractAggregatorTest, testing::Values(AggregatorPtr(new MeanValueAggregator(1,2))));
 
 
 TEST_F(MeanValueAgregatorTest, standard24hAgregate)

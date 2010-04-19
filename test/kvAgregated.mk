@@ -5,15 +5,15 @@ check_PROGRAMS = kvAgregatedTest
 kvAgregatedTest_SOURCES = \
 	test/test.cc \
 	$(kvAgregated_SOURCES:src/main.cc=) \
-	test/AbstractAgregatorTest.cc \
-	test/AbstractAgregatorTest.h \
+	test/AbstractAggregatorTest.cc \
+	test/AbstractAggregatorTest.h \
 	test/MinMaxTest.cc \
 	test/ra2rr_12ForwardTest.cc \
 	test/ra2rr_12Test.cc \
 	test/AggregatorConfigurationTest.cc \
 	test/KvalobsProxyTest.cc \
 	test/AggregatorHandlerTest.cc \
-	test/MeanValueAgregatorTest.cc \
+	test/MeanValueAggregatorTest.cc \
 	test/nn_24Test.cc \
 	test/FlagInheritanceTest.cc
 	

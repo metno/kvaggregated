@@ -1,6 +1,6 @@
 kvAgregated_SOURCES += \
-	src/agregator/AbstractAgregator.h \
-	src/agregator/AbstractAgregator.cc \
+	src/agregator/AbstractAggregator.h \
+	src/agregator/AbstractAggregator.cc \
 	src/agregator/minmax.h \
 	src/agregator/minmax.cc \
 	src/agregator/ra2rr_12.h \

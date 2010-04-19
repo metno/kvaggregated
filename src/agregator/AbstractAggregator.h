@@ -1,7 +1,7 @@
 /*
  Kvalobs - Free Quality Control Software for Meteorological Observations
 
- $Id: AbstractAgregator.h,v 1.1.2.8 2007/09/27 09:02:15 paule Exp $
+ $Id: AbstractAggregator.h,v 1.1.2.8 2007/09/27 09:02:15 paule Exp $
 
  Copyright (C) 2007 met.no
 
@@ -57,7 +57,7 @@ namespace aggregator
  *
  * In order to do this, a set of protected virtual methods have been
  * defined, which can be overridden by subclasses. All these methods
- * will be automatically invoked by the AbstractAgregator
+ * will be automatically invoked by the AbstractAggregator
  * object. Apart from the method \a extractUsefulData and \a calculate,
  * which are pure virtual methods and therefore must be overridden, the
  * methods have a default implementation. The protected methods are invoked
@@ -69,7 +69,7 @@ namespace aggregator
  * should therefore be used if a subclass is to use multiple
  * threads.
  */
-class AbstractAgregator
+class AbstractAggregator
 {
 
 public:
@@ -80,7 +80,7 @@ public:
 	typedef std::pair<miutil::miTime, miutil::miTime> TimeSpan;
 
 	/**
-	 * \brief Set up the basic parameters of the AbstractAgregator
+	 * \brief Set up the basic parameters of the AbstractAggregator
 	 * object.
 	 *
 	 * \param readParam The paramID that incoming data should
@@ -94,10 +94,10 @@ public:
 	 * \param generateWhen The times of day when we will generate
 	 * data. Agregates will only be generated for these times.
 	 */
-	AbstractAgregator(int readParam, int writeParam, int interestingHours,
+	AbstractAggregator(int readParam, int writeParam, int interestingHours,
 			const std::set<miutil::miClock> & generateWhen);
 
-	virtual ~AbstractAgregator();
+	virtual ~AbstractAggregator();
 
 	/**
 	 * \brief determine if we are interested in the given piece of data. 

@@ -31,7 +31,7 @@
 #ifndef __agregator_rr_h__
 #define __agregator_rr_h__
 
-#include "AbstractAgregator.h"
+#include "AbstractAggregator.h"
 #include "paramID.h"
 #include <kvalobs/kvData.h>
 #include <puTools/miClock.h>
@@ -45,12 +45,12 @@ namespace aggregator
  * \brief A framework for calculating sum of rainfall over a period
  * of time.
  */
-class rr: public AbstractAgregator
+class rr: public AbstractAggregator
 {
 public:
 	/**
 	 * \brief Constructor. Set up the basic parameters of the
-	 * AbstractAgregator object.
+	 * AbstractAggregator object.
 	 *
 	 * \param readParam The paramID that incoming data should
 	 * have. All data which comes to this object has this paramID.

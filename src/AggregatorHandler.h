@@ -31,7 +31,7 @@
 #ifndef __agregator__AgregatorHandler_h__
 #define __agregator__AgregatorHandler_h__
 
-#include "agregator/AbstractAgregator.h"
+#include "agregator/AbstractAggregator.h"
 #include "proxy/Callback.h"
 #include "proxy/KvalobsProxy.h"
 #include <map>
@@ -72,15 +72,15 @@ public:
 	}
 
 
-	void addHandler(AbstractAgregator *handler);
+	void addHandler(AbstractAggregator *handler);
 
 	virtual std::list<kvalobs::kvData>
 	getRelevantObsList(const kvalobs::kvData & data,
-			const AbstractAgregator::TimeSpan & obsTimes) const;
+			const AbstractAggregator::TimeSpan & obsTimes) const;
 
 private:
-	typedef std::pair<int, AbstractAgregator *> Handler;
-	typedef std::multimap<int, AbstractAgregator *> HandlerMap;
+	typedef std::pair<int, AbstractAggregator *> Handler;
+	typedef std::multimap<int, AbstractAggregator *> HandlerMap;
 
 	kvservice::proxy::KvalobsProxy & proxy_;
 

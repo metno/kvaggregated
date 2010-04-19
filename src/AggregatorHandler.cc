@@ -58,7 +58,7 @@ AggregatorHandler::~AggregatorHandler()
 		agHandler = 0;
 }
 
-void AggregatorHandler::addHandler(AbstractAgregator * handler)
+void AggregatorHandler::addHandler(AbstractAggregator * handler)
 {
 	LOGINFO("Adding handler: " << handler->readParam() << " -> "
 			<< handler->writeParam());
@@ -131,7 +131,7 @@ void AggregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvDa
 			LOGDEBUG("Processing:\n" << decodeutility::kvdataformatter::createString(data));
 
 			//it->second->process( data );
-			AbstractAgregator * agregator = it->second;
+			AbstractAggregator * agregator = it->second;
 			if (agregator->isInterestedIn(data))
 			{
 				std::auto_ptr<kvalobs::kvData> d =
@@ -177,8 +177,8 @@ namespace
 {
 	struct assertObsTimeMatches
 	{
-		const AbstractAgregator::TimeSpan & obsTimes_;
-		assertObsTimeMatches(const AbstractAgregator::TimeSpan & obsTimes ) : obsTimes_(obsTimes)
+		const AbstractAggregator::TimeSpan & obsTimes_;
+		assertObsTimeMatches(const AbstractAggregator::TimeSpan & obsTimes ) : obsTimes_(obsTimes)
 		{}
 		void operator () (const kvalobs::kvData & d)
 		{
@@ -194,7 +194,7 @@ namespace
 
 std::list<kvalobs::kvData>
 AggregatorHandler::getRelevantObsList( const kvalobs::kvData & data,
-		const AbstractAgregator::TimeSpan & obsTimes ) const
+		const AbstractAggregator::TimeSpan & obsTimes ) const
 {
 	std::list<kvalobs::kvData> ret;
 

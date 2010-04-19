@@ -1,7 +1,7 @@
 /*
  Kvalobs - Free Quality Control Software for Meteorological Observations
 
- $Id: AbstractAgregator.cc,v 1.1.2.9 2007/09/27 09:02:15 paule Exp $
+ $Id: AbstractAggregator.cc,v 1.1.2.9 2007/09/27 09:02:15 paule Exp $
 
  Copyright (C) 2007 met.no
 
@@ -28,7 +28,7 @@
  with KVALOBS; if not, write to the Free Software Foundation Inc.,
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-#include "AbstractAgregator.h"
+#include "AbstractAggregator.h"
 //#include "AggregatorHandler.h"
 #include "useinfoAggregate.h"
 #include <kvalobs/kvDataOperations.h>
@@ -55,7 +55,7 @@ using namespace boost;
 
 namespace aggregator
 {
-AbstractAgregator::AbstractAgregator(int readParam, int writeParam,
+AbstractAggregator::AbstractAggregator(int readParam, int writeParam,
 		int interestingHours, const set<miClock> &generateWhen) :
 	name("Agregator(" + lexical_cast<string> (readParam) + ", " + lexical_cast<
 			string> (writeParam) + ")"), read_param(readParam), write_param(
@@ -64,11 +64,11 @@ AbstractAgregator::AbstractAgregator(int readParam, int writeParam,
 {
 }
 
-AbstractAgregator::~AbstractAgregator()
+AbstractAggregator::~AbstractAggregator()
 {
 }
 
-const AbstractAgregator::TimeSpan AbstractAgregator::getTimeSpan(
+const AbstractAggregator::TimeSpan AbstractAggregator::getTimeSpan(
 		const kvData & data) const
 {
 	// Find out what times of day we are interested in:
@@ -89,7 +89,7 @@ const AbstractAgregator::TimeSpan AbstractAgregator::getTimeSpan(
 	return ret;
 }
 
-bool AbstractAgregator::shouldProcess(const kvalobs::kvData &trigger,
+bool AbstractAggregator::shouldProcess(const kvalobs::kvData &trigger,
 		const kvDataList &observations)
 {
 	if ((int) observations.size() < interesting_hours)
@@ -97,7 +97,7 @@ bool AbstractAgregator::shouldProcess(const kvalobs::kvData &trigger,
 	return true;
 }
 
-kvalobs::kvData AbstractAgregator::getDataObject_(const kvData &trigger,
+kvalobs::kvData AbstractAggregator::getDataObject_(const kvData &trigger,
 		const miTime &obsTime, float original, float corrected, const kvalobs::kvUseInfo & ui)
 {
 	int typeID = trigger.typeID();
@@ -120,7 +120,7 @@ kvalobs::kvData AbstractAgregator::getDataObject_(const kvData &trigger,
 	return ret;
 }
 
-bool AbstractAgregator::isInterestedIn(const kvalobs::kvData &data) const
+bool AbstractAggregator::isInterestedIn(const kvalobs::kvData &data) const
 {
 	// Are we still supposed to run?
 	if (KvApp::kvApp)
@@ -150,7 +150,7 @@ bool AbstractAgregator::isInterestedIn(const kvalobs::kvData &data) const
 	return true;
 }
 
-std::auto_ptr<kvalobs::kvData> AbstractAgregator::process(
+std::auto_ptr<kvalobs::kvData> AbstractAggregator::process(
 		const kvalobs::kvData & data,
 		const std::list<kvalobs::kvData> & observations)
 {
@@ -204,7 +204,7 @@ std::auto_ptr<kvalobs::kvData> AbstractAgregator::process(
 	}
 }
 
-kvalobs::kvUseInfo AbstractAgregator::calculateUseInfo(
+kvalobs::kvUseInfo AbstractAggregator::calculateUseInfo(
 		const kvDataList & sourceData) const
 {
 	std::vector<kvalobs::kvUseInfo> ui;
@@ -215,7 +215,7 @@ kvalobs::kvUseInfo AbstractAgregator::calculateUseInfo(
 	return aggregateUseFlag(ui);
 }
 
-float AbstractAgregator::generateOriginal_(const kvDataList & data) const
+float AbstractAggregator::generateOriginal_(const kvDataList & data) const
 {
 	kvDataList::const_iterator find = std::find_if(data.begin(), data.end(),
 			original_missing);
@@ -229,7 +229,7 @@ float AbstractAgregator::generateOriginal_(const kvDataList & data) const
 	return calculate(values);
 }
 
-float AbstractAgregator::generateCorrected_(const kvDataList & data) const
+float AbstractAggregator::generateCorrected_(const kvDataList & data) const
 {
 	kvDataList::const_iterator find = std::find_if(data.begin(), data.end(),
 			boost::not1(valid));
