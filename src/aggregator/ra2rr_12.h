@@ -74,7 +74,7 @@ public:
 protected:
     virtual int timeOffset() const { return -12; }
 
-	virtual float calculate(const std::vector<float> & source) const;
+	virtual float calculate(const std::vector<float> & source, const kvalobs::kvData & trigger) const;
 
 	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
 };

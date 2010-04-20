@@ -38,6 +38,7 @@
 #include <kvskel/datasource.hh>
 #include <list>
 #include <set>
+#include <map>
 #include <utility>
 #include <memory>
 
@@ -71,7 +72,6 @@ namespace aggregator
  */
 class AbstractAggregator
 {
-
 public:
 
 	/**
@@ -112,8 +112,7 @@ public:
 	 * Perform an agregation, based on the incoming data, using the list 
 	 * observations as base data.
 	 */
-	kvDataPtr process(const kvalobs::kvData & data, const std::list<
-			kvalobs::kvData> & observations);
+	kvDataPtr process(const kvalobs::kvData & data, const kvDataList & observations);
 
 	/**
 	 * \brief Get the value for paramID which we are interested in
@@ -207,9 +206,10 @@ protected:
 	 * Do the actual aggregation.
 	 *
 	 * @param source base data for aggregating
+	 * @param trigger The observation which caused this aggregation to run.
 	 * @return the aggregated value
 	 */
-	virtual float calculate(const std::vector<float> & source) const = 0;
+	virtual float calculate(const std::vector<float> & source, const kvalobs::kvData & trigger) const = 0;
 
 	/**
 	 * Calculate value for new useinfo flag, based on the source data, which
@@ -219,6 +219,24 @@ protected:
 	 *          called explicitly.
 	 */
 	kvalobs::kvUseInfo calculateUseInfo(const kvDataList & sourceData) const;
+
+	/**
+	 * Get station metadata from kvalobs. This i a service function to
+	 * subclasses. Will search the kvalobs database for metadata with the
+	 * given name, which it applicable to the given kvData object. Data is
+	 * fetched from the station_metadata table.
+	 *
+	 * This method is virtual in order to make it overrideable by tests.
+	 *
+	 * \throws std::runtime_error if unable to find metadata, or if there is
+	 * an error when contacting kvalobs.
+	 *
+	 * \param metadataname Name of the metadata to fetch
+	 * \param validFor The object this metadata will be applied to.
+	 *
+	 * \return The value of the given metadata
+	 */
+	virtual float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const;
 
 	/**
 	 * \brief This is the kvalobs internal value for errors.
@@ -262,8 +280,8 @@ private:
 	getDataObject_(const kvalobs::kvData &trigger,
 			const miutil::miTime &obsTime, float original, float corrected, const kvalobs::kvUseInfo & ui);
 
-	float generateOriginal_(const kvDataList & data) const;
-	float generateCorrected_(const kvDataList & data) const;
+	float generateOriginal_(const kvDataList & data, const kvalobs::kvData & trigger) const;
+	float generateCorrected_(const kvDataList & data, const kvalobs::kvData & trigger) const;
 
 	const int read_param;
 	const int write_param;

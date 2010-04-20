@@ -29,6 +29,8 @@
 
 #include "uu_24.h"
 #include "paramID.h"
+#include <milog/milog.h>
+#include <algorithm>
 
 
 namespace aggregator
@@ -43,11 +45,86 @@ uu_24::~uu_24()
 {
 }
 
+namespace
+{
+struct have_obstime
+{
+	const miutil::miTime t_;
+	have_obstime(const miutil::miTime & t) : t_(t) {}
 
-//bool ta_24::shouldProcess( const kvalobs::kvData &trigger, const kvDataList & observations )
-//{
-//	return MeanValueAgregator::shouldProcess(trigger, observations);
-//}
+	bool operator () (const kvalobs::kvData & d) const
+	{
+		return d.obstime() == t_;
+	}
+};
+
+bool obstimeInList(const miutil::miTime & t, const AbstractAggregator::kvDataList & observations )
+{
+	return std::find_if(observations.begin(), observations.end(), have_obstime(t)) != observations.end();
+}
+
+bool matchingObsTimes(const uu_24::kvDataList & observations, const miutil::miClock & firstObs = "06:00:00")
+{
+	const miutil::miDate d = observations.front().obstime().date();
+
+	miutil::miClock c = firstObs;
+	for ( int i = 0; i < 3; ++ i )
+	{
+		miutil::miTime t(d, c);
+		if ( not obstimeInList(t, observations) )
+		{
+			if ( firstObs == "06:00:00" )
+				return matchingObsTimes(observations, "07:00:00");
+			return false;
+		}
+		c.addHour(6);
+	}
+	return true;
+}
+}
+
+bool uu_24::shouldProcess( const kvalobs::kvData &trigger, const kvDataList & observations )
+{
+	if ( MeanValueAggregator::shouldProcess(trigger, observations) )
+		return true;
+
+	if ( observations.size() == 3 )
+		return matchingObsTimes(observations);
+}
+
+float uu_24::calculate(const std::vector<float> & source, const kvalobs::kvData & trigger) const
+{
+	if ( source.size() == 3 )
+	{
+		try
+		{
+			float factor = getStationMetadata("koppen", trigger);
+
+			float c = factor;
+			float q = (source[0] + source[2]) / 2.0;
+			return q + (c * (source[1] - q));
+		} catch ( std::exception & )
+		{
+			LOGERROR("Unable to find metadata for observation: " << trigger);
+			return invalidParam;
+		}
+	}
+	return MeanValueAggregator::calculate(source, trigger);
+}
+
+namespace
+{
+bool lt_obstime(const kvalobs::kvData & a, const kvalobs::kvData & b)
+{
+	return a.obstime() < b.obstime();
+}
+}
+
+void uu_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
+{
+	out = dataIn;
+	out.sort(lt_obstime);
+}
 
 
 }

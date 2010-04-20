@@ -35,6 +35,13 @@
 namespace kvservice
 {
 
+/**
+ * Access to data directly from kvalobs.
+ *
+ * This class implements some methods in addition to its interface. The idea
+ * is that objects of this class will be used by anyone who needs to access
+ * kvalobs in any way.
+ */
 class KvalobsDataAccess: public kvservice::DataAccess
 {
 public:
@@ -49,6 +56,23 @@ public:
     void getAllData(KvDataList & data, const miutil::miTime &from, const miutil::miTime &to, int station = 0) const;
 
     virtual CKvalObs::CDataSource::Result_var sendData( const KvDataList & data );
+
+	/**
+	 * Get station metadata from kvalobs. This i a service function to
+	 * subclasses. Will search the kvalobs database for metadata with the
+	 * given name, which it applicable to the given kvData object. Data is
+	 * fetched from the station_metadata table.
+	 *
+	 * \throws std::runtime_error if unable to find metadata, or if there is
+	 * an error when contacting kvalobs.
+	 *
+	 * \param metadataname Name of the metadata to fetch
+	 * \param validFor The object this metadata will be applied to.
+	 *
+	 * \return The value of the given metadata
+	 */
+	float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const;
+
 };
 
 }

@@ -31,6 +31,7 @@
 #include "AbstractAggregator.h"
 //#include "AggregatorHandler.h"
 #include "useinfoAggregate.h"
+#include <proxy/KvalobsDataAccess.h>
 #include <kvalobs/kvDataOperations.h>
 #include <puTools/miTime.h>
 #include <puTools/miString.h>
@@ -152,7 +153,7 @@ bool AbstractAggregator::isInterestedIn(const kvalobs::kvData &data) const
 
 std::auto_ptr<kvalobs::kvData> AbstractAggregator::process(
 		const kvalobs::kvData & data,
-		const std::list<kvalobs::kvData> & observations)
+		const kvDataList & observations)
 {
 	typedef std::auto_ptr<kvalobs::kvData> return_type;
 
@@ -170,8 +171,8 @@ std::auto_ptr<kvalobs::kvData> AbstractAggregator::process(
 		kvDataList relevantData;
 		extractUsefulData(relevantData, observations, data);
 
-		float original = generateOriginal_(relevantData);
-		float corrected = generateCorrected_(relevantData);
+		float original = generateOriginal_(relevantData, data);
+		float corrected = generateCorrected_(relevantData, data);
 #ifdef AGGREGATE_USEINFO
 		kvalobs::kvUseInfo ui = calculateUseInfo(relevantData);
 #else
@@ -215,7 +216,14 @@ kvalobs::kvUseInfo AbstractAggregator::calculateUseInfo(
 	return aggregateUseFlag(ui);
 }
 
-float AbstractAggregator::generateOriginal_(const kvDataList & data) const
+float AbstractAggregator::getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const
+{
+	kvservice::KvalobsDataAccess dataAccess;
+	return dataAccess.getStationMetadata(metadataName, validFor);
+}
+
+
+float AbstractAggregator::generateOriginal_(const kvDataList & data, const kvalobs::kvData & trigger) const
 {
 	kvDataList::const_iterator find = std::find_if(data.begin(), data.end(),
 			original_missing);
@@ -226,10 +234,10 @@ float AbstractAggregator::generateOriginal_(const kvDataList & data) const
 	for (kvDataList::const_iterator it = data.begin(); it != data.end(); ++it)
 		values.push_back(it->original());
 
-	return calculate(values);
+	return calculate(values, trigger);
 }
 
-float AbstractAggregator::generateCorrected_(const kvDataList & data) const
+float AbstractAggregator::generateCorrected_(const kvDataList & data, const kvalobs::kvData & trigger) const
 {
 	kvDataList::const_iterator find = std::find_if(data.begin(), data.end(),
 			boost::not1(valid));
@@ -240,7 +248,7 @@ float AbstractAggregator::generateCorrected_(const kvDataList & data) const
 	for (kvDataList::const_iterator it = data.begin(); it != data.end(); ++it)
 		values.push_back(it->corrected());
 
-	return calculate(values);
+	return calculate(values, trigger);
 }
 
 }
