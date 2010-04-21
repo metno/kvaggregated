@@ -29,17 +29,24 @@
 
 #include "ta_24.h"
 #include "paramID.h"
+#include <numeric>
 
 namespace aggregator
 {
 
 ta_24::ta_24() :
-		MeanValueAggregator(TA, TAM_24)
+		KoppenBasedMeanValueAggregator(TA, TAM_24)
 {
 }
 
 ta_24::~ta_24()
 {
+}
+
+float ta_24::calculateWithKoppensFormula(const std::vector<float> & source, float koppenFactor) const
+{
+	float n = std::accumulate(source.begin(), source.end(), 0.0) / 3.0;
+	return n - (koppenFactor * (n - std::min(source[0], source[2])));
 }
 
 }

@@ -30,16 +30,18 @@
 #ifndef TA_24_H_
 #define TA_24_H_
 
-#include "MeanValueAggregator.h"
+#include "KoppenBasedMeanValueAggregator.h"
 
 namespace aggregator
 {
 
-class ta_24: public MeanValueAggregator
+class ta_24: public KoppenBasedMeanValueAggregator
 {
 public:
 	ta_24();
 	virtual ~ta_24();
+
+	virtual float calculateWithKoppensFormula(const std::vector<float> & source, float koppenFactor) const;
 };
 
 }
