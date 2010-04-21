@@ -19,6 +19,8 @@ kvAgregated_SOURCES += \
 	src/aggregator/MeanValueAggregator.cc \
 	src/aggregator/ta_24.h \
 	src/aggregator/ta_24.cc \
+	src/aggregator/KoppenBasedMeanValueAggregator.h \
+	src/aggregator/KoppenBasedMeanValueAggregator.cc \
 	src/aggregator/uu_24.h \
 	src/aggregator/uu_24.cc \
 	src/aggregator/nn_24.h \

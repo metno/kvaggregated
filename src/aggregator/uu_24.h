@@ -30,23 +30,19 @@
 #ifndef UU_24_H_
 #define UU_24_H_
 
-#include "MeanValueAggregator.h"
+#include "KoppenBasedMeanValueAggregator.h"
 
 namespace aggregator
 {
 
-class uu_24: public MeanValueAggregator
+class uu_24: public KoppenBasedMeanValueAggregator
 {
 public:
 	uu_24();
 	virtual ~uu_24();
 
 protected:
-    virtual bool shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const;
-
-    virtual float calculate(const std::vector<float> & source, const kvalobs::kvData & trigger) const;
-
-    virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
+    virtual float calculateWithKoppensFormula(const std::vector<float> & source, float koppenFactor) const;
 };
 
 }
