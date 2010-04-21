@@ -72,11 +72,7 @@ bool matchingObsTimes(const uu_24::kvDataList & observations, const miutil::miCl
 	{
 		miutil::miTime t(d, c);
 		if ( not obstimeInList(t, observations) )
-		{
-			if ( firstObs == "06:00:00" )
-				return matchingObsTimes(observations, "07:00:00");
 			return false;
-		}
 		c.addHour(6);
 	}
 	return true;
@@ -88,13 +84,12 @@ bool uu_24::shouldProcess( const kvalobs::kvData &trigger, const kvDataList & ob
 	if ( MeanValueAggregator::shouldProcess(trigger, observations) )
 		return true;
 
-	// check if trigger contained a n obstime which dows not influence aggregation.
-	static int generateKoppenHours[6] = { 6,7,12,13,18,19 };
-	if ( std::find(generateKoppenHours, generateKoppenHours + 6, trigger.obstime().clock().hour()) == generateKoppenHours + 6 )
-		return false;
-
-	if ( observations.size() >= 3 )
+	int offsetFrom6 = trigger.obstime().hour() % 6;
+	if ( offsetFrom6 == 0 )
 		return matchingObsTimes(observations);
+	else if ( offsetFrom6 == 1 )
+		return observations.size() == 3 and matchingObsTimes(observations, "07:00:00");
+	return false;
 }
 
 float uu_24::calculate(const std::vector<float> & source, const kvalobs::kvData & trigger) const
@@ -134,10 +129,7 @@ void uu_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const
 		out = dataIn;
 	else
 	{
-		int offsetFrom6 = trigger.obstime().hour() % 6;
-		if ( offsetFrom6 != 0 and offsetFrom6 != 1 )
-			throw std::runtime_error("Invalid trigger data"); // should never happen - this should have been caught by shouldProcess
-
+		const int offsetFrom6 = trigger.obstime().hour() % 6;
 		for ( int i = 6 + offsetFrom6; i < 24; i += 6 )
 		{
 			kvDataList::const_iterator find = std::find_if(dataIn.begin(), dataIn.end(), have_obshour(i));

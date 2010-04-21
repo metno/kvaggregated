@@ -219,14 +219,13 @@ TEST_F(uu_24Test, inclomplete24HourObservationPossiblyInterpretedAs3hourObs)
 
 TEST_F(uu_24Test, inclomplete24HourObservationPossiblyInterpretedAs3hourObsTriggerAt7)
 {
+	// Generation at 7 should only happen when there are three observations
+
 	kvservice::KvDataList data;
 	for (miutil::miTime t = "2010-04-19 00:00:00"; t < "2010-04-19 20:00:00"; t.addHour() )
 		data.push_back(factory.getData(t.hour(), aggregator.readParam(), t));
 
 	uu_24::kvDataPtr result = aggregator.process(data.back(), data);
 
-	ASSERT_TRUE( result.get() );
-
-	EXPECT_FLOAT_EQ(12, result->original());
-	EXPECT_FLOAT_EQ(12, result->corrected());
+	ASSERT_FALSE( result.get() );
 }
