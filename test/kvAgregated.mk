@@ -16,7 +16,8 @@ kvAgregatedTest_SOURCES = \
 	test/MeanValueAggregatorTest.cc \
 	test/nn_24Test.cc \
 	test/FlagInheritanceTest.cc \
-	test/uu_24Test.cc
+	test/uu_24Test.cc \
+	test/ta_24Test.cc
 	
 	
 
