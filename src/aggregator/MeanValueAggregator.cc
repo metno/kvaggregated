@@ -43,10 +43,9 @@ MeanValueAggregator::~MeanValueAggregator()
 {
 }
 
-bool MeanValueAggregator::shouldProcess( const kvalobs::kvData &trigger, const kvDataList & observations )
+bool MeanValueAggregator::shouldProcess( const kvalobs::kvData &trigger, const kvDataList & observations ) const
 {
-	kvDataList::size_type size = observations.size();
-	switch ( size )
+	switch ( observations.size() )
 	{
 	case 24:
 		return true;

@@ -42,7 +42,7 @@ public:
 	virtual ~uu_24();
 
 protected:
-    virtual bool shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations );
+    virtual bool shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const;
 
     virtual float calculate(const std::vector<float> & source, const kvalobs::kvData & trigger) const;
 

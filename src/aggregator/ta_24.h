@@ -40,8 +40,6 @@ class ta_24: public MeanValueAggregator
 public:
 	ta_24();
 	virtual ~ta_24();
-
-    //virtual bool shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations );
 };
 
 }

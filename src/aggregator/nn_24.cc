@@ -42,7 +42,7 @@ nn_24::~nn_24()
 {
 }
 
-bool nn_24::shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations )
+bool nn_24::shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const
 {
 	return observations.size() >= 3;
 }

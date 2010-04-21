@@ -83,12 +83,17 @@ bool matchingObsTimes(const uu_24::kvDataList & observations, const miutil::miCl
 }
 }
 
-bool uu_24::shouldProcess( const kvalobs::kvData &trigger, const kvDataList & observations )
+bool uu_24::shouldProcess( const kvalobs::kvData &trigger, const kvDataList & observations ) const
 {
 	if ( MeanValueAggregator::shouldProcess(trigger, observations) )
 		return true;
 
-	if ( observations.size() == 3 )
+	// check if trigger contained a n obstime which dows not influence aggregation.
+	static int generateKoppenHours[6] = { 6,7,12,13,18,19 };
+	if ( std::find(generateKoppenHours, generateKoppenHours + 6, trigger.obstime().clock().hour()) == generateKoppenHours + 6 )
+		return false;
+
+	if ( observations.size() >= 3 )
 		return matchingObsTimes(observations);
 }
 
@@ -96,24 +101,27 @@ float uu_24::calculate(const std::vector<float> & source, const kvalobs::kvData 
 {
 	if ( source.size() == 3 )
 	{
-		try
-		{
-			float factor = getStationMetadata("koppen", trigger);
+		float factor = getStationMetadata("koppen", trigger);
 
-			float c = factor;
-			float q = (source[0] + source[2]) / 2.0;
-			return q + (c * (source[1] - q));
-		} catch ( std::exception & )
-		{
-			LOGERROR("Unable to find metadata for observation: " << trigger);
-			return invalidParam;
-		}
+		float c = factor;
+		float q = (source[0] + source[2]) / 2.0;
+		return q + (c * (source[1] - q));
 	}
 	return MeanValueAggregator::calculate(source, trigger);
 }
 
 namespace
 {
+struct have_obshour
+{
+	int hour_;
+	have_obshour(int hour) : hour_(hour) {}
+	bool operator () (const kvalobs::kvData & d)
+	{
+		return d.obstime().hour() == hour_;
+	}
+};
+
 bool lt_obstime(const kvalobs::kvData & a, const kvalobs::kvData & b)
 {
 	return a.obstime() < b.obstime();
@@ -122,8 +130,22 @@ bool lt_obstime(const kvalobs::kvData & a, const kvalobs::kvData & b)
 
 void uu_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
 {
-	out = dataIn;
-	out.sort(lt_obstime);
+	if ( MeanValueAggregator::shouldProcess(trigger, dataIn) )
+		out = dataIn;
+	else
+	{
+		int offsetFrom6 = trigger.obstime().hour() % 6;
+		if ( offsetFrom6 != 0 and offsetFrom6 != 1 )
+			throw std::runtime_error("Invalid trigger data"); // should never happen - this should have been caught by shouldProcess
+
+		for ( int i = 6 + offsetFrom6; i < 24; i += 6 )
+		{
+			kvDataList::const_iterator find = std::find_if(dataIn.begin(), dataIn.end(), have_obshour(i));
+			if ( find == dataIn.end())
+				throw std::runtime_error("Unable to find required data"); // should never happen
+			out.push_back(* find);
+		}
+	}
 }
 
 

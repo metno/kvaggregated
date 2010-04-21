@@ -43,7 +43,7 @@ rr_24::rr_24() :
 {
 }
 
-bool rr_24::shouldProcess(const kvData &trigger, const kvDataList &observations)
+bool rr_24::shouldProcess(const kvData &trigger, const kvDataList &observations) const
 {
 	// These are the times from which we will generate data:
 	const std::set<miClock> &when = sixAmSixPm;

@@ -163,9 +163,7 @@ TEST_F(uu_24Test, data3hoursMissingMetadata)
 
 	uu_24::kvDataPtr result = aggregator.process(data.front(), data);
 
-	ASSERT_TRUE( result.get() );
-
-	ASSERT_TRUE( kvalobs::missing(* result));
+	ASSERT_FALSE( result.get() );
 }
 
 
@@ -203,4 +201,32 @@ TEST_F(uu_24Test, data3hoursUnsorted)
 
 	EXPECT_FLOAT_EQ(11.5, result->original());
 	EXPECT_FLOAT_EQ(7.0, result->corrected());
+}
+
+TEST_F(uu_24Test, inclomplete24HourObservationPossiblyInterpretedAs3hourObs)
+{
+	kvservice::KvDataList data;
+	for (miutil::miTime t = "2010-04-19 00:00:00"; t < "2010-04-19 19:00:00"; t.addHour() )
+		data.push_back(factory.getData(t.hour(), aggregator.readParam(), t));
+
+	uu_24::kvDataPtr result = aggregator.process(data.back(), data);
+
+	ASSERT_TRUE( result.get() );
+
+	EXPECT_FLOAT_EQ(12, result->original());
+	EXPECT_FLOAT_EQ(12, result->corrected());
+}
+
+TEST_F(uu_24Test, inclomplete24HourObservationPossiblyInterpretedAs3hourObsTriggerAt7)
+{
+	kvservice::KvDataList data;
+	for (miutil::miTime t = "2010-04-19 00:00:00"; t < "2010-04-19 20:00:00"; t.addHour() )
+		data.push_back(factory.getData(t.hour(), aggregator.readParam(), t));
+
+	uu_24::kvDataPtr result = aggregator.process(data.back(), data);
+
+	ASSERT_TRUE( result.get() );
+
+	EXPECT_FLOAT_EQ(12, result->original());
+	EXPECT_FLOAT_EQ(12, result->corrected());
 }

@@ -46,7 +46,7 @@ MinMax::MinMax(int readParam, int writeParam, int interestingHours, const set<mi
 {
 }
 
-bool MinMax::shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations )
+bool MinMax::shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const
 {
 	if ( ! AbstractAggregator::shouldProcess(trigger, observations) )
 		return false;

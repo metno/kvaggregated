@@ -91,7 +91,7 @@ const AbstractAggregator::TimeSpan AbstractAggregator::getTimeSpan(
 }
 
 bool AbstractAggregator::shouldProcess(const kvalobs::kvData &trigger,
-		const kvDataList &observations)
+		const kvDataList &observations) const
 {
 	if ((int) observations.size() < interesting_hours)
 		return false;

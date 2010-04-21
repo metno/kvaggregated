@@ -69,7 +69,7 @@ public:
      * False otherwise.
      */
     virtual bool shouldProcess( const kvalobs::kvData &trigger,
-                                const kvDataList &observations );
+                                const kvDataList &observations ) const;
 
 protected:
     virtual int timeOffset() const { return -12; }

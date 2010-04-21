@@ -56,7 +56,7 @@ rr_1::~rr_1()
 	delete thread;
 }
 
-bool rr_1::shouldProcess(const kvData &trigger, const kvDataList &observations)
+bool rr_1::shouldProcess(const kvData &trigger, const kvDataList &observations) const
 {
 	//return true;
 	// Will only generate when receiving values from GenerateZero thread

@@ -42,9 +42,4 @@ ta_24::~ta_24()
 {
 }
 
-//bool ta_24::shouldProcess( const kvalobs::kvData &trigger, const kvDataList & observations )
-//{
-//	return MeanValueAgregator::shouldProcess(trigger, observations);
-//}
-
 }

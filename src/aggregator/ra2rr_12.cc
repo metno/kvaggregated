@@ -82,7 +82,7 @@ struct lt_obstime
 }
 
 bool ra2rr_12::shouldProcess(const kvData & trigger,
-		const kvDataList & observations)
+		const kvDataList & observations) const
 {
 	const set<miClock> & gw = generateWhen();
 	if (observations.size() > 1 and
