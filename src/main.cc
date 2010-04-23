@@ -232,12 +232,12 @@ int main(int argc, char **argv)
 			handler.addHandler(&ra2rr_b);
 			ra2rr_12_forward ra2rr_f;
 			handler.addHandler(&ra2rr_f);
-			ta_24 ta24;
-			handler.addHandler(& ta24);
-			uu_24 uu24;
-			handler.addHandler(& uu24);
-			nn_24 nn24;
-			handler.addHandler(& nn24);
+			//ta_24 ta24;
+			//handler.addHandler(& ta24);
+			//uu_24 uu24;
+			//handler.addHandler(& uu24);
+			//nn_24 nn24;
+			//handler.addHandler(& nn24);
 
 			try
 			{
