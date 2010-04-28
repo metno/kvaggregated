@@ -28,6 +28,7 @@
  */
 
 #include "KoppenBasedMeanValueAggregator.h"
+#include <iomanip>
 
 namespace aggregator
 {
@@ -127,7 +128,9 @@ float KoppenBasedMeanValueAggregator::calculate(const std::vector<float> & sourc
 {
 	if ( source.size() == 3 )
 	{
-		float factor = getStationMetadata("koppen", trigger);
+		std::ostringstream metadataParameterName;
+		metadataParameterName << "koppen_" << std::setfill('0') << std::setw(2) << trigger.obstime().month();
+		float factor = getStationMetadata(metadataParameterName.str(), trigger);
 		return calculateWithKoppensFormula(source, factor);
 	}
 	return MeanValueAggregator::calculate(source, trigger);
