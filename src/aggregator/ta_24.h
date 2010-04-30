@@ -32,17 +32,45 @@
 
 #include "KoppenBasedMeanValueAggregator.h"
 
+namespace kvservice
+{
+class DataAccess;
+}
+
 namespace aggregator
 {
 
 class ta_24: public KoppenBasedMeanValueAggregator
 {
 public:
-	ta_24();
+	explicit ta_24(const kvservice::DataAccess * dataAccess);
 	virtual ~ta_24();
 
-	virtual float calculateWithKoppensFormula(const std::vector<float> & source, float koppenFactor) const;
+	virtual float calculateWithKoppensFormula(const std::vector<float> & source, float koppenFactor, ExtraData extraData) const;
+
+	virtual ExtraData getExtraData(const kvalobs::kvData & data);
+
+	class ExtraCalculationData;
+
+private:
+	const kvservice::DataAccess * dataAccess_;
 };
+
+class ta_24::ExtraCalculationData : public KoppenExtraData
+{
+public:
+	explicit ExtraCalculationData(const kvalobs::kvData & trigger);
+
+	virtual float minimumTemperature(const kvservice::DataAccess * dataAccess);
+
+private:
+	void populate(const kvservice::DataAccess * dataAccess);
+
+	float tan06[2];
+	float tan18[2];
+	int useCount;
+};
+
 
 }
 

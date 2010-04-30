@@ -34,6 +34,13 @@
 
 using aggregator::ta_24;
 
+class TestExtraCalculationData : public ta_24::ExtraCalculationData
+{
+public:
+	TestExtraCalculationData(const kvalobs::kvData & d) : ta_24::ExtraCalculationData(d) {}
+	virtual float minimumTemperature(const kvservice::DataAccess * dataAccess) { return 7.5; }
+};
+
 /**
  * Testing version of class ta_24. This class will merely pretend to contact
  * kvalobs on calls to getStationMetadata.
@@ -44,8 +51,13 @@ class ta_24_test_version : public ta_24
 	bool throwOnCall_;
 public:
 	ta_24_test_version() :
-		ret_(0.75), throwOnCall_(false)
+		ta_24(0), ret_(0.75), throwOnCall_(false)
 	{}
+
+	virtual ExtraData getExtraData(const kvalobs::kvData & data)
+	{
+		return new TestExtraCalculationData(data);
+	}
 
 	/**
 	 * Any calls to getStationMetadata will after this call return the given
@@ -87,7 +99,7 @@ protected:
 	ta_24_test_version aggregator;
 };
 
-INSTANTIATE_TEST_CASE_P(ta_24Test, AbstractAggregatorTest, testing::Values(AggregatorPtr(new ta_24)));
+INSTANTIATE_TEST_CASE_P(ta_24Test, AbstractAggregatorTest, testing::Values(AggregatorPtr(new ta_24(0))));
 
 
 TEST_F(ta_24Test, data24hours)
@@ -145,8 +157,8 @@ TEST_F(ta_24Test, data3hoursStartAt7)
 
 	ASSERT_TRUE( result.get() );
 
-	EXPECT_FLOAT_EQ(7.5, result->original());
-	EXPECT_FLOAT_EQ(5.0, result->corrected());
+	EXPECT_FLOAT_EQ(8.625, result->original());
+	EXPECT_FLOAT_EQ(8.375, result->corrected());
 }
 
 
@@ -179,8 +191,8 @@ TEST_F(ta_24Test, data3hours)
 
 	ASSERT_TRUE( result.get() );
 
-	EXPECT_FLOAT_EQ(7.5, result->original());
-	EXPECT_FLOAT_EQ(5, result->corrected());
+	EXPECT_FLOAT_EQ(8.625, result->original());
+	EXPECT_FLOAT_EQ(8.375, result->corrected());
 }
 
 TEST_F(ta_24Test, data3hoursUnsorted)
@@ -199,8 +211,8 @@ TEST_F(ta_24Test, data3hoursUnsorted)
 
 	ASSERT_TRUE( result.get() );
 
-	EXPECT_FLOAT_EQ(10, result->original());
-	EXPECT_FLOAT_EQ(8.5, result->corrected());
+	EXPECT_FLOAT_EQ(9.75, result->original());
+	EXPECT_FLOAT_EQ(8.25, result->corrected());
 }
 
 TEST_F(ta_24Test, inclomplete24HourObservationPossiblyInterpretedAs3hourObs)
@@ -213,8 +225,8 @@ TEST_F(ta_24Test, inclomplete24HourObservationPossiblyInterpretedAs3hourObs)
 
 	ASSERT_TRUE( result.get() );
 
-	EXPECT_FLOAT_EQ(7.5, result->original());
-	EXPECT_FLOAT_EQ(7.5, result->corrected());
+	EXPECT_FLOAT_EQ(8.625, result->original());
+	EXPECT_FLOAT_EQ(8.625, result->corrected());
 }
 
 TEST_F(ta_24Test, inclomplete24HourObservationPossiblyInterpretedAs3hourObsTriggerAt7)

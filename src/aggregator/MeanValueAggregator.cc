@@ -64,7 +64,7 @@ void MeanValueAggregator::extractUsefulData(kvDataList & out, const kvDataList &
 	out = dataIn;
 }
 
-float MeanValueAggregator::calculate(const std::vector<float> & source, const kvalobs::kvData & ) const
+float MeanValueAggregator::calculate(const std::vector<float> & source, ExtraData extraData ) const
 {
 	return std::accumulate(source.begin(), source.end(), 0.0) / source.size();
 }

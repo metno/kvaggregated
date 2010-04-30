@@ -232,7 +232,7 @@ int main(int argc, char **argv)
 			handler.addHandler(&ra2rr_b);
 			ra2rr_12_forward ra2rr_f;
 			handler.addHandler(&ra2rr_f);
-			ta_24 ta24;
+			ta_24 ta24(& proxy);
 			handler.addHandler(& ta24);
 			uu_24 uu24;
 			handler.addHandler(& uu24);

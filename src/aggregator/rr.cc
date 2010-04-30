@@ -60,7 +60,7 @@ void rr::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kv
 }
 
 
-float rr::calculate(const std::vector<float> & source, const kvalobs::kvData & ) const
+float rr::calculate(const std::vector<float> & source, ExtraData ) const
 {
 	bool nothing = true;
 	float sum = 0;

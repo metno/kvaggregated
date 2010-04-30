@@ -202,6 +202,13 @@ protected:
 	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn,
 			const kvalobs::kvData & trigger) const =0;
 
+	struct ExtraAggregationData {
+		virtual ~ExtraAggregationData() {}
+	};
+	typedef ExtraAggregationData * ExtraData;
+
+	virtual ExtraData getExtraData(const kvalobs::kvData & data) { return 0; }
+
 	/**
 	 * Do the actual aggregation.
 	 *
@@ -209,7 +216,7 @@ protected:
 	 * @param trigger The observation which caused this aggregation to run.
 	 * @return the aggregated value
 	 */
-	virtual float calculate(const std::vector<float> & source, const kvalobs::kvData & trigger) const = 0;
+	virtual float calculate(const std::vector<float> & source, ExtraData extraData) const = 0;
 
 	/**
 	 * Calculate value for new useinfo flag, based on the source data, which
@@ -280,8 +287,8 @@ private:
 	getDataObject_(const kvalobs::kvData &trigger,
 			const miutil::miTime &obsTime, float original, float corrected, const kvalobs::kvUseInfo & ui);
 
-	float generateOriginal_(const kvDataList & data, const kvalobs::kvData & trigger) const;
-	float generateCorrected_(const kvDataList & data, const kvalobs::kvData & trigger) const;
+	float generateOriginal_(const kvDataList & data, ExtraData extraData) const;
+	float generateCorrected_(const kvDataList & data, ExtraData extraData) const;
 
 	const int read_param;
 	const int write_param;

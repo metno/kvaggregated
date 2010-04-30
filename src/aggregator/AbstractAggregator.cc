@@ -38,6 +38,7 @@
 #include <milog/milog.h>
 #include <decodeutility/kvDataFormatter.h>
 #include <boost/functional.hpp>
+#include <boost/scoped_ptr.hpp>
 #include <sstream>
 #include <vector>
 #include <list>
@@ -171,8 +172,11 @@ std::auto_ptr<kvalobs::kvData> AbstractAggregator::process(
 		kvDataList relevantData;
 		extractUsefulData(relevantData, observations, data);
 
-		float original = generateOriginal_(relevantData, data);
-		float corrected = generateCorrected_(relevantData, data);
+		ExtraAggregationData * ead = getExtraData(data);
+		boost::scoped_ptr<ExtraAggregationData> extraData(ead);
+
+		float original = generateOriginal_(relevantData, extraData.get());
+		float corrected = generateCorrected_(relevantData, extraData.get());
 #ifdef AGGREGATE_USEINFO
 		kvalobs::kvUseInfo ui = calculateUseInfo(relevantData);
 #else
@@ -223,7 +227,7 @@ float AbstractAggregator::getStationMetadata(const std::string & metadataName, c
 }
 
 
-float AbstractAggregator::generateOriginal_(const kvDataList & data, const kvalobs::kvData & trigger) const
+float AbstractAggregator::generateOriginal_(const kvDataList & data, ExtraData extraData) const
 {
 	kvDataList::const_iterator find = std::find_if(data.begin(), data.end(),
 			original_missing);
@@ -234,10 +238,10 @@ float AbstractAggregator::generateOriginal_(const kvDataList & data, const kvalo
 	for (kvDataList::const_iterator it = data.begin(); it != data.end(); ++it)
 		values.push_back(it->original());
 
-	return calculate(values, trigger);
+	return calculate(values, extraData);
 }
 
-float AbstractAggregator::generateCorrected_(const kvDataList & data, const kvalobs::kvData & trigger) const
+float AbstractAggregator::generateCorrected_(const kvDataList & data, ExtraData extraData) const
 {
 	kvDataList::const_iterator find = std::find_if(data.begin(), data.end(),
 			boost::not1(valid));
@@ -248,7 +252,7 @@ float AbstractAggregator::generateCorrected_(const kvDataList & data, const kval
 	for (kvDataList::const_iterator it = data.begin(); it != data.end(); ++it)
 		values.push_back(it->corrected());
 
-	return calculate(values, trigger);
+	return calculate(values, extraData);
 }
 
 }

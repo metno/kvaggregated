@@ -124,16 +124,24 @@ void KoppenBasedMeanValueAggregator::extractUsefulData(kvDataList & out, const k
 	}
 }
 
-float KoppenBasedMeanValueAggregator::calculate(const std::vector<float> & source, const kvalobs::kvData & trigger) const
+KoppenBasedMeanValueAggregator::ExtraData KoppenBasedMeanValueAggregator::getExtraData(const kvalobs::kvData & data)
+{
+	KoppenExtraData * ret = new KoppenExtraData(data);
+	return ret;
+}
+
+float KoppenBasedMeanValueAggregator::calculate(const std::vector<float> & source, ExtraData extraData) const
 {
 	if ( source.size() == 3 )
 	{
+		const kvalobs::kvData & trigger = static_cast<KoppenExtraData *>(extraData)->trigger;
+
 		std::ostringstream metadataParameterName;
 		metadataParameterName << "koppen_" << std::setfill('0') << std::setw(2) << trigger.obstime().month();
 		float factor = getStationMetadata(metadataParameterName.str(), trigger);
-		return calculateWithKoppensFormula(source, factor);
+		return calculateWithKoppensFormula(source, factor, extraData);
 	}
-	return MeanValueAggregator::calculate(source, trigger);
+	return MeanValueAggregator::calculate(source, extraData);
 }
 
 

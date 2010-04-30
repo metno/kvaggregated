@@ -71,7 +71,7 @@ bool rr_1::shouldProcess(const kvData &trigger, const kvDataList &observations) 
 	return generate;
 }
 
-float rr_1::calculate(const std::vector<float> & source, const kvalobs::kvData & ) const
+float rr_1::calculate(const std::vector<float> & source, ExtraData ) const
 {
 	float sum = 0;
 	for ( std::vector<float>::const_iterator it = source.begin(); it != source.end(); ++ it )

@@ -53,9 +53,17 @@ protected:
 
     virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
 
-    virtual float calculate(const std::vector<float> & source, const kvalobs::kvData & trigger) const;
+	virtual ExtraData getExtraData(const kvalobs::kvData & data);
 
-    virtual float calculateWithKoppensFormula(const std::vector<float> & source, float koppenFactor) const = 0;
+	virtual float calculate(const std::vector<float> & source, ExtraData extraData) const;
+
+    virtual float calculateWithKoppensFormula(const std::vector<float> & source, float koppenFactor, ExtraData extraData) const = 0;
+
+    struct KoppenExtraData : public ExtraAggregationData
+    {
+    	kvalobs::kvData trigger;
+    	explicit KoppenExtraData(const kvalobs::kvData & trigger) : trigger(trigger) {}
+    };
 };
 
 }

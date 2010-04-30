@@ -45,7 +45,7 @@ uu_24::~uu_24()
 {
 }
 
-float uu_24::calculateWithKoppensFormula(const std::vector<float> & source, float koppenFactor) const
+float uu_24::calculateWithKoppensFormula(const std::vector<float> & source, float koppenFactor, ExtraData ) const
 {
 	float q = (source[0] + source[2]) / 2.0;
 	return q + (koppenFactor * (source[1] - q));
