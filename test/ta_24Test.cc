@@ -114,7 +114,7 @@ TEST_F(ta_24Test, data24hours)
 	ASSERT_TRUE( result.get() );
 
 	EXPECT_FLOAT_EQ(11.5, result->original());
-	EXPECT_FLOAT_EQ(11.625, result->corrected());
+	EXPECT_FLOAT_EQ(11.6, result->corrected());
 }
 
 TEST_F(ta_24Test, data8hours)
@@ -129,7 +129,7 @@ TEST_F(ta_24Test, data8hours)
 	ASSERT_TRUE( result.get() );
 
 	EXPECT_FLOAT_EQ(10.5, result->original());
-	EXPECT_FLOAT_EQ(10.875, result->corrected());
+	EXPECT_FLOAT_EQ(10.9, result->corrected());
 }
 
 TEST_F(ta_24Test, data3hoursWrongTimes)
@@ -157,8 +157,8 @@ TEST_F(ta_24Test, data3hoursStartAt7)
 
 	ASSERT_TRUE( result.get() );
 
-	EXPECT_FLOAT_EQ(8.625, result->original());
-	EXPECT_FLOAT_EQ(8.375, result->corrected());
+	EXPECT_FLOAT_EQ(8.6, result->original());
+	EXPECT_FLOAT_EQ(8.4, result->corrected());
 }
 
 
@@ -191,8 +191,8 @@ TEST_F(ta_24Test, data3hours)
 
 	ASSERT_TRUE( result.get() );
 
-	EXPECT_FLOAT_EQ(8.625, result->original());
-	EXPECT_FLOAT_EQ(8.375, result->corrected());
+	EXPECT_FLOAT_EQ(8.6, result->original());
+	EXPECT_FLOAT_EQ(8.4, result->corrected());
 }
 
 TEST_F(ta_24Test, data3hoursUnsorted)
@@ -211,8 +211,8 @@ TEST_F(ta_24Test, data3hoursUnsorted)
 
 	ASSERT_TRUE( result.get() );
 
-	EXPECT_FLOAT_EQ(9.75, result->original());
-	EXPECT_FLOAT_EQ(8.25, result->corrected());
+	EXPECT_FLOAT_EQ(9.8, result->original());
+	EXPECT_FLOAT_EQ(8.3, result->corrected());
 }
 
 TEST_F(ta_24Test, inclomplete24HourObservationPossiblyInterpretedAs3hourObs)
@@ -225,8 +225,8 @@ TEST_F(ta_24Test, inclomplete24HourObservationPossiblyInterpretedAs3hourObs)
 
 	ASSERT_TRUE( result.get() );
 
-	EXPECT_FLOAT_EQ(8.625, result->original());
-	EXPECT_FLOAT_EQ(8.625, result->corrected());
+	EXPECT_FLOAT_EQ(8.6, result->original());
+	EXPECT_FLOAT_EQ(8.6, result->corrected());
 }
 
 TEST_F(ta_24Test, inclomplete24HourObservationPossiblyInterpretedAs3hourObsTriggerAt7)

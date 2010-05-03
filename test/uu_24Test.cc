@@ -102,7 +102,7 @@ TEST_F(uu_24Test, data24hours)
 	ASSERT_TRUE( result.get() );
 
 	EXPECT_FLOAT_EQ(11.5, result->original());
-	EXPECT_FLOAT_EQ(11.625, result->corrected());
+	EXPECT_FLOAT_EQ(11.6, result->corrected());
 }
 
 TEST_F(uu_24Test, data8hours)
@@ -117,7 +117,7 @@ TEST_F(uu_24Test, data8hours)
 	ASSERT_TRUE( result.get() );
 
 	EXPECT_FLOAT_EQ(10.5, result->original());
-	EXPECT_FLOAT_EQ(10.875, result->corrected());
+	EXPECT_FLOAT_EQ(10.9, result->corrected());
 }
 
 TEST_F(uu_24Test, data3hoursWrongTimes)
@@ -146,7 +146,7 @@ TEST_F(uu_24Test, data3hoursStartAt7)
 	ASSERT_TRUE( result.get() );
 
 	EXPECT_FLOAT_EQ(12, result->original());
-	EXPECT_FLOAT_EQ(11.625, result->corrected());
+	EXPECT_FLOAT_EQ(11.6, result->corrected());
 }
 
 
@@ -180,7 +180,7 @@ TEST_F(uu_24Test, data3hours)
 	ASSERT_TRUE( result.get() );
 
 	EXPECT_FLOAT_EQ(12, result->original());
-	EXPECT_FLOAT_EQ(11.625, result->corrected());
+	EXPECT_FLOAT_EQ(11.6, result->corrected());
 }
 
 TEST_F(uu_24Test, data3hoursUnsorted)

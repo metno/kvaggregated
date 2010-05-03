@@ -152,6 +152,20 @@ bool AbstractAggregator::isInterestedIn(const kvalobs::kvData &data) const
 	return true;
 }
 
+namespace
+{
+float round(float f)
+{
+	if ( f < 0 )
+		f -= 0.05;
+	else
+		f += 0.05;
+	f *= 10;
+	f = int(f);
+	return f / 10.0;
+}
+}
+
 std::auto_ptr<kvalobs::kvData> AbstractAggregator::process(
 		const kvalobs::kvData & data,
 		const kvDataList & observations)
@@ -175,8 +189,9 @@ std::auto_ptr<kvalobs::kvData> AbstractAggregator::process(
 		ExtraAggregationData * ead = getExtraData(data);
 		boost::scoped_ptr<ExtraAggregationData> extraData(ead);
 
-		float original = generateOriginal_(relevantData, extraData.get());
-		float corrected = generateCorrected_(relevantData, extraData.get());
+		float original = round(generateOriginal_(relevantData, extraData.get()));
+		float corrected = round(generateCorrected_(relevantData, extraData.get()));
+
 #ifdef AGGREGATE_USEINFO
 		kvalobs::kvUseInfo ui = calculateUseInfo(relevantData);
 #else
