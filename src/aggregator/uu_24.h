@@ -42,7 +42,7 @@ public:
 	virtual ~uu_24();
 
 protected:
-    virtual float calculateWithKoppensFormula(const std::vector<float> & source, float koppenFactor, ExtraData extraData) const;
+    virtual float calculateWithKoppensFormula(const ValueList & source, float koppenFactor, ExtraData extraData) const;
 };
 
 }

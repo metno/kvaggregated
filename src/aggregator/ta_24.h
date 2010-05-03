@@ -46,7 +46,7 @@ public:
 	explicit ta_24(const kvservice::DataAccess * dataAccess);
 	virtual ~ta_24();
 
-	virtual float calculateWithKoppensFormula(const std::vector<float> & source, float koppenFactor, ExtraData extraData) const;
+	virtual float calculateWithKoppensFormula(const ValueList & source, float koppenFactor, ExtraData extraData) const;
 
 	virtual ExtraData getExtraData(const kvalobs::kvData & data);
 

@@ -81,7 +81,7 @@ public:
 
 	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
 
-	virtual float calculate(const std::vector<float> & source, ExtraData extraData) const;
+	virtual float calculate(const ValueList & source, ExtraData extraData) const;
 };
 
 /**
@@ -102,8 +102,7 @@ public:
  * \return A MinMax object for calculating minimum value of all
  * observation.
  */
-inline MinMax min(int readParam, int writeParam, int hours, const std::set<
-		miutil::miClock> &when)
+inline MinMax min(int readParam, int writeParam, int hours, const std::set<miutil::miClock> &when)
 {
 	return MinMax(readParam, writeParam, hours, when, std::min<float>);
 }

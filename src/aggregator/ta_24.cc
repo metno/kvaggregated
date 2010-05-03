@@ -46,7 +46,7 @@ ta_24::~ta_24()
 {
 }
 
-float ta_24::calculateWithKoppensFormula(const std::vector<float> & source, float koppenFactor, ExtraData extraData) const
+float ta_24::calculateWithKoppensFormula(const ValueList & source, float koppenFactor, ExtraData extraData) const
 {
 	ExtraCalculationData * d = static_cast<ExtraCalculationData *>(extraData);
 

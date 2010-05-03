@@ -74,7 +74,7 @@ public:
 	virtual bool shouldProcess(const kvalobs::kvData &trigger,
 			const kvDataList &observations) const;
 
-	float calculate(const std::vector<float> & source, ExtraData extraData) const;
+	float calculate(const ValueList & source, ExtraData extraData) const;
 
 	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
 };

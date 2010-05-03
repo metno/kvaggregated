@@ -234,7 +234,7 @@ float AbstractAggregator::generateOriginal_(const kvDataList & data, ExtraData e
 	if (find != data.end())
 		return invalidParam;
 
-	std::vector<float> values;
+	ValueList values;
 	for (kvDataList::const_iterator it = data.begin(); it != data.end(); ++it)
 		values.push_back(it->original());
 
@@ -248,7 +248,7 @@ float AbstractAggregator::generateCorrected_(const kvDataList & data, ExtraData 
 	if (find != data.end())
 		return invalidParam;
 
-	std::vector<float> values;
+	ValueList values;
 	for (kvDataList::const_iterator it = data.begin(); it != data.end(); ++it)
 		values.push_back(it->corrected());
 

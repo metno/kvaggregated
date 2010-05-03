@@ -64,10 +64,10 @@ void MinMax::extractUsefulData(kvDataList & out, const kvDataList & dataIn, cons
 	out = dataIn;
 }
 
-float MinMax::calculate(const std::vector<float> & source, ExtraData ) const
+float MinMax::calculate(const ValueList & source, ExtraData ) const
 {
 	float ret = source.front();
-	for ( std::vector<float>::const_iterator it = source.begin(); it != source.end(); ++ it )
+	for ( ValueList::const_iterator it = source.begin(); it != source.end(); ++ it )
 		ret = function(ret, * it);
 	return ret;
 }

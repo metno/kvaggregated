@@ -209,6 +209,7 @@ protected:
 
 	virtual ExtraData getExtraData(const kvalobs::kvData & data) { return 0; }
 
+	typedef std::vector<float> ValueList;
 	/**
 	 * Do the actual aggregation.
 	 *
@@ -216,7 +217,7 @@ protected:
 	 * @param trigger The observation which caused this aggregation to run.
 	 * @return the aggregated value
 	 */
-	virtual float calculate(const std::vector<float> & source, ExtraData extraData) const = 0;
+	virtual float calculate(const ValueList & source, ExtraData extraData) const = 0;
 
 	/**
 	 * Calculate value for new useinfo flag, based on the source data, which
