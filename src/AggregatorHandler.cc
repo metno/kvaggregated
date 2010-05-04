@@ -49,7 +49,7 @@ AggregatorHandler::AggregatorHandler(CallbackCollection & callbacks, KvalobsProx
 		agHandler = this;
 	else
 		throw std::logic_error(
-				"There can only be one instance of the AgregatorHandler at the same time");
+				"There can only be one instance of the AggregatorHandler at the same time");
 }
 
 AggregatorHandler::~AggregatorHandler()

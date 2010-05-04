@@ -113,4 +113,83 @@ CKvalObs::CDataSource::Result_var KvalobsDataAccess::sendData(const KvDataList &
 	return KvApp::kvApp->sendDataToKv(msg.c_str(), "kv2kvDecoder");
 }
 
+namespace // helper functions for getStationMetadata
+{
+bool compatible(const kvalobs::kvStationMetadata & metadata, const kvalobs::kvData & d)
+{
+	if ( metadata.stationID() != d.stationID() )
+		return false;
+	LOGINFO(__LINE__);
+	if ( not metadata.fromtime().undef() and metadata.fromtime() > d.obstime() )
+		return false;
+	LOGINFO(__LINE__);
+	if ( not metadata.totime().undef() and metadata.totime() < d.obstime() )
+		return false;
+	LOGINFO(__LINE__);
+	if ( metadata.haveSpecificParam() and metadata.paramID() != d.paramID() )
+		return false;
+	LOGINFO(__LINE__);
+	if ( metadata.haveSpecificType() and metadata.typeID() != d.typeID() )
+		return false;
+	LOGINFO(__LINE__);
+	if ( metadata.haveSpecificLevel() and metadata.level() != d.level() )
+		return false;
+	LOGINFO(__LINE__);
+	if ( metadata.haveSpecificSensor() and metadata.sensor() != d.sensor() )
+		return false;
+	LOGINFO(__LINE__);
+	return true;
+}
+
+int specificCount(const kvalobs::kvStationMetadata & metadata)
+{
+	int specificCount = 0;
+
+	if (metadata.haveSpecificParam())
+		++specificCount;
+	if (metadata.haveSpecificType())
+		++specificCount;
+	if (metadata.haveSpecificLevel())
+		++specificCount;
+	if (metadata.haveSpecificSensor())
+		++specificCount;
+	return specificCount;
+}
+
+const kvalobs::kvStationMetadata * mostSpecific(const kvalobs::kvStationMetadata * a,
+		const kvalobs::kvStationMetadata * b)
+{
+	if ( ! b )
+		return a;
+	if ( ! a )
+		return b;
+	if ( specificCount(* a) >= specificCount(* b) )
+		return a;
+	return b;
+}
+}
+
+float KvalobsDataAccess::getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const
+{
+	if ( ! KvApp::kvApp )
+		throw std::runtime_error("No kvalobs connection have been established");
+
+	std::list<kvalobs::kvStationMetadata> metadata;
+
+	if ( ! KvApp::kvApp->getKvStationMetaData(metadata, validFor.stationID(), validFor.obstime(), metadataName) )
+		throw std::runtime_error("Unable to contact kvalobs");
+
+	LOGINFO("Compatible: " << compatible(metadata.front(), validFor));
+
+	const kvalobs::kvStationMetadata * ret = 0;
+	for ( std::list<kvalobs::kvStationMetadata>::const_iterator it = metadata.begin(); it != metadata.end(); ++ it )
+		if ( compatible(* it, validFor) )
+			ret = mostSpecific(ret, &* it);
+
+	if ( ! ret )
+		throw std::runtime_error("Unable to find metadata");
+
+	return ret->metadata();
+}
+
 }

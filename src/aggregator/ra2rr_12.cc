@@ -82,7 +82,7 @@ struct lt_obstime
 }
 
 bool ra2rr_12::shouldProcess(const kvData & trigger,
-		const kvDataList & observations)
+		const kvDataList & observations) const
 {
 	const set<miClock> & gw = generateWhen();
 	if (observations.size() > 1 and
@@ -93,7 +93,7 @@ bool ra2rr_12::shouldProcess(const kvData & trigger,
 	return false;
 }
 
-float ra2rr_12::calculate(const std::vector<float> & source) const
+float ra2rr_12::calculate(const ValueList & source, ExtraData ) const
 {
 	const float zero = 0.01;
 
@@ -142,7 +142,7 @@ void ra2rr_12::extractUsefulData(kvDataList & out, const kvDataList & dataIn, co
 	{
 		const miutil::miTime & t1 = ret.front().obstime();
 		const miutil::miTime & t2 = ret.back().obstime();
-		std::cout << miutil::miTime::hourDiff(t1, t2) << std::endl;
+		//std::cout << miutil::miTime::hourDiff(t1, t2) << std::endl;
 		if ( std::abs(miutil::miTime::hourDiff(t1, t2)) != std::abs(timeOffset()) )
 			throw runtime_error("Missing middle period for ra generation");
 	}

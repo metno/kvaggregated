@@ -56,7 +56,7 @@ rr_1::~rr_1()
 	delete thread;
 }
 
-bool rr_1::shouldProcess(const kvData &trigger, const kvDataList &observations)
+bool rr_1::shouldProcess(const kvData &trigger, const kvDataList &observations) const
 {
 	//return true;
 	// Will only generate when receiving values from GenerateZero thread
@@ -71,10 +71,10 @@ bool rr_1::shouldProcess(const kvData &trigger, const kvDataList &observations)
 	return generate;
 }
 
-float rr_1::calculate(const std::vector<float> & source) const
+float rr_1::calculate(const ValueList & source, ExtraData ) const
 {
 	float sum = 0;
-	for ( std::vector<float>::const_iterator it = source.begin(); it != source.end(); ++ it )
+	for ( ValueList::const_iterator it = source.begin(); it != source.end(); ++ it )
 		if ( * it > 0 )
 			sum += 0;
 	return sum;

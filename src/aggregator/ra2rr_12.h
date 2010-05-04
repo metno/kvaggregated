@@ -69,12 +69,12 @@ public:
      * False otherwise.
      */
     virtual bool shouldProcess( const kvalobs::kvData &trigger,
-                                const kvDataList &observations );
+                                const kvDataList &observations ) const;
 
 protected:
     virtual int timeOffset() const { return -12; }
 
-	virtual float calculate(const std::vector<float> & source) const;
+	virtual float calculate(const ValueList & source, ExtraData extraData) const;
 
 	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
 };

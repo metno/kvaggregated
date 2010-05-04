@@ -69,7 +69,7 @@ public:
 protected:
 	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
 
-	virtual float calculate(const std::vector<float> & source) const;
+	virtual float calculate(const ValueList & source, ExtraData extraData) const;
 
 };
 

@@ -43,10 +43,9 @@ MeanValueAggregator::~MeanValueAggregator()
 {
 }
 
-bool MeanValueAggregator::shouldProcess( const kvalobs::kvData &trigger, const kvDataList & observations )
+bool MeanValueAggregator::shouldProcess( const kvalobs::kvData &trigger, const kvDataList & observations ) const
 {
-	kvDataList::size_type size = observations.size();
-	switch ( size )
+	switch ( observations.size() )
 	{
 	case 24:
 		return true;
@@ -65,7 +64,7 @@ void MeanValueAggregator::extractUsefulData(kvDataList & out, const kvDataList &
 	out = dataIn;
 }
 
-float MeanValueAggregator::calculate(const std::vector<float> & source) const
+float MeanValueAggregator::calculate(const ValueList & source, ExtraData extraData ) const
 {
 	return std::accumulate(source.begin(), source.end(), 0.0) / source.size();
 }

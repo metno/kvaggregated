@@ -43,7 +43,7 @@ rr_24::rr_24() :
 {
 }
 
-bool rr_24::shouldProcess(const kvData &trigger, const kvDataList &observations)
+bool rr_24::shouldProcess(const kvData &trigger, const kvDataList &observations) const
 {
 	// These are the times from which we will generate data:
 	const std::set<miClock> &when = sixAmSixPm;
@@ -74,7 +74,7 @@ void rr_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const
 
 	for (std::set<miClock>::const_iterator it = when.begin(); it != when.end(); it++)
 	{
-		std::cout << * it << std::endl;
+		//std::cout << * it << std::endl;
 		for (kvDataList::const_iterator dataIt = dataIn.begin(); dataIt != dataIn.end(); dataIt++)
 		{
 			miTime t = dataIt->obstime();

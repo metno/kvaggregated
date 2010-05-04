@@ -46,7 +46,7 @@ MinMax::MinMax(int readParam, int writeParam, int interestingHours, const set<mi
 {
 }
 
-bool MinMax::shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations )
+bool MinMax::shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const
 {
 	if ( ! AbstractAggregator::shouldProcess(trigger, observations) )
 		return false;
@@ -64,10 +64,10 @@ void MinMax::extractUsefulData(kvDataList & out, const kvDataList & dataIn, cons
 	out = dataIn;
 }
 
-float MinMax::calculate(const std::vector<float> & source) const
+float MinMax::calculate(const ValueList & source, ExtraData ) const
 {
 	float ret = source.front();
-	for ( std::vector<float>::const_iterator it = source.begin(); it != source.end(); ++ it )
+	for ( ValueList::const_iterator it = source.begin(); it != source.end(); ++ it )
 		ret = function(ret, * it);
 	return ret;
 }

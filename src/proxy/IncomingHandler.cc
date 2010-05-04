@@ -181,7 +181,7 @@ void IncomingHandler::process(KvObsDataListPtr & data)
 
 		callbacks_.send(*data);
 
-		LOGINFO( "Station " << data->front().dataList().front().stationID() << " done" );
+		LOGDEBUG( "Station " << data->front().dataList().front().stationID() << " done" );
 	}
 }
 }

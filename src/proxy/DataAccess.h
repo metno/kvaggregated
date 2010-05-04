@@ -36,6 +36,9 @@
 
 namespace kvservice
 {
+/**
+ * Virtual base class for access to kvalobs data.
+ */
 class DataAccess
 {
 public:

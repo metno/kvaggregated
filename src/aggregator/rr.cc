@@ -60,11 +60,11 @@ void rr::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kv
 }
 
 
-float rr::calculate(const std::vector<float> & source) const
+float rr::calculate(const ValueList & source, ExtraData ) const
 {
 	bool nothing = true;
 	float sum = 0;
-	for ( std::vector<float>::const_iterator it = source.begin(); it != source.end(); ++ it )
+	for ( ValueList::const_iterator it = source.begin(); it != source.end(); ++ it )
 	{
 		if (* it >= 0)
 		{

@@ -29,13 +29,15 @@
 
 #include "uu_24.h"
 #include "paramID.h"
+#include <milog/milog.h>
+#include <algorithm>
 
 
 namespace aggregator
 {
 
 uu_24::uu_24() :
-		MeanValueAggregator(UU, UUM_24)
+		KoppenBasedMeanValueAggregator(UU, UUM_24)
 {
 }
 
@@ -43,11 +45,11 @@ uu_24::~uu_24()
 {
 }
 
-
-//bool ta_24::shouldProcess( const kvalobs::kvData &trigger, const kvDataList & observations )
-//{
-//	return MeanValueAgregator::shouldProcess(trigger, observations);
-//}
+float uu_24::calculateWithKoppensFormula(const ValueList & source, float koppenFactor, ExtraData ) const
+{
+	float q = (source[0] + source[2]) / 2.0;
+	return q + (koppenFactor * (source[1] - q));
+}
 
 
 }

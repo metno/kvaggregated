@@ -111,3 +111,39 @@ TEST_F(nn_24Test, missingPeriod18)
 
 	ASSERT_FALSE( result.get() );
 }
+
+TEST_F(nn_24Test, roundDataToOneDecimal) // this is really applicable to all aggregators
+{
+	kvservice::KvDataList data;
+	data.push_back(factory.getData(2, aggregator.readParam(), "2010-03-18 06:00:00"));
+	data.push_back(factory.getData(2, aggregator.readParam(), "2010-03-18 12:00:00"));
+	data.push_back(factory.getData(3, aggregator.readParam(), "2010-03-18 18:00:00"));
+
+	kvalobs::correct(data.front(), 3);
+
+	nn_24::kvDataPtr result = aggregator.process(data.front(), data);
+
+	ASSERT_TRUE( result.get() );
+
+	// Note that we require exactly equal!
+	EXPECT_FLOAT_EQ(2.3, result->original());
+	EXPECT_FLOAT_EQ(2.7, result->corrected());
+}
+
+TEST_F(nn_24Test, roundDataDownwardsToOneDecimalWhenNegative) // this is really applicable to all aggregators
+{
+	kvservice::KvDataList data;
+	data.push_back(factory.getData(-2, aggregator.readParam(), "2010-03-18 06:00:00"));
+	data.push_back(factory.getData(-2, aggregator.readParam(), "2010-03-18 12:00:00"));
+	data.push_back(factory.getData(-3, aggregator.readParam(), "2010-03-18 18:00:00"));
+
+	kvalobs::correct(data.front(), -3);
+
+	nn_24::kvDataPtr result = aggregator.process(data.front(), data);
+
+	ASSERT_TRUE( result.get() );
+
+	// Note that we require exactly equal!
+	EXPECT_FLOAT_EQ(-2.3, result->original());
+	EXPECT_FLOAT_EQ(-2.7, result->corrected());
+}
