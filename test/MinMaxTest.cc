@@ -50,7 +50,7 @@ INSTANTIATE_TEST_CASE_P(MinMaxTest, AbstractAggregatorTest, testing::Values(Aggr
 
 TEST_F(MinMaxTest, testNormal)
 {
-	AbstractAggregator::kvDataList data;
+	StandardAggregator::kvDataList data;
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
 //	data.push_back( dataFactory.getData( 2, 1, "2007-06-05 18:00:00" ) );
 	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 19:00:00" ) );
@@ -66,10 +66,10 @@ TEST_F(MinMaxTest, testNormal)
 	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 05:00:00" ) );
 	data.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
 	
-	AbstractAggregator::kvDataList::const_iterator p = data.begin();
+	StandardAggregator::kvDataList::const_iterator p = data.begin();
 	++p;
 	
-	AbstractAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
 	ASSERT_TRUE( d.get() );
 	
 	EXPECT_EQ( 2, d->paramID() );
@@ -79,7 +79,7 @@ TEST_F(MinMaxTest, testNormal)
 
 TEST_F(MinMaxTest, testModifiedValue)
 {
-	AbstractAggregator::kvDataList data;
+	StandardAggregator::kvDataList data;
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
 	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 19:00:00" ) );
 	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 20:00:00" ) );
@@ -96,10 +96,10 @@ TEST_F(MinMaxTest, testModifiedValue)
 
 	kvalobs::correct(data.front(), -42);
 
-	AbstractAggregator::kvDataList::const_iterator p = data.begin();
+	StandardAggregator::kvDataList::const_iterator p = data.begin();
 	++p;
 
-	AbstractAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
 	ASSERT_TRUE( d.get() );
 
 	EXPECT_EQ( 2, d->paramID() );
@@ -109,7 +109,7 @@ TEST_F(MinMaxTest, testModifiedValue)
 
 TEST_F(MinMaxTest, testRejectedValue)
 {
-	AbstractAggregator::kvDataList data;
+	StandardAggregator::kvDataList data;
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
 	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 19:00:00" ) );
 	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 20:00:00" ) );
@@ -126,10 +126,10 @@ TEST_F(MinMaxTest, testRejectedValue)
 
 	kvalobs::reject(data.front());
 
-	AbstractAggregator::kvDataList::const_iterator p = data.begin();
+	StandardAggregator::kvDataList::const_iterator p = data.begin();
 	++p;
 
-	AbstractAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
 	ASSERT_TRUE( d.get() );
 
 	EXPECT_EQ( 2, d->paramID() );
@@ -139,7 +139,7 @@ TEST_F(MinMaxTest, testRejectedValue)
 
 TEST_F(MinMaxTest, testMissingValueCorrected)
 {
-	AbstractAggregator::kvDataList data;
+	StandardAggregator::kvDataList data;
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
 	data.push_back( dataFactory.getMissing( 1, "2007-06-05 19:00:00" ) );
 	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 20:00:00" ) );
@@ -156,10 +156,10 @@ TEST_F(MinMaxTest, testMissingValueCorrected)
 
 	kvalobs::correct(data.front(), -42);
 
-	AbstractAggregator::kvDataList::const_iterator p = data.begin();
+	StandardAggregator::kvDataList::const_iterator p = data.begin();
 	++p;
 
-	AbstractAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
 	ASSERT_TRUE( d.get() );
 
 	EXPECT_EQ( 2, d->paramID() );
@@ -169,7 +169,7 @@ TEST_F(MinMaxTest, testMissingValueCorrected)
 
 TEST_F(MinMaxTest, testOneValueMissingOtherRejected)
 {
-	AbstractAggregator::kvDataList data;
+	StandardAggregator::kvDataList data;
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
 	data.push_back( dataFactory.getData( 15, 1, "2007-06-05 19:00:00" ) );
 	data.push_back( dataFactory.getMissing( 1, "2007-06-05 20:00:00" ) );
@@ -186,10 +186,10 @@ TEST_F(MinMaxTest, testOneValueMissingOtherRejected)
 
 	kvalobs::reject(data.front());
 
-	AbstractAggregator::kvDataList::const_iterator p = data.begin();
+	StandardAggregator::kvDataList::const_iterator p = data.begin();
 	++p;
 
-	AbstractAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
 	ASSERT_TRUE( d.get() );
 
 	EXPECT_EQ( 2, d->paramID() );
@@ -200,7 +200,7 @@ TEST_F(MinMaxTest, testOneValueMissingOtherRejected)
 
 TEST_F(MinMaxTest, testIncompleteData)
 {
-	AbstractAggregator::kvDataList data;
+	StandardAggregator::kvDataList data;
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
 //	data.push_back( dataFactory.getData( 5, 1, "2007-06-05 18:00:00" ) );
 	data.push_back( dataFactory.getData( 5, 1, "2007-06-05 19:00:00" ) );
@@ -216,7 +216,7 @@ TEST_F(MinMaxTest, testIncompleteData)
 	data.push_back( dataFactory.getData( 5, 1, "2007-06-06 05:00:00" ) );
 	data.push_back( dataFactory.getData( 5, 1, "2007-06-06 06:00:00" ) );
 
-	AbstractAggregator::kvDataPtr d = agregatorToTest.process( data.back(), data );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( data.back(), data );
 	ASSERT_TRUE(d.get());
 	
 	EXPECT_EQ( 2, d->paramID() );
@@ -225,7 +225,7 @@ TEST_F(MinMaxTest, testIncompleteData)
 
 TEST_F(MinMaxTest, testMissingRow)
 {
-	AbstractAggregator::kvDataList data;
+	StandardAggregator::kvDataList data;
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
 //	data.push_back( dataFactory.getData( 5, 1, "2007-06-05 18:00:00" ) );
 	data.push_back( dataFactory.getData( 3, 1, "2007-06-05 19:00:00" ) );
@@ -241,14 +241,14 @@ TEST_F(MinMaxTest, testMissingRow)
 	data.push_back( dataFactory.getData( 5, 1, "2007-06-06 05:00:00" ) );
 	data.push_back( dataFactory.getData( 5, 1, "2007-06-06 06:00:00" ) );
 
-	AbstractAggregator::kvDataPtr d = agregatorToTest.process( data.back(), data );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( data.back(), data );
 	ASSERT_TRUE( ! d.get() );
 }
 
 
 TEST_F(MinMaxTest, testWrongInputDates)
 {
-	AbstractAggregator::kvDataList data;
+	StandardAggregator::kvDataList data;
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
 	data.push_back( dataFactory.getData( 1, 1, "2007-06-02 18:00:00" ) ); // <- this should be ignored
 	data.push_back( dataFactory.getData( 5, 1, "2007-06-05 19:00:00" ) );
@@ -264,7 +264,7 @@ TEST_F(MinMaxTest, testWrongInputDates)
 	data.push_back( dataFactory.getData( 5, 1, "2007-06-06 05:00:00" ) );
 	data.push_back( dataFactory.getData( 4, 1, "2007-06-06 06:00:00" ) );
 
-	AbstractAggregator::kvDataPtr d = agregatorToTest.process( data.back(), data );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( data.back(), data );
 	ASSERT_TRUE( ! d.get() );
 //	EXPECT_FLOAT_EQ(4, d->original());
 //	EXPECT_FLOAT_EQ(4, d->corrected());
@@ -273,7 +273,7 @@ TEST_F(MinMaxTest, testWrongInputDates)
 
 TEST_F(MinMaxTest, testCompleteDataObservationInMiddle)
 {
-	AbstractAggregator::kvDataList data;
+	StandardAggregator::kvDataList data;
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
 //	data.push_back( dataFactory.getData( 12, 1, "2007-06-05 18:00:00" ) );
 	data.push_back( dataFactory.getData( 11, 1, "2007-06-05 19:00:00" ) );
@@ -289,10 +289,10 @@ TEST_F(MinMaxTest, testCompleteDataObservationInMiddle)
 	data.push_back( dataFactory.getData( 1, 1, "2007-06-06 05:00:00" ) );
 	data.push_back( dataFactory.getData( 0, 1, "2007-06-06 06:00:00" ) );
 	
-	AbstractAggregator::kvDataList::const_iterator randomElement = data.begin();
+	StandardAggregator::kvDataList::const_iterator randomElement = data.begin();
 	std::advance( randomElement, 4 );
 	
-	AbstractAggregator::kvDataPtr d = agregatorToTest.process( * randomElement, data );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( * randomElement, data );
 	ASSERT_TRUE(d.get());
 	
 	EXPECT_EQ( 2, d->paramID() );

@@ -55,7 +55,7 @@ struct have_obstime
 	}
 };
 
-bool obstimeInList(const miutil::miTime & t, const AbstractAggregator::kvDataList & observations )
+bool obstimeInList(const miutil::miTime & t, const StandardAggregator::kvDataList & observations )
 {
 	return std::find_if(observations.begin(), observations.end(), have_obstime(t)) != observations.end();
 }

@@ -35,7 +35,7 @@ namespace aggregator
 {
 
 MeanValueAggregator::MeanValueAggregator(int readParam, int writeParam) :
-		AbstractAggregator(readParam, writeParam, 24, elevenPm)
+		StandardAggregator(readParam, writeParam, 24, elevenPm)
 {
 }
 

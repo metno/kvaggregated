@@ -50,7 +50,7 @@ namespace aggregator
 
 rr::rr(int readParam, int writeParam, int interestingHours,
 		const set<miClock> &generateWhen) :
-	AbstractAggregator(readParam, writeParam, interestingHours, generateWhen)
+	StandardAggregator(readParam, writeParam, interestingHours, generateWhen)
 {
 }
 

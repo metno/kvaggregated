@@ -30,13 +30,14 @@
 #ifndef MEANVALUEAGREGATOR_H_
 #define MEANVALUEAGREGATOR_H_
 
-#include "AbstractAggregator.h"
+#include "StandardAggregator.h"
+
 
 
 namespace aggregator
 {
 
-class MeanValueAggregator: public AbstractAggregator
+class MeanValueAggregator: public StandardAggregator
 {
 public:
 	MeanValueAggregator(int readParam, int writeParam);

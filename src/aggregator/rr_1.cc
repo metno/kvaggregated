@@ -42,7 +42,7 @@ using namespace kvalobs;
 namespace aggregator
 {
 rr_1::rr_1() :
-	AbstractAggregator(RR_01, RR_1, 1, allHours), threadStopping(false)
+	StandardAggregator(RR_01, RR_1, 1, allHours), threadStopping(false)
 {
 	GenerateZero g0(*this);
 	thread = new boost::thread(g0);

@@ -79,7 +79,7 @@ public:
 		throwOnCall_ = doThrow;
 	}
 protected:
-	// Overrides getStationMetadata in AbstractAggregator
+	// Overrides getStationMetadata in StandardAggregator
 	virtual float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const
 	{
 		if ( throwOnCall_ )
@@ -164,7 +164,7 @@ TEST_F(ta_24Test, data3hoursStartAt7)
 
 TEST_F(ta_24Test, data3hoursMissingMetadata)
 {
-	// Simulate AbstractAggregator method getStationMetadata not finding any data.
+	// Simulate StandardAggregator method getStationMetadata not finding any data.
 	aggregator.setThrowOnCallToStationMetadata();
 
 	kvservice::KvDataList data;

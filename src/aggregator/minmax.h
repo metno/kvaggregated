@@ -31,7 +31,7 @@
 #ifndef __agregator_minmax_h__
 #define __agregator_minmax_h__
 
-#include "AbstractAggregator.h"
+#include "StandardAggregator.h"
 #include "paramID.h"
 #include <kvalobs/kvData.h>
 #include <vector>
@@ -48,7 +48,7 @@ typedef const float& (* Func)(const float&, const float&);
 /**
  * \brief Calculates minimum and maximum values for observations.
  */
-class MinMax: public AbstractAggregator
+class MinMax: public StandardAggregator
 {
 	/**
 	 * \brief The function to be called for doing agregate calculation.
