@@ -53,6 +53,7 @@ float ta_24::calculateWithKoppensFormula(const ValueList & source, float koppenF
 	float minTemperature = d->minimumTemperature(dataAccess_);
 
 	float n = std::accumulate(source.begin(), source.end(), 0.0) / 3.0;
+
 	return n - (koppenFactor * (n - minTemperature));
 }
 
@@ -81,8 +82,8 @@ void ta_24::ExtraCalculationData::populate(const kvservice::DataAccess * dataAcc
 
 	kvservice::KvDataList data;
 	dataAccess->getData(data, trigger.stationID(),
-			miutil::miTime(trigger.obstime().date(), "06:00.00"),
-			miutil::miTime(trigger.obstime().date(), "18:00.00"),
+			miutil::miTime(trigger.obstime().date(), "05:59:59"),
+			miutil::miTime(trigger.obstime().date(), "18:00:00"),
 			TAN_12, trigger.typeID(), trigger.sensor(), trigger.level());
 
 	if ( data.size() < 2 )
