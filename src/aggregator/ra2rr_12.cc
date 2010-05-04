@@ -142,7 +142,7 @@ void ra2rr_12::extractUsefulData(kvDataList & out, const kvDataList & dataIn, co
 	{
 		const miutil::miTime & t1 = ret.front().obstime();
 		const miutil::miTime & t2 = ret.back().obstime();
-		std::cout << miutil::miTime::hourDiff(t1, t2) << std::endl;
+		//std::cout << miutil::miTime::hourDiff(t1, t2) << std::endl;
 		if ( std::abs(miutil::miTime::hourDiff(t1, t2)) != std::abs(timeOffset()) )
 			throw runtime_error("Missing middle period for ra generation");
 	}
