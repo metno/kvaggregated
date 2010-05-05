@@ -139,11 +139,17 @@ void AggregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvDa
 			LOGDEBUG("Processing:\n" << decodeutility::kvdataformatter::createString(data));
 
 			//it->second->process( data );
-			AbstractAggregator * agregator = it->second;
-			if (agregator->isInterestedIn(data))
+			AbstractAggregator * aggregator = it->second;
+			if (aggregator->isInterestedIn(data))
 			{
+				AbstractAggregator::ParameterSortedDataList baseDataToAggregateFrom;
+				getRelevantObsList(baseDataToAggregateFrom, * aggregator, data, aggregator->getTimeSpan(data));
+
+
+//				const std::list<kvalobs::kvData> baseDataToAggregateFrom = getRelevantObsList(data, aggregator->getTimeSpan(data));
+
 				AbstractAggregator::kvDataPtr d =
-						agregator->process(data, getRelevantObsList(data, agregator->getTimeSpan(data)));
+						aggregator->process(data, baseDataToAggregateFrom);
 
 				if ( d.get() )
 				{
@@ -200,24 +206,36 @@ namespace
 	};
 }
 
-std::list<kvalobs::kvData>
-AggregatorHandler::getRelevantObsList( const kvalobs::kvData & data,
-		const AbstractAggregator::TimeSpan & obsTimes ) const
+void
+AggregatorHandler::getRelevantObsList(
+		AbstractAggregator::ParameterSortedDataList & out,
+		const AbstractAggregator & user,
+		const kvalobs::kvData & data,
+		const AbstractAggregator::TimeSpan & obsTimes) const
 {
-	std::list<kvalobs::kvData> ret;
+	const AbstractAggregator::ParameterList & parameters = user.readParam();
+	for ( AbstractAggregator::ParameterList::const_iterator it = parameters.begin(); it != parameters.end(); ++ it )
+	{
+		AbstractAggregator::kvDataList & dataForParameter = out[* it];
 
-	proxy_.getData( ret, data.stationID(), obsTimes.first, obsTimes.second,
-			data.paramID(), data.typeID(), data.sensor(), data.level() );
+		proxy_.getData( dataForParameter, data.stationID(), obsTimes.first, obsTimes.second,
+				* it, data.typeID(), data.sensor(), data.level() );
 
-	std::for_each(ret.begin(), ret.end(), assertObsTimeMatches(obsTimes));
+		std::for_each(dataForParameter.begin(), dataForParameter.end(), assertObsTimeMatches(obsTimes));
 
-	std::list<kvalobs::kvData>::iterator find = std::find_if(ret.begin(), ret.end(), std::bind1st(kvalobs::compare::same_kvData(), data));
-	if ( find == ret.end() )
-		ret.push_back(data);
-	else
-		* find = data;
-
-	return ret;
+		// Find the trigger data
+		// Append it to the return list if not found, and we are in the correct parameter's list
+		// If found, update list to reflect the data of the trigger
+		AbstractAggregator::kvDataList::iterator find =
+				std::find_if(dataForParameter.begin(), dataForParameter.end(), std::bind1st(kvalobs::compare::same_kvData(), data));
+		if ( find == dataForParameter.end() )
+		{
+			if ( data.paramID() == * it )
+				dataForParameter.push_back(data);
+		}
+		else
+			* find = data;
+	}
 }
 
 }

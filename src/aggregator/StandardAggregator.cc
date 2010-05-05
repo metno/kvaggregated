@@ -161,8 +161,13 @@ float round(float f)
 
 AbstractAggregator::kvDataPtr StandardAggregator::process(
 		const kvalobs::kvData & data,
-		const kvDataList & observations)
+		const ParameterSortedDataList & p_observations)
 {
+	ParameterSortedDataList::const_iterator find = p_observations.find(data.paramID());
+	if ( find == p_observations.end())
+		throw std::logic_error("Internal error");
+	const kvDataList & observations = find->second;
+
 	if (not shouldProcess(data, observations))
 	{
 		LOGDEBUG( "Will not process" );
@@ -177,8 +182,7 @@ AbstractAggregator::kvDataPtr StandardAggregator::process(
 		kvDataList relevantData;
 		extractUsefulData(relevantData, observations, data);
 
-		ExtraAggregationData * ead = getExtraData(data);
-		boost::scoped_ptr<ExtraAggregationData> extraData(ead);
+		boost::scoped_ptr<ExtraAggregationData> extraData(getExtraData(data));
 
 		float original = round(generateOriginal_(relevantData, extraData.get()));
 		float corrected = round(generateCorrected_(relevantData, extraData.get()));

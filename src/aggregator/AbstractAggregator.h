@@ -52,11 +52,13 @@ public:
 	typedef boost::shared_ptr<kvalobs::kvData> kvDataPtr;
 	typedef std::list<kvalobs::kvData> kvDataList;
 
+	typedef std::map<int, AbstractAggregator::kvDataList> ParameterSortedDataList;
+
 	/**
 	 * Perform an agregation, based on the incoming data, using the list
 	 * observations as base data.
 	 */
-	virtual kvDataPtr process(const kvalobs::kvData & data, const kvDataList & observations) =0;
+	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations) =0;
 
 
 	/**

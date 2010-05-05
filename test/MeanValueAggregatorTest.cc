@@ -33,7 +33,7 @@
 #include <kvalobs/kvDataOperations.h>
 #include <kvcpp/kvservicetypes.h>
 
-using aggregator::MeanValueAggregator;
+using namespace aggregator;
 
 class MeanValueAgregatorTest : public AbstractAggregatorTest
 {
@@ -52,12 +52,13 @@ INSTANTIATE_TEST_CASE_P(MeanValueAgregatorTest, AbstractAggregatorTest, testing:
 
 TEST_F(MeanValueAgregatorTest, standard24hAgregate)
 {
-	kvservice::KvDataList data;
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[1];
 	int i = 0;
 	for ( miutil::miTime t = "2010-03-15 07:00:00"; t <= factory.obstime(); t.addHour() )
-		data.push_back(factory.getData(++ i, 1, t));
+		dl.push_back(factory.getData(++ i, 1, t));
 
-	MeanValueAggregator::kvDataPtr result = aggregator.process(data.front(), data);
+	MeanValueAggregator::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -67,13 +68,14 @@ TEST_F(MeanValueAgregatorTest, standard24hAgregate)
 
 TEST_F(MeanValueAgregatorTest, missingValue)
 {
-	kvservice::KvDataList data;
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[1];
 	for ( miutil::miTime t = "2010-03-15 07:00:00"; t <= factory.obstime(); t.addHour() )
-		data.push_back(factory.getData(1, 1, t));
+		dl.push_back(factory.getData(1, 1, t));
 
-	kvalobs::reject(data.front());
+	kvalobs::reject(dl.front());
 
-	MeanValueAggregator::kvDataPtr result = aggregator.process(data.front(), data);
+	MeanValueAggregator::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -83,14 +85,15 @@ TEST_F(MeanValueAgregatorTest, missingValue)
 
 TEST_F(MeanValueAgregatorTest, observationEach3Hours)
 {
-	kvservice::KvDataList data;
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[1];
 	int i = 0;
 	for ( miutil::miTime t = "2010-03-15 09:00:00"; t <= factory.obstime(); t.addHour(3) )
-		data.push_back(factory.getData(++ i, 1, t));
+		dl.push_back(factory.getData(++ i, 1, t));
 
-	kvalobs::reject(data.front());
+	kvalobs::reject(dl.front());
 
-	MeanValueAggregator::kvDataPtr result = aggregator.process(data.front(), data);
+	MeanValueAggregator::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
