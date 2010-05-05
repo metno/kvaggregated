@@ -30,6 +30,7 @@
 #include "AbstractAggregatorTest.h"
 #include <aggregator/nn_24.h>
 #include <kvalobs/kvDataOperations.h>
+#include <kvcpp/kvservicetypes.h>
 
 using aggregator::nn_24;
 
@@ -50,10 +51,10 @@ INSTANTIATE_TEST_CASE_P(nn_24Test, AbstractAggregatorTest, testing::Values(Aggre
 TEST_F(nn_24Test, moreThanEnoughData)
 {
 	kvservice::KvDataList data;
-	data.push_back(factory.getData(1, aggregator.readParam(), "2010-03-18 06:00:00"));
-	data.push_back(factory.getData(2, aggregator.readParam(), "2010-03-18 12:00:00"));
-	data.push_back(factory.getData(3, aggregator.readParam(), "2010-03-18 18:00:00"));
-	data.push_back(factory.getData(900, aggregator.readParam(), "2010-03-18 00:00:00"));
+	data.push_back(factory.getData(1, aggregator.readParam().front(), "2010-03-18 06:00:00"));
+	data.push_back(factory.getData(2, aggregator.readParam().front(), "2010-03-18 12:00:00"));
+	data.push_back(factory.getData(3, aggregator.readParam().front(), "2010-03-18 18:00:00"));
+	data.push_back(factory.getData(900, aggregator.readParam().front(), "2010-03-18 00:00:00"));
 
 	kvalobs::correct(data.front(), 4);
 
@@ -68,8 +69,8 @@ TEST_F(nn_24Test, moreThanEnoughData)
 TEST_F(nn_24Test, tooLittleData)
 {
 	kvservice::KvDataList data;
-	data.push_back(factory.getData(1, aggregator.readParam(), "2010-03-18 06:00:00"));
-	data.push_back(factory.getData(3, aggregator.readParam(), "2010-03-18 18:00:00"));
+	data.push_back(factory.getData(1, aggregator.readParam().front(), "2010-03-18 06:00:00"));
+	data.push_back(factory.getData(3, aggregator.readParam().front(), "2010-03-18 18:00:00"));
 
 	nn_24::kvDataPtr result = aggregator.process(data.front(), data);
 
@@ -79,9 +80,9 @@ TEST_F(nn_24Test, tooLittleData)
 TEST_F(nn_24Test, missingPeriod6)
 {
 	kvservice::KvDataList data;
-	data.push_back(factory.getData(1, aggregator.readParam(), "2010-03-18 09:00:00"));
-	data.push_back(factory.getData(2, aggregator.readParam(), "2010-03-18 12:00:00"));
-	data.push_back(factory.getData(3, aggregator.readParam(), "2010-03-18 18:00:00"));
+	data.push_back(factory.getData(1, aggregator.readParam().front(), "2010-03-18 09:00:00"));
+	data.push_back(factory.getData(2, aggregator.readParam().front(), "2010-03-18 12:00:00"));
+	data.push_back(factory.getData(3, aggregator.readParam().front(), "2010-03-18 18:00:00"));
 
 	nn_24::kvDataPtr result = aggregator.process(data.front(), data);
 
@@ -91,9 +92,9 @@ TEST_F(nn_24Test, missingPeriod6)
 TEST_F(nn_24Test, missingPeriod12)
 {
 	kvservice::KvDataList data;
-	data.push_back(factory.getData(1, aggregator.readParam(), "2010-03-18 06:00:00"));
-	data.push_back(factory.getData(2, aggregator.readParam(), "2010-03-18 15:00:00"));
-	data.push_back(factory.getData(3, aggregator.readParam(), "2010-03-18 18:00:00"));
+	data.push_back(factory.getData(1, aggregator.readParam().front(), "2010-03-18 06:00:00"));
+	data.push_back(factory.getData(2, aggregator.readParam().front(), "2010-03-18 15:00:00"));
+	data.push_back(factory.getData(3, aggregator.readParam().front(), "2010-03-18 18:00:00"));
 
 	nn_24::kvDataPtr result = aggregator.process(data.front(), data);
 
@@ -103,9 +104,9 @@ TEST_F(nn_24Test, missingPeriod12)
 TEST_F(nn_24Test, missingPeriod18)
 {
 	kvservice::KvDataList data;
-	data.push_back(factory.getData(1, aggregator.readParam(), "2010-03-18 06:00:00"));
-	data.push_back(factory.getData(2, aggregator.readParam(), "2010-03-18 12:00:00"));
-	data.push_back(factory.getData(3, aggregator.readParam(), "2010-03-18 14:00:00"));
+	data.push_back(factory.getData(1, aggregator.readParam().front(), "2010-03-18 06:00:00"));
+	data.push_back(factory.getData(2, aggregator.readParam().front(), "2010-03-18 12:00:00"));
+	data.push_back(factory.getData(3, aggregator.readParam().front(), "2010-03-18 14:00:00"));
 
 	nn_24::kvDataPtr result = aggregator.process(data.front(), data);
 
@@ -115,9 +116,9 @@ TEST_F(nn_24Test, missingPeriod18)
 TEST_F(nn_24Test, roundDataToOneDecimal) // this is really applicable to all aggregators
 {
 	kvservice::KvDataList data;
-	data.push_back(factory.getData(2, aggregator.readParam(), "2010-03-18 06:00:00"));
-	data.push_back(factory.getData(2, aggregator.readParam(), "2010-03-18 12:00:00"));
-	data.push_back(factory.getData(3, aggregator.readParam(), "2010-03-18 18:00:00"));
+	data.push_back(factory.getData(2, aggregator.readParam().front(), "2010-03-18 06:00:00"));
+	data.push_back(factory.getData(2, aggregator.readParam().front(), "2010-03-18 12:00:00"));
+	data.push_back(factory.getData(3, aggregator.readParam().front(), "2010-03-18 18:00:00"));
 
 	kvalobs::correct(data.front(), 3);
 
@@ -133,9 +134,9 @@ TEST_F(nn_24Test, roundDataToOneDecimal) // this is really applicable to all agg
 TEST_F(nn_24Test, roundDataDownwardsToOneDecimalWhenNegative) // this is really applicable to all aggregators
 {
 	kvservice::KvDataList data;
-	data.push_back(factory.getData(-2, aggregator.readParam(), "2010-03-18 06:00:00"));
-	data.push_back(factory.getData(-2, aggregator.readParam(), "2010-03-18 12:00:00"));
-	data.push_back(factory.getData(-3, aggregator.readParam(), "2010-03-18 18:00:00"));
+	data.push_back(factory.getData(-2, aggregator.readParam().front(), "2010-03-18 06:00:00"));
+	data.push_back(factory.getData(-2, aggregator.readParam().front(), "2010-03-18 12:00:00"));
+	data.push_back(factory.getData(-3, aggregator.readParam().front(), "2010-03-18 18:00:00"));
 
 	kvalobs::correct(data.front(), -3);
 

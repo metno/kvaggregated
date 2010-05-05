@@ -31,6 +31,7 @@
 #include <paramID.h>
 #include <aggregator/MeanValueAggregator.h>
 #include <kvalobs/kvDataOperations.h>
+#include <kvcpp/kvservicetypes.h>
 
 using aggregator::MeanValueAggregator;
 

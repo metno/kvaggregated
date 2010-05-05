@@ -32,7 +32,6 @@
 #define __agregator__AbstractAgregator_h__
 
 #include "AbstractAggregator.h"
-#include <kvcpp/KvApp.h>
 #include <kvalobs/kvData.h>
 #include <kvalobs/kvStation.h>
 #include <puTools/miTime.h>

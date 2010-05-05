@@ -42,7 +42,6 @@
 using namespace std;
 using namespace miutil;
 using namespace kvalobs;
-using namespace kvservice;
 using namespace boost;
 
 namespace aggregator

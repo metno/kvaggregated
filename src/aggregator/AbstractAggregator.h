@@ -32,6 +32,7 @@
 
 #include <kvalobs/kvData.h>
 #include <list>
+#include <vector>
 #include <memory>
 
 namespace aggregator
@@ -44,9 +45,9 @@ public:
 	virtual ~AbstractAggregator();
 
 	/**
-	 * \brief determine if we are interested in the given piece of data.
+	 * \brief determine if we are interested in the given piece of data, based on its obstime
 	 */
-	virtual bool isInterestedIn(const kvalobs::kvData &data) const =0;
+	virtual bool isInterestedIn(const kvalobs::kvData &data) const { return true; }
 
 	typedef std::auto_ptr<kvalobs::kvData> kvDataPtr;
 	typedef std::list<kvalobs::kvData> kvDataList;
@@ -79,14 +80,24 @@ public:
 	virtual const TimeSpan getTimeSpan(const kvalobs::kvData &data) const =0;
 
 
+	typedef std::vector<int> ParameterList;
+
 	/**
-	 * \brief Get the value for paramID which we are interested in
-	 * reading.
+	 * Get the paramIDs which we are interested in reading.
 	 */
-	int readParam() const
+	const ParameterList & readParam() const
 	{
 		return read_param;
 	}
+
+	/**
+	 * Get the paramIDs which we are interested in reading - for editing
+	 */
+//	ParameterList & readParam()
+//	{
+//		return read_param;
+//	}
+
 
 	/**
 	 * \brief Get the value for paramID which we are interested in
@@ -98,8 +109,10 @@ public:
 	}
 
 private:
-	const int read_param;
+
+	ParameterList read_param;
 	const int write_param;
+	const std::set<miutil::miClock> generate_when;
 };
 
 }

@@ -124,11 +124,6 @@ kvalobs::kvData StandardAggregator::getDataObject_(const kvData &trigger,
 
 bool StandardAggregator::isInterestedIn(const kvalobs::kvData &data) const
 {
-	// Are we still supposed to run?
-	if (KvApp::kvApp)
-		if (KvApp::kvApp->shutdown())
-			return false;
-
 	LogContext context(name + " Station=" + lexical_cast<string> (
 			data.stationID()));
 
@@ -144,9 +139,7 @@ bool StandardAggregator::isInterestedIn(const kvalobs::kvData &data) const
 		{
 			t.addHour(2);
 			if (times.second > t)
-			{
 				return false;
-			}
 		}
 	}
 	return true;

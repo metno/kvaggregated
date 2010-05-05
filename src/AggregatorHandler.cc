@@ -31,6 +31,7 @@
 #include "AggregatorHandler.h"
 #include "KvDataFunctors.h"
 #include "paramID.h"
+#include <kvcpp/KvApp.h>
 #include <kvalobs/kvDataOperations.h>
 #include <milog/milog.h>
 
@@ -60,11 +61,14 @@ AggregatorHandler::~AggregatorHandler()
 
 void AggregatorHandler::addHandler(AbstractAggregator * handler)
 {
-	LOGINFO("Adding handler: " << handler->readParam() << " -> "
+	LOGINFO("Adding handler: " << handler->readParam().front() << " -> "
 			<< handler->writeParam());
-	proxy_.addInteresting(handler->readParam());
+	for ( AbstractAggregator::ParameterList::const_iterator it = handler->readParam().begin(); it !=  handler->readParam().end(); ++ it )
+	{
+		proxy_.addInteresting(* it);
+		handlers.insert(Handler(* it, handler));
+	}
 	proxy_.addInteresting(handler->writeParam());
-	handlers.insert(Handler(handler->readParam(), handler));
 }
 
 #ifdef AGREGATOR_DEBUG
@@ -126,6 +130,10 @@ void AggregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvDa
 	const HandlerMap::const_iterator end = handlers.upper_bound(paramID);
 	while (it != end)
 	{
+		// Are we still supposed to run?
+		if ( ! KvApp::kvApp or KvApp::kvApp->shutdown())
+			break;
+
 		try
 		{
 			LOGDEBUG("Processing:\n" << decodeutility::kvdataformatter::createString(data));
