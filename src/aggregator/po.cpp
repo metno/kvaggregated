@@ -27,39 +27,27 @@
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "nn_24.h"
-#include "paramID.h"
+#include "po.h"
 
 namespace aggregator
 {
 
-nn_24::nn_24() :
-	MeanValueAggregator(NN, NNM_24)
+po::po()
 {
 }
 
-nn_24::~nn_24()
+po::~po()
 {
 }
 
-bool nn_24::shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const
+kvDataPtr po::process(const kvalobs::kvData & data, const ParameterSortedDataList & observations)
 {
-	return observations.size() >= 3;
+	return kvDataPtr();
 }
 
-void nn_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
+const TimeSpan po::getTimeSpan(const kvalobs::kvData &data) const
 {
-	std::set<miutil::miTime> wantedTimes;
-	wantedTimes.insert(miutil::miTime(trigger.obstime().date(), miutil::miClock(6,0,0)));
-	wantedTimes.insert(miutil::miTime(trigger.obstime().date(), miutil::miClock(12,0,0)));
-	wantedTimes.insert(miutil::miTime(trigger.obstime().date(), miutil::miClock(18,0,0)));
-
-	for ( kvDataList::const_iterator it = dataIn.begin(); it != dataIn.end(); ++ it )
-		if ( wantedTimes.find(it->obstime()) != wantedTimes.end() )
-			out.push_back(* it);
-
-	if ( out.size() != 3 )
-		throw std::runtime_error("Unable to find correct periods for agregation");
+	return TimeSpan(data.obstime(), data.obstime());
 }
 
 }

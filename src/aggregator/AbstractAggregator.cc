@@ -32,10 +32,10 @@
 namespace aggregator
 {
 
-AbstractAggregator::AbstractAggregator(int primaryReadParam, int writeParam) :
+AbstractAggregator::AbstractAggregator(int readParam, int writeParam) :
 		write_param(writeParam)
 {
-	read_param.push_back(primaryReadParam);
+	read_param.push_back(readParam);
 }
 
 AbstractAggregator::~AbstractAggregator()

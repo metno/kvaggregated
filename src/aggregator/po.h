@@ -27,39 +27,26 @@
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "nn_24.h"
-#include "paramID.h"
+#ifndef PO_H_
+#define PO_H_
+
+#include "AbstractAggregator.h"
 
 namespace aggregator
 {
 
-nn_24::nn_24() :
-	MeanValueAggregator(NN, NNM_24)
+class po: public aggregator::AbstractAggregator
 {
-}
+public:
+	po();
+	virtual ~po();
 
-nn_24::~nn_24()
-{
-}
+	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations) =0;
 
-bool nn_24::shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const
-{
-	return observations.size() >= 3;
-}
+	virtual const TimeSpan getTimeSpan(const kvalobs::kvData &data) const;
 
-void nn_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
-{
-	std::set<miutil::miTime> wantedTimes;
-	wantedTimes.insert(miutil::miTime(trigger.obstime().date(), miutil::miClock(6,0,0)));
-	wantedTimes.insert(miutil::miTime(trigger.obstime().date(), miutil::miClock(12,0,0)));
-	wantedTimes.insert(miutil::miTime(trigger.obstime().date(), miutil::miClock(18,0,0)));
-
-	for ( kvDataList::const_iterator it = dataIn.begin(); it != dataIn.end(); ++ it )
-		if ( wantedTimes.find(it->obstime()) != wantedTimes.end() )
-			out.push_back(* it);
-
-	if ( out.size() != 3 )
-		throw std::runtime_error("Unable to find correct periods for agregation");
-}
+};
 
 }
+
+#endif /* PO_H_ */

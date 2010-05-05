@@ -56,7 +56,7 @@ rr_1::~rr_1()
 	delete thread;
 }
 
-bool rr_1::shouldProcess(const kvData &trigger, const ParameterSortedDataList &observations) const
+bool rr_1::shouldProcess(const kvData &trigger, const kvDataList &observations) const
 {
 	//return true;
 	// Will only generate when receiving values from GenerateZero thread
@@ -80,7 +80,7 @@ float rr_1::calculate(const ValueList & source, ExtraData ) const
 	return sum;
 }
 
-void rr_1::extractUsefulData(ParameterSortedDataList & out, const ParameterSortedDataList & dataIn, const kvalobs::kvData & trigger) const
+void rr_1::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
 {
 	out = dataIn;
 }

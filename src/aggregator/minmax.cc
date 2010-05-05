@@ -46,21 +46,20 @@ MinMax::MinMax(int readParam, int writeParam, int interestingHours, const set<mi
 {
 }
 
-bool MinMax::shouldProcess( const kvalobs::kvData &trigger, const ParameterSortedDataList &observations ) const
+bool MinMax::shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const
 {
 	if ( ! StandardAggregator::shouldProcess(trigger, observations) )
 		return false;
 
 	TimeSpan time = getTimeSpan(trigger);
-	for ( ParameterSortedDataList::const_iterator pit = observations.begin(); pit != observations.end(); ++ pit )
-		for ( kvDataList::const_iterator it = pit->second.begin(); it != pit->second.end(); ++ it )
-			if ( it->obstime() <= time.first or time.second < it->obstime() )
-				return false;
+	for ( kvDataList::const_iterator it = observations.begin(); it != observations.end(); ++ it )
+		if ( it->obstime() <= time.first or time.second < it->obstime() )
+			return false;
 	return true;
 }
 
 
-void MinMax::extractUsefulData(ParameterSortedDataList & out, const ParameterSortedDataList & dataIn, const kvalobs::kvData & trigger) const
+void MinMax::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
 {
 	out = dataIn;
 }

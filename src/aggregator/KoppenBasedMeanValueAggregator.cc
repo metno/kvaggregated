@@ -76,18 +76,16 @@ bool matchingObsTimes(const KoppenBasedMeanValueAggregator::kvDataList & observa
 }
 }
 
-bool KoppenBasedMeanValueAggregator::shouldProcess( const kvalobs::kvData &trigger, const ParameterSortedDataList & observations ) const
+bool KoppenBasedMeanValueAggregator::shouldProcess( const kvalobs::kvData &trigger, const kvDataList & observations ) const
 {
 	if ( MeanValueAggregator::shouldProcess(trigger, observations) )
 		return true;
 
-	const AbstractAggregator::kvDataList & primaryObs = observations.find(primaryReadParam())->second;
-
 	int offsetFrom6 = trigger.obstime().hour() % 6;
 	if ( offsetFrom6 == 0 )
-		return matchingObsTimes(primaryObs);
+		return matchingObsTimes(observations);
 	else if ( offsetFrom6 == 1 )
-		return primaryObs.size() == 3 and matchingObsTimes(primaryObs, "07:00:00");
+		return observations.size() == 3 and matchingObsTimes(observations, "07:00:00");
 	return false;
 }
 
@@ -109,26 +107,19 @@ bool lt_obstime(const kvalobs::kvData & a, const kvalobs::kvData & b)
 }
 }
 
-void KoppenBasedMeanValueAggregator::extractUsefulData(ParameterSortedDataList & out, const ParameterSortedDataList & dataIn, const kvalobs::kvData & trigger) const
+void KoppenBasedMeanValueAggregator::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
 {
 	if ( MeanValueAggregator::shouldProcess(trigger, dataIn) )
 		out = dataIn;
 	else
 	{
-		kvDataList & dlOut = out[primaryReadParam()];
 		const int offsetFrom6 = trigger.obstime().hour() % 6;
-
-		ParameterSortedDataList::const_iterator findIn = dataIn.find(primaryReadParam());
-		if ( findIn == dataIn.end() )
-			throw std::runtime_error("Unable to find any parameters for aggregation");
-		const kvDataList & dlIn = findIn->second;
-
 		for ( int i = 6 + offsetFrom6; i < 24; i += 6 )
 		{
-			kvDataList::const_iterator find = std::find_if(dlIn.begin(), dlIn.end(), have_obshour(i));
-			if ( find == dlIn.end())
+			kvDataList::const_iterator find = std::find_if(dataIn.begin(), dataIn.end(), have_obshour(i));
+			if ( find == dataIn.end())
 				throw std::runtime_error("Unable to find required data"); // should never happen
-			dlOut.push_back(* find);
+			out.push_back(* find);
 		}
 	}
 }

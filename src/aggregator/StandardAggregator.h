@@ -154,7 +154,7 @@ protected:
 	 */
 	virtual bool
 	shouldProcess(const kvalobs::kvData &trigger,
-			const ParameterSortedDataList &observations) const;
+			const kvDataList &observations) const;
 
 	/**
 	 * Extract exactly all data which is needed for aggregating.
@@ -165,7 +165,7 @@ protected:
 	 * @param dataIn source data to select from
 	 * @param trigger the piece of data which caused this aggregation to start.
 	 */
-	virtual void extractUsefulData(ParameterSortedDataList & out, const ParameterSortedDataList & dataIn,
+	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn,
 			const kvalobs::kvData & trigger) const =0;
 
 	struct ExtraAggregationData {

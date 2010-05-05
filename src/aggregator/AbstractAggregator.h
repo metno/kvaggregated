@@ -41,7 +41,7 @@ namespace aggregator
 class AbstractAggregator
 {
 public:
-	AbstractAggregator(int primaryReadParam, int writeParam);
+	AbstractAggregator(int readParam, int writeParam);
 	virtual ~AbstractAggregator();
 
 	/**
@@ -83,11 +83,6 @@ public:
 
 
 	typedef std::vector<int> ParameterList;
-
-	int primaryReadParam() const
-	{
-		return read_param.front();
-	}
 
 	/**
 	 * Get the paramIDs which we are interested in reading.

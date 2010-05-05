@@ -92,11 +92,10 @@ const StandardAggregator::TimeSpan StandardAggregator::getTimeSpan(
 }
 
 bool StandardAggregator::shouldProcess(const kvalobs::kvData &trigger,
-		const ParameterSortedDataList & observations) const
+		const kvDataList &observations) const
 {
-	for ( ParameterSortedDataList::const_iterator it = observations.begin(); it != observations.end(); ++ it )
-		if ((int) it->second.size() < interesting_hours)
-			return false;
+	if ((int) observations.size() < interesting_hours)
+		return false;
 	return true;
 }
 
@@ -169,7 +168,7 @@ AbstractAggregator::kvDataPtr StandardAggregator::process(
 		throw std::logic_error("Internal error");
 	const kvDataList & observations = find->second;
 
-	if (not shouldProcess(data, p_observations))
+	if (not shouldProcess(data, observations))
 	{
 		LOGDEBUG( "Will not process" );
 		return kvDataPtr();
@@ -180,13 +179,13 @@ AbstractAggregator::kvDataPtr StandardAggregator::process(
 	// Call abstract method to get agregate value:
 	try
 	{
-		ParameterSortedDataList relevantData;
-		extractUsefulData(relevantData, p_observations, data);
+		kvDataList relevantData;
+		extractUsefulData(relevantData, observations, data);
 
 		boost::scoped_ptr<ExtraAggregationData> extraData(getExtraData(data));
 
-		float original = round(generateOriginal_(relevantData[primaryReadParam()], extraData.get()));
-		float corrected = round(generateCorrected_(relevantData[primaryReadParam()], extraData.get()));
+		float original = round(generateOriginal_(relevantData, extraData.get()));
+		float corrected = round(generateCorrected_(relevantData, extraData.get()));
 
 #ifdef AGGREGATE_USEINFO
 		kvalobs::kvUseInfo ui = calculateUseInfo(relevantData);
