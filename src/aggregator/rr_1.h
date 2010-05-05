@@ -72,7 +72,7 @@ public:
 	 * \return False unless trigger.original() == GenerateZero::obsVal()
 	 */
 	virtual bool shouldProcess(const kvalobs::kvData &trigger,
-			const kvDataList &observations) const;
+			const ParameterSortedDataList &observations) const;
 
 	float calculate(const ValueList & source, ExtraData extraData) const;
 

@@ -154,7 +154,7 @@ protected:
 	 */
 	virtual bool
 	shouldProcess(const kvalobs::kvData &trigger,
-			const kvDataList &observations) const;
+			const ParameterSortedDataList &observations) const;
 
 	/**
 	 * Extract exactly all data which is needed for aggregating.

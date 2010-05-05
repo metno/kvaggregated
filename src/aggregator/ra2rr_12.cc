@@ -82,13 +82,15 @@ struct lt_obstime
 }
 
 bool ra2rr_12::shouldProcess(const kvData & trigger,
-		const kvDataList & observations) const
+		const ParameterSortedDataList & observations) const
 {
+	const AbstractAggregator::kvDataList & primaryObs = observations.find(primaryReadParam())->second;
+
 	const set<miClock> & gw = generateWhen();
-	if (observations.size() > 1 and
+	if (primaryObs.size() > 1 and
 			gw.find(trigger.obstime().clock()) != gw.end() and
-			find_if(observations.begin(), observations.end(),hasObsHour<6> ) != observations.end() and
-			find_if(observations.begin(), observations.end(), hasObsHour<18> ) != observations.end())
+			find_if(primaryObs.begin(), primaryObs.end(),hasObsHour<6> ) != primaryObs.end() and
+			find_if(primaryObs.begin(), primaryObs.end(), hasObsHour<18> ) != primaryObs.end())
 		return true;
 	return false;
 }

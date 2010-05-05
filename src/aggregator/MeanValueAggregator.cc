@@ -43,14 +43,15 @@ MeanValueAggregator::~MeanValueAggregator()
 {
 }
 
-bool MeanValueAggregator::shouldProcess( const kvalobs::kvData &trigger, const kvDataList & observations ) const
+bool MeanValueAggregator::shouldProcess( const kvalobs::kvData &trigger, const ParameterSortedDataList & observations ) const
 {
-	switch ( observations.size() )
+	const AbstractAggregator::kvDataList & primaryObs = observations.find(primaryReadParam())->second;
+	switch ( primaryObs.size() )
 	{
 	case 24:
 		return true;
 	case 8:
-		for ( kvDataList::const_iterator it = observations.begin(); it != observations.end(); ++ it )
+		for ( kvDataList::const_iterator it = primaryObs.begin(); it != primaryObs.end(); ++ it )
 			if ( it->obstime().hour() % 3 != 0 )
 				return false;
 		return true;

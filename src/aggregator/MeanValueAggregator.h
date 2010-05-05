@@ -43,7 +43,7 @@ public:
 	MeanValueAggregator(int readParam, int writeParam);
 	virtual ~MeanValueAggregator();
 
-    virtual bool shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const;
+    virtual bool shouldProcess( const kvalobs::kvData &trigger, const ParameterSortedDataList &observations ) const;
 
 	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
 

@@ -92,10 +92,11 @@ const StandardAggregator::TimeSpan StandardAggregator::getTimeSpan(
 }
 
 bool StandardAggregator::shouldProcess(const kvalobs::kvData &trigger,
-		const kvDataList &observations) const
+		const ParameterSortedDataList & observations) const
 {
-	if ((int) observations.size() < interesting_hours)
-		return false;
+	for ( ParameterSortedDataList::const_iterator it = observations.begin(); it != observations.end(); ++ it )
+		if ((int) it->second.size() < interesting_hours)
+			return false;
 	return true;
 }
 
@@ -168,7 +169,7 @@ AbstractAggregator::kvDataPtr StandardAggregator::process(
 		throw std::logic_error("Internal error");
 	const kvDataList & observations = find->second;
 
-	if (not shouldProcess(data, observations))
+	if (not shouldProcess(data, p_observations))
 	{
 		LOGDEBUG( "Will not process" );
 		return kvDataPtr();

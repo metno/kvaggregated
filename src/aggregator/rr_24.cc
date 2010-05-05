@@ -43,7 +43,7 @@ rr_24::rr_24() :
 {
 }
 
-bool rr_24::shouldProcess(const kvData &trigger, const kvDataList &observations) const
+bool rr_24::shouldProcess(const kvData &trigger, const ParameterSortedDataList &observations) const
 {
 	// These are the times from which we will generate data:
 	const std::set<miClock> &when = sixAmSixPm;
@@ -52,17 +52,19 @@ bool rr_24::shouldProcess(const kvData &trigger, const kvDataList &observations)
 	if (when.find(time.clock()) == when.end())
 		return false;
 
+	const AbstractAggregator::kvDataList & primaryObs = observations.find(primaryReadParam())->second;
+
 	for (std::set<miClock>::const_iterator genTime = when.begin(); genTime != when.end(); genTime++)
 	{
-		kvDataList::const_iterator search = observations.begin();
-		while (search != observations.end())
+		kvDataList::const_iterator search = primaryObs.begin();
+		while (search != primaryObs.end())
 		{
 			const miTime &t = search->obstime();
 			if (t.clock() == *genTime)
 				break;
 			search++;
 		}
-		if (search == observations.end())
+		if (search == primaryObs.end())
 			return false;
 	}
 	return true;

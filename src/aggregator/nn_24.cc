@@ -42,9 +42,10 @@ nn_24::~nn_24()
 {
 }
 
-bool nn_24::shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const
+bool nn_24::shouldProcess( const kvalobs::kvData &trigger, const ParameterSortedDataList &observations ) const
 {
-	return observations.size() >= 3;
+	const AbstractAggregator::kvDataList & primaryObs = observations.find(primaryReadParam())->second;
+	return primaryObs.size() >= 3;
 }
 
 void nn_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const

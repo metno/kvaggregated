@@ -76,16 +76,18 @@ bool matchingObsTimes(const KoppenBasedMeanValueAggregator::kvDataList & observa
 }
 }
 
-bool KoppenBasedMeanValueAggregator::shouldProcess( const kvalobs::kvData &trigger, const kvDataList & observations ) const
+bool KoppenBasedMeanValueAggregator::shouldProcess( const kvalobs::kvData &trigger, const ParameterSortedDataList & observations ) const
 {
 	if ( MeanValueAggregator::shouldProcess(trigger, observations) )
 		return true;
 
+	const AbstractAggregator::kvDataList & primaryObs = observations.find(primaryReadParam())->second;
+
 	int offsetFrom6 = trigger.obstime().hour() % 6;
 	if ( offsetFrom6 == 0 )
-		return matchingObsTimes(observations);
+		return matchingObsTimes(primaryObs);
 	else if ( offsetFrom6 == 1 )
-		return observations.size() == 3 and matchingObsTimes(observations, "07:00:00");
+		return primaryObs.size() == 3 and matchingObsTimes(primaryObs, "07:00:00");
 	return false;
 }
 
@@ -109,7 +111,10 @@ bool lt_obstime(const kvalobs::kvData & a, const kvalobs::kvData & b)
 
 void KoppenBasedMeanValueAggregator::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
 {
-	if ( MeanValueAggregator::shouldProcess(trigger, dataIn) )
+	ParameterSortedDataList d;
+	d[dataIn.front().paramID()] = dataIn;
+
+	if ( MeanValueAggregator::shouldProcess(trigger, d) )
 		out = dataIn;
 	else
 	{
