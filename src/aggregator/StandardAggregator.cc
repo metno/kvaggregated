@@ -159,16 +159,14 @@ float round(float f)
 }
 }
 
-std::auto_ptr<kvalobs::kvData> StandardAggregator::process(
+AbstractAggregator::kvDataPtr StandardAggregator::process(
 		const kvalobs::kvData & data,
 		const kvDataList & observations)
 {
-	typedef std::auto_ptr<kvalobs::kvData> return_type;
-
 	if (not shouldProcess(data, observations))
 	{
 		LOGDEBUG( "Will not process" );
-		return return_type(0);
+		return kvDataPtr();
 	}
 
 	LOGINFO( "Agregating " << decodeutility::kvdataformatter::createString(data) );
@@ -199,7 +197,7 @@ std::auto_ptr<kvalobs::kvData> StandardAggregator::process(
 		miTime t = miTime(times.second.date(), miClock(times.second.hour(), 0,
 				0));
 
-		return_type ret(
+		kvDataPtr ret(
 				new kvData(getDataObject_(data, t, original, corrected, ui)));
 
 		return ret;
@@ -209,11 +207,11 @@ std::auto_ptr<kvalobs::kvData> StandardAggregator::process(
 		{
 			LOGERROR( err.what() );
 		}
-		return return_type(0);
+		return kvDataPtr();
 	} catch (...)
 	{
 		LOGERROR( "Unrecognized error" );
-		return return_type(0);
+		return kvDataPtr();
 	}
 }
 

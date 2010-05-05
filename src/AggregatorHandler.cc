@@ -142,7 +142,7 @@ void AggregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvDa
 			AbstractAggregator * agregator = it->second;
 			if (agregator->isInterestedIn(data))
 			{
-				std::auto_ptr<kvalobs::kvData> d =
+				AbstractAggregator::kvDataPtr d =
 						agregator->process(data, getRelevantObsList(data, agregator->getTimeSpan(data)));
 
 				if ( d.get() )

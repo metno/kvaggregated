@@ -31,9 +31,9 @@
 #define ABSTRACTAGGREGATOR_H_
 
 #include <kvalobs/kvData.h>
+#include <boost/shared_ptr.hpp>
 #include <list>
 #include <vector>
-#include <memory>
 
 namespace aggregator
 {
@@ -49,7 +49,7 @@ public:
 	 */
 	virtual bool isInterestedIn(const kvalobs::kvData &data) const { return true; }
 
-	typedef std::auto_ptr<kvalobs::kvData> kvDataPtr;
+	typedef boost::shared_ptr<kvalobs::kvData> kvDataPtr;
 	typedef std::list<kvalobs::kvData> kvDataList;
 
 	/**
