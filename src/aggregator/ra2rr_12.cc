@@ -131,10 +131,17 @@ float ra2rr_12::calculate(const ValueList & source, ExtraData ) const
 	return result;
 }
 
-void ra2rr_12::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
+void ra2rr_12::extractUsefulData(ParameterSortedDataList & out, const ParameterSortedDataList & dataIn, const kvalobs::kvData & trigger) const
 {
 	kvDataList ret;
-	for ( kvDataList::const_iterator it = dataIn.begin(); it != dataIn.end(); ++ it )
+
+	ParameterSortedDataList::const_iterator findIn = dataIn.find(primaryReadParam());
+	if ( findIn == dataIn.end() )
+		throw std::runtime_error("Unable to find any parameters for aggregation");
+	const kvDataList & dlIn = findIn->second;
+
+
+	for ( kvDataList::const_iterator it = dlIn.begin(); it != dlIn.end(); ++ it )
 		if ( hasObsHour<6>(* it) or hasObsHour<18>(* it) )
 			ret.push_back(* it);
 
@@ -155,7 +162,7 @@ void ra2rr_12::extractUsefulData(kvDataList & out, const kvDataList & dataIn, co
 		throw runtime_error(msg.str());
 	}
 
-	out.swap(ret);
+	out[primaryReadParam()].swap(ret);
 }
 
 }

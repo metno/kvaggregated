@@ -80,7 +80,7 @@ float rr_1::calculate(const ValueList & source, ExtraData ) const
 	return sum;
 }
 
-void rr_1::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
+void rr_1::extractUsefulData(ParameterSortedDataList & out, const ParameterSortedDataList & dataIn, const kvalobs::kvData & trigger) const
 {
 	out = dataIn;
 }

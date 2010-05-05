@@ -70,18 +70,25 @@ bool rr_24::shouldProcess(const kvData &trigger, const ParameterSortedDataList &
 	return true;
 }
 
-void rr_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
+void rr_24::extractUsefulData(ParameterSortedDataList & out, const ParameterSortedDataList & dataIn, const kvalobs::kvData & trigger) const
 {
 	const std::set<miClock> & when = sixAmSixPm;
+
+	kvDataList & dlOut = out[primaryReadParam()];
+
+	ParameterSortedDataList::const_iterator findIn = dataIn.find(primaryReadParam());
+	if ( findIn == dataIn.end() )
+		throw std::runtime_error("Unable to find any parameters for aggregation");
+	const kvDataList & dlIn = findIn->second;
 
 	for (std::set<miClock>::const_iterator it = when.begin(); it != when.end(); it++)
 	{
 		//std::cout << * it << std::endl;
-		for (kvDataList::const_iterator dataIt = dataIn.begin(); dataIt != dataIn.end(); dataIt++)
+		for (kvDataList::const_iterator dataIt = dlIn.begin(); dataIt != dlIn.end(); dataIt++)
 		{
 			miTime t = dataIt->obstime();
 			if (t.clock() == *it)
-				out.push_back(*dataIt);
+				dlOut.push_back(*dataIt);
 		}
 	}
 }

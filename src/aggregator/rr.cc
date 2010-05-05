@@ -53,7 +53,7 @@ rr::rr(int readParam, int writeParam, int interestingHours,
 {
 }
 
-void rr::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
+void rr::extractUsefulData(ParameterSortedDataList & out, const ParameterSortedDataList & dataIn, const kvalobs::kvData & trigger) const
 {
 	out = dataIn;
 }

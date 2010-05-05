@@ -48,18 +48,25 @@ bool nn_24::shouldProcess( const kvalobs::kvData &trigger, const ParameterSorted
 	return primaryObs.size() >= 3;
 }
 
-void nn_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
+void nn_24::extractUsefulData(ParameterSortedDataList & out, const ParameterSortedDataList & dataIn, const kvalobs::kvData & trigger) const
 {
 	std::set<miutil::miTime> wantedTimes;
 	wantedTimes.insert(miutil::miTime(trigger.obstime().date(), miutil::miClock(6,0,0)));
 	wantedTimes.insert(miutil::miTime(trigger.obstime().date(), miutil::miClock(12,0,0)));
 	wantedTimes.insert(miutil::miTime(trigger.obstime().date(), miutil::miClock(18,0,0)));
 
-	for ( kvDataList::const_iterator it = dataIn.begin(); it != dataIn.end(); ++ it )
-		if ( wantedTimes.find(it->obstime()) != wantedTimes.end() )
-			out.push_back(* it);
+	kvDataList & dlOut = out[primaryReadParam()];
 
-	if ( out.size() != 3 )
+	ParameterSortedDataList::const_iterator findIn = dataIn.find(primaryReadParam());
+	if ( findIn == dataIn.end() )
+		throw std::runtime_error("Unable to find any parameters for aggregation");
+	const kvDataList & dlIn = findIn->second;
+
+	for ( kvDataList::const_iterator it = dlIn.begin(); it != dlIn.end(); ++ it )
+		if ( wantedTimes.find(it->obstime()) != wantedTimes.end() )
+			dlOut.push_back(* it);
+
+	if ( dlOut.size() != 3 )
 		throw std::runtime_error("Unable to find correct periods for agregation");
 }
 

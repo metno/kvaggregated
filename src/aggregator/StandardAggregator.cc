@@ -180,13 +180,13 @@ AbstractAggregator::kvDataPtr StandardAggregator::process(
 	// Call abstract method to get agregate value:
 	try
 	{
-		kvDataList relevantData;
-		extractUsefulData(relevantData, observations, data);
+		ParameterSortedDataList relevantData;
+		extractUsefulData(relevantData, p_observations, data);
 
 		boost::scoped_ptr<ExtraAggregationData> extraData(getExtraData(data));
 
-		float original = round(generateOriginal_(relevantData, extraData.get()));
-		float corrected = round(generateCorrected_(relevantData, extraData.get()));
+		float original = round(generateOriginal_(relevantData[primaryReadParam()], extraData.get()));
+		float corrected = round(generateCorrected_(relevantData[primaryReadParam()], extraData.get()));
 
 #ifdef AGGREGATE_USEINFO
 		kvalobs::kvUseInfo ui = calculateUseInfo(relevantData);

@@ -109,22 +109,26 @@ bool lt_obstime(const kvalobs::kvData & a, const kvalobs::kvData & b)
 }
 }
 
-void KoppenBasedMeanValueAggregator::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
+void KoppenBasedMeanValueAggregator::extractUsefulData(ParameterSortedDataList & out, const ParameterSortedDataList & dataIn, const kvalobs::kvData & trigger) const
 {
-	ParameterSortedDataList d;
-	d[dataIn.front().paramID()] = dataIn;
-
-	if ( MeanValueAggregator::shouldProcess(trigger, d) )
+	if ( MeanValueAggregator::shouldProcess(trigger, dataIn) )
 		out = dataIn;
 	else
 	{
+		kvDataList & dlOut = out[primaryReadParam()];
 		const int offsetFrom6 = trigger.obstime().hour() % 6;
+
+		ParameterSortedDataList::const_iterator findIn = dataIn.find(primaryReadParam());
+		if ( findIn == dataIn.end() )
+			throw std::runtime_error("Unable to find any parameters for aggregation");
+		const kvDataList & dlIn = findIn->second;
+
 		for ( int i = 6 + offsetFrom6; i < 24; i += 6 )
 		{
-			kvDataList::const_iterator find = std::find_if(dataIn.begin(), dataIn.end(), have_obshour(i));
-			if ( find == dataIn.end())
+			kvDataList::const_iterator find = std::find_if(dlIn.begin(), dlIn.end(), have_obshour(i));
+			if ( find == dlIn.end())
 				throw std::runtime_error("Unable to find required data"); // should never happen
-			out.push_back(* find);
+			dlOut.push_back(* find);
 		}
 	}
 }

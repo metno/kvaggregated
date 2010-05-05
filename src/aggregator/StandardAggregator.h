@@ -165,7 +165,7 @@ protected:
 	 * @param dataIn source data to select from
 	 * @param trigger the piece of data which caused this aggregation to start.
 	 */
-	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn,
+	virtual void extractUsefulData(ParameterSortedDataList & out, const ParameterSortedDataList & dataIn,
 			const kvalobs::kvData & trigger) const =0;
 
 	struct ExtraAggregationData {

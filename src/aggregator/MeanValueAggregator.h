@@ -45,7 +45,7 @@ public:
 
     virtual bool shouldProcess( const kvalobs::kvData &trigger, const ParameterSortedDataList &observations ) const;
 
-	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
+	virtual void extractUsefulData(ParameterSortedDataList & out, const ParameterSortedDataList & dataIn, const kvalobs::kvData & trigger) const;
 
     virtual float calculate(const ValueList & source, ExtraData extraData) const;
 };

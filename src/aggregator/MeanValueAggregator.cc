@@ -60,7 +60,7 @@ bool MeanValueAggregator::shouldProcess( const kvalobs::kvData &trigger, const P
 }
 
 
-void MeanValueAggregator::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
+void MeanValueAggregator::extractUsefulData(ParameterSortedDataList & out, const ParameterSortedDataList & dataIn, const kvalobs::kvData & trigger) const
 {
 	out = dataIn;
 }

@@ -76,7 +76,7 @@ protected:
 
 	virtual float calculate(const ValueList & source, ExtraData extraData) const;
 
-	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
+	virtual void extractUsefulData(ParameterSortedDataList & out, const ParameterSortedDataList & dataIn, const kvalobs::kvData & trigger) const;
 };
 
 

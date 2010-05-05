@@ -60,7 +60,7 @@ bool MinMax::shouldProcess( const kvalobs::kvData &trigger, const ParameterSorte
 }
 
 
-void MinMax::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
+void MinMax::extractUsefulData(ParameterSortedDataList & out, const ParameterSortedDataList & dataIn, const kvalobs::kvData & trigger) const
 {
 	out = dataIn;
 }
