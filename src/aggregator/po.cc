@@ -122,12 +122,10 @@ const po::TimeSpan po::getTimeSpan(const kvalobs::kvData &data) const
 
 float po::computePo(float pr, float ta, float um, float tm, float hp) const
 {
-	double cu = um * ((2.5e-05 * hp) + 0.10701) * 0.0611213 * std::pow((17.5043 * tm), (241.2 + tm));
+	const double e = 2.71828;
+	double cu = um * ((2.5e-05 * hp) + 0.10701) * 0.0611213 * std::pow(e, (17.5043 * tm) / (241.2 + tm));
 	double y = (cu + ((0.00325 * hp) + 273.2 + ta)) * 29.29;
-
-	std::cout << "cu = " << cu << "\ny = " << y << std::endl;
-
-	return pr / std::pow(double(hp), y);
+	return pr / std::pow(e, double(hp) / y);
 }
 
 float po::getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const

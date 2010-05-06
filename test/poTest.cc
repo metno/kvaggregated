@@ -42,23 +42,23 @@ protected:
 		if ( metadataName == "VS" )
 		{
 			if ( validFor.paramID() == UM_VS )
-				return 80;
+				return 70;
 			if ( validFor.paramID() == TM_VS )
-				return 2.4;
+				return 5.7;
 		}
 		if ( metadataName == "hp" )
-			return 42;
+			return 408;
 
 		throw std::exception();
 	}
 } p;
 
 
-TEST(poTest, test)
+TEST(poTest, test1)
 {
 	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
-	const kvalobs::kvData pr = factory.getData(1001.1, PR);
-	const kvalobs::kvData ta = factory.getData(12.6, TA);
+	const kvalobs::kvData pr = factory.getData(1036.5, PR);
+	const kvalobs::kvData ta = factory.getData(6.3, TA);
 
 	po::ParameterSortedDataList toProcess;
 	toProcess[PR].push_back(pr);
@@ -67,9 +67,28 @@ TEST(poTest, test)
 	po::kvDataPtr result = p.process(pr, toProcess);
 
 	// just made up some values
-	EXPECT_EQ(36, result->original());
-	EXPECT_EQ(35, result->corrected());
+	EXPECT_NEAR(986.5, result->original(), 0.05);
+	EXPECT_NEAR(986.5, result->corrected(), 0.05);
 }
+
+TEST(poTest, test2)
+{
+	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	const kvalobs::kvData pr = factory.getData(1038.9, PR);
+	const kvalobs::kvData ta = factory.getData(-6.3, TA);
+
+	po::ParameterSortedDataList toProcess;
+	toProcess[PR].push_back(pr);
+	toProcess[TA].push_back(ta);
+
+	po::kvDataPtr result = p.process(pr, toProcess);
+
+	// just made up some values
+	EXPECT_NEAR(986.5, result->original(), 0.05);
+	EXPECT_NEAR(986.5, result->corrected(), 0.05);
+}
+
+
 
 TEST(poTest, noPr)
 {
