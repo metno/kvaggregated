@@ -93,15 +93,6 @@ public:
 	}
 
 	/**
-	 * Get the paramIDs which we are interested in reading - for editing
-	 */
-//	ParameterList & readParam()
-//	{
-//		return read_param;
-//	}
-
-
-	/**
 	 * \brief Get the value for paramID which we are interested in
 	 * writing.
 	 */
@@ -109,6 +100,16 @@ public:
 	{
 		return write_param;
 	}
+
+protected:
+	/**
+	 * Get the paramIDs which we are interested in reading - for editing
+	 */
+	void addAdditionalReadParam(int parameter)
+	{
+		read_param.push_back(parameter);
+	}
+
 
 private:
 

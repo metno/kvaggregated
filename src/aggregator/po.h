@@ -41,10 +41,22 @@ public:
 	po();
 	virtual ~po();
 
-	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations) =0;
+	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations);
 
 	virtual const TimeSpan getTimeSpan(const kvalobs::kvData &data) const;
 
+	/**
+	 * \param pr air pressure reduced to sea level
+	 * \param ta air temperature
+	 * \param um yearly mean air humidity
+	 * \param tm yearly mean air temperature
+	 * \param hp reference value for air pressure
+	 */
+	float computePo(float pr, float ta, float um, float tm, float hp) const;
+
+protected:
+	// protected to be overrideable by tests
+	virtual float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const;
 };
 
 }

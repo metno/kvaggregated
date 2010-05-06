@@ -163,6 +163,9 @@ AbstractAggregator::kvDataPtr StandardAggregator::process(
 		const kvalobs::kvData & data,
 		const ParameterSortedDataList & p_observations)
 {
+	if ( p_observations.size() != 1 )
+		throw std::logic_error("internal error - StandardAggregator may only have one parameter dependency.");
+
 	ParameterSortedDataList::const_iterator find = p_observations.find(data.paramID());
 	if ( find == p_observations.end())
 		throw std::logic_error("Internal error");
