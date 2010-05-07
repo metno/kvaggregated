@@ -31,6 +31,7 @@
 #include <paramID.h>
 #include <proxy/KvalobsDataAccess.h>
 #include <kvalobs/kvDataOperations.h>
+#include <milog/milog.h>
 #include <algorithm>
 #include <cmath>
 
@@ -93,40 +94,48 @@ po::kvDataPtr po::processMethod2(const kvalobs::kvData & data, const ParameterSo
 
 po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDataList & observations, int method)
 {
-	const kvalobs::kvData * pr = getData(PR, data.obstime(), observations);
-	const kvalobs::kvData * ta = getData(TA, data.obstime(), observations);
-	if ( ! pr or ! ta )
-		return po::kvDataPtr();
-
-	kvalobs::kvDataFactory factory(data);
-	float um = getStationMetadata("VS", factory.getMissing(UM_VS));
-	float tm = getStationMetadata("VS", factory.getMissing(TM_VS));
-	float hp = getStationMetadata("hp", data);
-
-	kvDataPtr ret;
-	if ( kvalobs::original_missing(* pr) or kvalobs::original_missing(* ta) )
-		ret = kvDataPtr(new kvalobs::kvData(factory.getMissing(PO)));
-	else
+	milog::LogContext context("PO aggregation");
+	try
 	{
-		float poOriginal =
-				method == 2 ?
-						computePoWithInversionCorrection(pr->original(), ta->original(), um, tm ,hp) :
-						computePo(pr->original(), ta->original(), um, tm ,hp);
-		ret = kvDataPtr(new kvalobs::kvData(factory.getData(poOriginal, PO)));
-	}
+		const kvalobs::kvData * pr = getData(PR, data.obstime(), observations);
+		const kvalobs::kvData * ta = getData(TA, data.obstime(), observations);
+		if ( ! pr or ! ta )
+			return po::kvDataPtr();
 
-	if ( not kvalobs::valid(* pr) or not kvalobs::valid(* ta) )
-		kvalobs::reject(* ret);
-	else if ( pr->original() != pr->corrected() or ta->original() != ta->corrected() )
+		kvalobs::kvDataFactory factory(data);
+		float um = getStationMetadata("VS", factory.getMissing(UM_VS));
+		float tm = getStationMetadata("VS", factory.getMissing(TM_VS));
+		float hp = getStationMetadata("hp", data);
+
+		kvDataPtr ret;
+		if ( kvalobs::original_missing(* pr) or kvalobs::original_missing(* ta) )
+			ret = kvDataPtr(new kvalobs::kvData(factory.getMissing(PO)));
+		else
+		{
+			float poOriginal =
+					method == 2 ?
+							computePoWithInversionCorrection(pr->original(), ta->original(), um, tm ,hp) :
+							computePo(pr->original(), ta->original(), um, tm ,hp);
+			ret = kvDataPtr(new kvalobs::kvData(factory.getData(poOriginal, PO)));
+		}
+
+		if ( not kvalobs::valid(* pr) or not kvalobs::valid(* ta) )
+			kvalobs::reject(* ret);
+		else if ( pr->original() != pr->corrected() or ta->original() != ta->corrected() )
+		{
+			float poCorrected =
+					method == 2 ?
+							computePoWithInversionCorrection(pr->corrected(), ta->corrected(), um, tm ,hp) :
+							computePo(pr->corrected(), ta->corrected(), um, tm ,hp);
+			kvalobs::correct(* ret, poCorrected);
+		}
+
+		return ret;
+	}
+	catch ( std::exception & e )
 	{
-		float poCorrected =
-				method == 2 ?
-						computePoWithInversionCorrection(pr->corrected(), ta->corrected(), um, tm ,hp) :
-						computePo(pr->corrected(), ta->corrected(), um, tm ,hp);
-		kvalobs::correct(* ret, poCorrected);
+		LOGERROR(e.what());
 	}
-
-	return ret;
 }
 
 
