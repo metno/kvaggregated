@@ -83,6 +83,16 @@ const kvalobs::kvData * getData(int parameter, const miutil::miTime & obstime, c
 
 po::kvDataPtr po::process(const kvalobs::kvData & data, const ParameterSortedDataList & observations)
 {
+	return process_(data, observations, 1);
+}
+
+po::kvDataPtr po::processMethod2(const kvalobs::kvData & data, const ParameterSortedDataList & observations)
+{
+	return process_(data, observations, 2);
+}
+
+po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDataList & observations, int method)
+{
 	const kvalobs::kvData * pr = getData(PR, data.obstime(), observations);
 	const kvalobs::kvData * ta = getData(TA, data.obstime(), observations);
 	if ( ! pr or ! ta )
@@ -98,7 +108,10 @@ po::kvDataPtr po::process(const kvalobs::kvData & data, const ParameterSortedDat
 		ret = kvDataPtr(new kvalobs::kvData(factory.getMissing(PO)));
 	else
 	{
-		float poOriginal = computePo(pr->original(), ta->original(), um, tm ,hp);
+		float poOriginal =
+				method == 2 ?
+						computePoWithInversionCorrection(pr->original(), ta->original(), um, tm ,hp) :
+						computePo(pr->original(), ta->original(), um, tm ,hp);
 		ret = kvDataPtr(new kvalobs::kvData(factory.getData(poOriginal, PO)));
 	}
 
@@ -106,12 +119,16 @@ po::kvDataPtr po::process(const kvalobs::kvData & data, const ParameterSortedDat
 		kvalobs::reject(* ret);
 	else if ( pr->original() != pr->corrected() or ta->original() != ta->corrected() )
 	{
-		float poCorrected = computePo(pr->corrected(), ta->corrected(), um, tm ,hp);
+		float poCorrected =
+				method == 2 ?
+						computePoWithInversionCorrection(pr->corrected(), ta->corrected(), um, tm ,hp) :
+						computePo(pr->corrected(), ta->corrected(), um, tm ,hp);
 		kvalobs::correct(* ret, poCorrected);
 	}
 
 	return ret;
 }
+
 
 const po::TimeSpan po::getTimeSpan(const kvalobs::kvData &data) const
 {
@@ -122,11 +139,25 @@ const po::TimeSpan po::getTimeSpan(const kvalobs::kvData &data) const
 
 float po::computePo(float pr, float ta, float um, float tm, float hp) const
 {
-	const double e = 2.71828;
+	const double e = 2.718281828;
 	double cu = um * ((2.5e-05 * hp) + 0.10701) * 0.0611213 * std::pow(e, (17.5043 * tm) / (241.2 + tm));
-	double y = (cu + ((0.00325 * hp) + 273.2 + ta)) * 29.29;
+	double y = (cu + (0.00325 * hp) + 273.2 + ta) * 29.29;
 	return pr / std::pow(e, double(hp) / y);
 }
+
+float po::computePoWithInversionCorrection(float pr, float ta, float um, float tm, float hp) const
+{
+	if ( ta < 1.5 )
+	{
+		const double e = 2.718281828;
+		double cu = um * ((2.5e-05 * hp) + 0.10701) * 0.0611213 * std::pow(e, (17.5043 * tm) / (241.2 + tm));
+		double y = (cu + (0.00325 * hp) + 273.2 + (ta *0.315) + 1) * 29.29;
+		return pr / std::pow(e, double(hp) / y);
+	}
+	else
+		return computePo(pr, ta, um, tm, hp);
+}
+
 
 float po::getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const
 {
