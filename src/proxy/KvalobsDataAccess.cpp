@@ -187,7 +187,11 @@ float KvalobsDataAccess::getStationMetadata(const std::string & metadataName, co
 			ret = mostSpecific(ret, &* it);
 
 	if ( ! ret )
-		throw std::runtime_error("Unable to find metadata: " + metadataName);
+	{
+		std::ostringstream msg;
+		msg << "Unable to find metadata: " << metadataName << " for data " << validFor;
+		throw std::runtime_error(msg.str());
+	}
 
 	return ret->metadata();
 }
