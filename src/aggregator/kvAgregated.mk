@@ -1,6 +1,8 @@
 kvAgregated_SOURCES += \
 	src/aggregator/AbstractAggregator.h \
 	src/aggregator/AbstractAggregator.cc \
+	src/aggregator/StandardAggregator.h \
+	src/aggregator/StandardAggregator.cc \
 	src/aggregator/minmax.h \
 	src/aggregator/minmax.cc \
 	src/aggregator/ra2rr_12.h \
@@ -25,5 +27,7 @@ kvAgregated_SOURCES += \
 	src/aggregator/uu_24.cc \
 	src/aggregator/nn_24.h \
 	src/aggregator/nn_24.cc \
+	src/aggregator/po.h \
+	src/aggregator/po.cc \
 	src/aggregator/useinfoAggregate.h \
 	src/aggregator/useinfoAggregate.cc

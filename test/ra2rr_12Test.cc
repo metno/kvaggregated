@@ -64,67 +64,72 @@ TEST_F(ra2rr_12Test, testExpressedInterest)
 
 TEST_F(ra2rr_12Test, testNotEnoughData)
 {
-	AbstractAggregator::kvDataList data;
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[RA];
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302);
-	data.push_back(dataFactory.getData( 213.3, RA) );
+	dl.push_back(dataFactory.getData( 213.3, RA) );
 
-	AbstractAggregator::kvDataPtr d = aggregator.process(data.back(), data);
+	StandardAggregator::kvDataPtr d = aggregator.process(dl.back(), data);
 	ASSERT_TRUE( not d.get() );
 }
 
 TEST_F(ra2rr_12Test, testCompleteDataObservationInMiddle)
 {
-	AbstractAggregator::kvDataList data;
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[RA];
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302);
 
 	miutil::miTime t("2007-06-05 06:00:00");
 	for (int i = 0; i < 13; ++i)
 	{
-		data.push_back(dataFactory.getData(i, RA, t) );
+		dl.push_back(dataFactory.getData(i, RA, t) );
 		t.addHour();
 	}
 
-	AbstractAggregator::kvDataList::const_iterator randomElement = data.begin();
+	StandardAggregator::kvDataList::const_iterator randomElement = dl.begin();
 	advance(randomElement, 4);
 
-	AbstractAggregator::kvDataPtr d = aggregator.process( *randomElement, data);
+	StandardAggregator::kvDataPtr d = aggregator.process( *randomElement, data);
 
 	ASSERT_TRUE( !d.get() );
 }
 
 TEST_F(ra2rr_12Test, testNonStandardDataSet)
 {
-	AbstractAggregator::kvDataList data;
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[RA];
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302);
 	for (miutil::miTime t = "2007-06-06 07:00:00"; t < "2007-06-06 19:00:00"; t.addHour() )
-		data.push_back(dataFactory.getData( 100, RA, t) );
+		dl.push_back(dataFactory.getData( 100, RA, t) );
 
-	AbstractAggregator::kvDataPtr d = aggregator.process(data.back(), data);
+	StandardAggregator::kvDataPtr d = aggregator.process(dl.back(), data);
 	ASSERT_TRUE( !d.get() );
 }
 
 TEST_F(ra2rr_12Test, testDataMarkedAsMissing)
 {
-	AbstractAggregator::kvDataList data;
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[RA];
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302);
-	data.push_back(dataFactory.getData( 210.1, RA, "2007-06-05 06:00:00") );
-	data.push_back(dataFactory.getMissing(RA, "2007-06-05 18:00:00") );
-	data.push_back(dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00") );
+	dl.push_back(dataFactory.getData( 210.1, RA, "2007-06-05 06:00:00") );
+	dl.push_back(dataFactory.getMissing(RA, "2007-06-05 18:00:00") );
+	dl.push_back(dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00") );
 
-	AbstractAggregator::kvDataPtr d = aggregator.process(data.back(), data);
+	StandardAggregator::kvDataPtr d = aggregator.process(dl.back(), data);
 	ASSERT_TRUE(d.get() );
 	ASSERT_TRUE(missing( *d) );
 }
 
 TEST_F(ra2rr_12Test, test12hZero)
 {
-	AbstractAggregator::kvDataList data;
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[RA];
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302);
-	data.push_back(dataFactory.getData( 210.1, RA, "2007-06-05 06:00:00") );
-	data.push_back(dataFactory.getData( 213.3, RA, "2007-06-05 18:00:00") );
-	data.push_back(dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00") );
+	dl.push_back(dataFactory.getData( 210.1, RA, "2007-06-05 06:00:00") );
+	dl.push_back(dataFactory.getData( 213.3, RA, "2007-06-05 18:00:00") );
+	dl.push_back(dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00") );
 
-	AbstractAggregator::kvDataPtr d = aggregator.process(data.back(), data);
+	StandardAggregator::kvDataPtr d = aggregator.process(dl.back(), data);
 	ASSERT_TRUE(d.get() );
 	EXPECT_EQ(miutil::miTime("2007-06-06 06:00:00"), d->obstime() );
 	EXPECT_NEAR( 0, d->corrected(), .00001);
@@ -132,13 +137,14 @@ TEST_F(ra2rr_12Test, test12hZero)
 
 TEST_F(ra2rr_12Test, test12hNegative)
 {
-	AbstractAggregator::kvDataList data;
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[RA];
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302);
-	data.push_back(dataFactory.getData( 210.1, RA, "2007-06-05 06:00:00") );
-	data.push_back(dataFactory.getData( 213.3, RA, "2007-06-05 18:00:00") );
-	data.push_back(dataFactory.getData( 212.2, RA, "2007-06-06 06:00:00") );
+	dl.push_back(dataFactory.getData( 210.1, RA, "2007-06-05 06:00:00") );
+	dl.push_back(dataFactory.getData( 213.3, RA, "2007-06-05 18:00:00") );
+	dl.push_back(dataFactory.getData( 212.2, RA, "2007-06-06 06:00:00") );
 
-	AbstractAggregator::kvDataPtr d = aggregator.process(data.back(), data);
+	StandardAggregator::kvDataPtr d = aggregator.process(dl.back(), data);
 	ASSERT_TRUE(d.get() );
 	EXPECT_EQ(miutil::miTime("2007-06-06 06:00:00"), d->obstime() );
 	EXPECT_NEAR( 0, d->corrected(), .00001);
@@ -146,13 +152,14 @@ TEST_F(ra2rr_12Test, test12hNegative)
 
 TEST_F(ra2rr_12Test, test12hPositive24hNegative)
 {
-	AbstractAggregator::kvDataList data;
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[RA];
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302);
-	data.push_back(dataFactory.getData( 214.4, RA, "2007-06-05 06:00:00") );
-	data.push_back(dataFactory.getData( 212.2, RA, "2007-06-05 18:00:00") );
-	data.push_back(dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00") );
+	dl.push_back(dataFactory.getData( 214.4, RA, "2007-06-05 06:00:00") );
+	dl.push_back(dataFactory.getData( 212.2, RA, "2007-06-05 18:00:00") );
+	dl.push_back(dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00") );
 
-	AbstractAggregator::kvDataPtr d = aggregator.process(data.back(), data);
+	StandardAggregator::kvDataPtr d = aggregator.process(dl.back(), data);
 	ASSERT_TRUE(d.get() );
 	EXPECT_EQ(miutil::miTime("2007-06-06 06:00:00"), d->obstime() );
 	EXPECT_NEAR( 0, d->corrected(), .00001);
@@ -160,13 +167,14 @@ TEST_F(ra2rr_12Test, test12hPositive24hNegative)
 
 TEST_F(ra2rr_12Test, test12hPositive24hZero)
 {
-	AbstractAggregator::kvDataList data;
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[RA];
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302);
-	data.push_back(dataFactory.getData( 213.3, RA, "2007-06-05 06:00:00") );
-	data.push_back(dataFactory.getData( 212.2, RA, "2007-06-05 18:00:00") );
-	data.push_back(dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00") );
+	dl.push_back(dataFactory.getData( 213.3, RA, "2007-06-05 06:00:00") );
+	dl.push_back(dataFactory.getData( 212.2, RA, "2007-06-05 18:00:00") );
+	dl.push_back(dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00") );
 
-	AbstractAggregator::kvDataPtr d = aggregator.process(data.back(), data);
+	StandardAggregator::kvDataPtr d = aggregator.process(dl.back(), data);
 	ASSERT_TRUE(d.get() );
 	EXPECT_EQ(miutil::miTime("2007-06-06 06:00:00"), d->obstime() );
 	EXPECT_NEAR( 0, d->corrected(), .00001);
@@ -174,13 +182,14 @@ TEST_F(ra2rr_12Test, test12hPositive24hZero)
 
 TEST_F(ra2rr_12Test, test12hPositive24hPositivePrev12hNegative)
 {
-	AbstractAggregator::kvDataList data;
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[RA];
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302);
-	data.push_back(dataFactory.getData( 212.1, RA, "2007-06-05 06:00:00") );
-	data.push_back(dataFactory.getData( 211.1, RA, "2007-06-05 18:00:00") );
-	data.push_back(dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00") );
+	dl.push_back(dataFactory.getData( 212.1, RA, "2007-06-05 06:00:00") );
+	dl.push_back(dataFactory.getData( 211.1, RA, "2007-06-05 18:00:00") );
+	dl.push_back(dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00") );
 
-	AbstractAggregator::kvDataPtr d = aggregator.process(data.back(), data);
+	StandardAggregator::kvDataPtr d = aggregator.process(dl.back(), data);
 	ASSERT_TRUE(d.get() );
 	EXPECT_EQ(miutil::miTime("2007-06-06 06:00:00"), d->obstime() );
 	EXPECT_NEAR( 1.2, d->corrected(), .00001);
@@ -188,13 +197,14 @@ TEST_F(ra2rr_12Test, test12hPositive24hPositivePrev12hNegative)
 
 TEST_F(ra2rr_12Test, test12hPositive24hPositivePrev12hZero)
 {
-	AbstractAggregator::kvDataList data;
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[RA];
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302);
-	data.push_back(dataFactory.getData( 211.1, RA, "2007-06-05 06:00:00") );
-	data.push_back(dataFactory.getData( 211.1, RA, "2007-06-05 18:00:00") );
-	data.push_back(dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00") );
+	dl.push_back(dataFactory.getData( 211.1, RA, "2007-06-05 06:00:00") );
+	dl.push_back(dataFactory.getData( 211.1, RA, "2007-06-05 18:00:00") );
+	dl.push_back(dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00") );
 
-	AbstractAggregator::kvDataPtr d = aggregator.process(data.back(), data);
+	StandardAggregator::kvDataPtr d = aggregator.process(dl.back(), data);
 	ASSERT_TRUE(d.get() );
 	EXPECT_EQ(miutil::miTime("2007-06-06 06:00:00"), d->obstime() );
 	EXPECT_NEAR( 2.2, d->corrected(), .00001);
@@ -202,13 +212,14 @@ TEST_F(ra2rr_12Test, test12hPositive24hPositivePrev12hZero)
 
 TEST_F(ra2rr_12Test, test12hPositive24hPositivePrev12hPositive)
 {
-	AbstractAggregator::kvDataList data;
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[RA];
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302);
-	data.push_back(dataFactory.getData( 211.0, RA, "2007-06-05 06:00:00") );
-	data.push_back(dataFactory.getData( 212.2, RA, "2007-06-05 18:00:00") );
-	data.push_back(dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00") );
+	dl.push_back(dataFactory.getData( 211.0, RA, "2007-06-05 06:00:00") );
+	dl.push_back(dataFactory.getData( 212.2, RA, "2007-06-05 18:00:00") );
+	dl.push_back(dataFactory.getData( 213.3, RA, "2007-06-06 06:00:00") );
 
-	AbstractAggregator::kvDataPtr d = aggregator.process(data.back(), data);
+	StandardAggregator::kvDataPtr d = aggregator.process(dl.back(), data);
 	ASSERT_TRUE(d.get() );
 	EXPECT_EQ(miutil::miTime("2007-06-06 06:00:00"), d->obstime() );
 	EXPECT_NEAR( 1.1, d->corrected(), .00001);
@@ -216,13 +227,14 @@ TEST_F(ra2rr_12Test, test12hPositive24hPositivePrev12hPositive)
 
 TEST_F(ra2rr_12Test, testEmptyBucket)
 {
-	AbstractAggregator::kvDataList data;
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[RA];
 	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302);
-	data.push_back(dataFactory.getData( 411.0, RA, "2007-06-05 06:00:00") );
-	data.push_back(dataFactory.getData( 112.2, RA, "2007-06-05 18:00:00") );
-	data.push_back(dataFactory.getData( 113.3, RA, "2007-06-06 06:00:00") );
+	dl.push_back(dataFactory.getData( 411.0, RA, "2007-06-05 06:00:00") );
+	dl.push_back(dataFactory.getData( 112.2, RA, "2007-06-05 18:00:00") );
+	dl.push_back(dataFactory.getData( 113.3, RA, "2007-06-06 06:00:00") );
 
-	AbstractAggregator::kvDataPtr d = aggregator.process(data.back(), data);
+	StandardAggregator::kvDataPtr d = aggregator.process(dl.back(), data);
 	ASSERT_TRUE(d.get() );
 	EXPECT_EQ(miutil::miTime("2007-06-06 06:00:00"), d->obstime() );
 	EXPECT_NEAR( 1.1, d->corrected(), .00001);

@@ -31,7 +31,7 @@
 #ifndef __agregator_ra2rr_12_h__
 #define __agregator_ra2rr_12_h__
 
-#include "AbstractAggregator.h"
+#include "StandardAggregator.h"
 #include "rr.h"
 
 namespace aggregator
@@ -43,7 +43,7 @@ namespace aggregator
  * of negative rain, reporting it as no rain. This is to allow for
  * evaporation or lack of precision in the measuring instruments.
  */
-class ra2rr_12 : public AbstractAggregator
+class ra2rr_12 : public StandardAggregator
 {
 public:
 

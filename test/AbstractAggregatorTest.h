@@ -2,11 +2,11 @@
 #define ABSTRACTAGREGATORTEST_H_
 
 #include <gtest/gtest.h>
-#include <aggregator/AbstractAggregator.h>
+#include <aggregator/StandardAggregator.h>
 #include <boost/shared_ptr.hpp>
 
 
-typedef boost::shared_ptr<aggregator::AbstractAggregator> AggregatorPtr;
+typedef boost::shared_ptr<aggregator::StandardAggregator> AggregatorPtr;
 
 class AbstractAggregatorTest : public testing::TestWithParam<AggregatorPtr>
 {};

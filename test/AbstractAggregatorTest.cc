@@ -1,7 +1,7 @@
 #include "AbstractAggregatorTest.h"
 #include <kvalobs/kvDataOperations.h>
 
-using aggregator::AbstractAggregator;
+using aggregator::StandardAggregator;
 
 TEST_P(AbstractAggregatorTest, testGetTimeSpanAtGenerationPoint)
 {
@@ -11,7 +11,7 @@ TEST_P(AbstractAggregatorTest, testGetTimeSpanAtGenerationPoint)
 	miutil::miTime time(miutil::miDate("2007-06-06"),toTest);
 	const kvalobs::kvData d = dataFactory.getData( 15, 1, time );
 	
-	const AbstractAggregator::TimeSpan timeSpan = GetParam()->getTimeSpan(d);
+	const StandardAggregator::TimeSpan timeSpan = GetParam()->getTimeSpan(d);
 
 	ASSERT_EQ(time, timeSpan.second);
 	
@@ -31,7 +31,7 @@ TEST_P(AbstractAggregatorTest, testGetTimeSpan)
 	triggerTime.addHour(-1);
 	const kvalobs::kvData d = dataFactory.getData( 15, 1, triggerTime );
 	
-	const AbstractAggregator::TimeSpan timeSpan = GetParam()->getTimeSpan(d);
+	const StandardAggregator::TimeSpan timeSpan = GetParam()->getTimeSpan(d);
 	
 	ASSERT_EQ(time, timeSpan.second);
 	

@@ -30,9 +30,10 @@
 #include "AbstractAggregatorTest.h"
 #include <aggregator/ta_24.h>
 #include <kvalobs/kvDataOperations.h>
+#include <kvcpp/kvservicetypes.h>
 #include <map>
 
-using aggregator::ta_24;
+using namespace aggregator;
 
 class TestExtraCalculationData : public ta_24::ExtraCalculationData
 {
@@ -79,7 +80,7 @@ public:
 		throwOnCall_ = doThrow;
 	}
 protected:
-	// Overrides getStationMetadata in AbstractAggregator
+	// Overrides getStationMetadata in StandardAggregator
 	virtual float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const
 	{
 		if ( throwOnCall_ )
@@ -104,12 +105,14 @@ INSTANTIATE_TEST_CASE_P(ta_24Test, AbstractAggregatorTest, testing::Values(Aggre
 
 TEST_F(ta_24Test, data24hours)
 {
-	kvservice::KvDataList data;
-	for (miutil::miTime t = "2010-04-19 00:00:00"; t < "2010-04-20 00:00:00"; t.addHour() )
-		data.push_back(factory.getData(t.hour(), aggregator.readParam(), t));
-	kvalobs::correct(data.front(), 3);
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
 
-	ta_24::kvDataPtr result = aggregator.process(data.front(), data);
+	for (miutil::miTime t = "2010-04-19 00:00:00"; t < "2010-04-20 00:00:00"; t.addHour() )
+		dl.push_back(factory.getData(t.hour(), aggregator.readParam().front(), t));
+	kvalobs::correct(dl.front(), 3);
+
+	ta_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -119,12 +122,14 @@ TEST_F(ta_24Test, data24hours)
 
 TEST_F(ta_24Test, data8hours)
 {
-	kvservice::KvDataList data;
-	for (miutil::miTime t = "2010-04-19 00:00:00"; t < "2010-04-20 00:00:00"; t.addHour(3) )
-		data.push_back(factory.getData(t.hour(), aggregator.readParam(), t));
-	kvalobs::correct(data.front(), 3);
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
 
-	ta_24::kvDataPtr result = aggregator.process(data.front(), data);
+	for (miutil::miTime t = "2010-04-19 00:00:00"; t < "2010-04-20 00:00:00"; t.addHour(3) )
+		dl.push_back(factory.getData(t.hour(), aggregator.readParam().front(), t));
+	kvalobs::correct(dl.front(), 3);
+
+	ta_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -134,26 +139,30 @@ TEST_F(ta_24Test, data8hours)
 
 TEST_F(ta_24Test, data3hoursWrongTimes)
 {
-	kvservice::KvDataList data;
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
+
 	for (miutil::miTime t = "2010-04-19 00:00:00"; t < "2010-04-19 03:00:00"; t.addHour() )
-		data.push_back(factory.getData(t.hour(), aggregator.readParam(), t));
+		dl.push_back(factory.getData(t.hour(), aggregator.readParam().front(), t));
 
-	ASSERT_EQ(3u, data.size()) << "test precondition error";
+	ASSERT_EQ(3u, dl.size()) << "test precondition error";
 
-	ta_24::kvDataPtr result = aggregator.process(data.front(), data);
+	ta_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_FALSE( result.get() );
 }
 
 TEST_F(ta_24Test, data3hoursStartAt7)
 {
-	kvservice::KvDataList data;
-	data.push_back(factory.getData(6, aggregator.readParam(), "2010-04-19 07:00:00"));
-	data.push_back(factory.getData(12, aggregator.readParam(), "2010-04-19 13:00:00"));
-	data.push_back(factory.getData(18, aggregator.readParam(), "2010-04-19 19:00:00"));
-	kvalobs::correct(data.front(), 3);
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
 
-	ta_24::kvDataPtr result = aggregator.process(data.front(), data);
+	dl.push_back(factory.getData(6, aggregator.readParam().front(), "2010-04-19 07:00:00"));
+	dl.push_back(factory.getData(12, aggregator.readParam().front(), "2010-04-19 13:00:00"));
+	dl.push_back(factory.getData(18, aggregator.readParam().front(), "2010-04-19 19:00:00"));
+	kvalobs::correct(dl.front(), 3);
+
+	ta_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -164,16 +173,18 @@ TEST_F(ta_24Test, data3hoursStartAt7)
 
 TEST_F(ta_24Test, data3hoursMissingMetadata)
 {
-	// Simulate AbstractAggregator method getStationMetadata not finding any data.
+	// Simulate StandardAggregator method getStationMetadata not finding any data.
 	aggregator.setThrowOnCallToStationMetadata();
 
-	kvservice::KvDataList data;
-	data.push_back(factory.getData(6, aggregator.readParam(), "2010-04-19 06:00:00"));
-	data.push_back(factory.getData(12, aggregator.readParam(), "2010-04-19 12:00:00"));
-	data.push_back(factory.getData(18, aggregator.readParam(), "2010-04-19 18:00:00"));
-	kvalobs::correct(data.front(), 3);
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
 
-	ta_24::kvDataPtr result = aggregator.process(data.front(), data);
+	dl.push_back(factory.getData(6, aggregator.readParam().front(), "2010-04-19 06:00:00"));
+	dl.push_back(factory.getData(12, aggregator.readParam().front(), "2010-04-19 12:00:00"));
+	dl.push_back(factory.getData(18, aggregator.readParam().front(), "2010-04-19 18:00:00"));
+	kvalobs::correct(dl.front(), 3);
+
+	ta_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_FALSE( result.get() );
 }
@@ -181,13 +192,15 @@ TEST_F(ta_24Test, data3hoursMissingMetadata)
 
 TEST_F(ta_24Test, data3hours)
 {
-	kvservice::KvDataList data;
-	data.push_back(factory.getData(6, aggregator.readParam(), "2010-04-19 06:00:00"));
-	data.push_back(factory.getData(12, aggregator.readParam(), "2010-04-19 12:00:00"));
-	data.push_back(factory.getData(18, aggregator.readParam(), "2010-04-19 18:00:00"));
-	kvalobs::correct(data.front(), 3);
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
 
-	ta_24::kvDataPtr result = aggregator.process(data.front(), data);
+	dl.push_back(factory.getData(6, aggregator.readParam().front(), "2010-04-19 06:00:00"));
+	dl.push_back(factory.getData(12, aggregator.readParam().front(), "2010-04-19 12:00:00"));
+	dl.push_back(factory.getData(18, aggregator.readParam().front(), "2010-04-19 18:00:00"));
+	kvalobs::correct(dl.front(), 3);
+
+	ta_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -201,13 +214,15 @@ TEST_F(ta_24Test, data3hoursUnsorted)
 
 	aggregator.setNextReturnValueForStationMetadata(0.5);
 
-	kvservice::KvDataList data;
-	data.push_back(factory.getData(12, aggregator.readParam(), "2010-04-19 12:00:00"));
-	data.push_back(factory.getData(8, aggregator.readParam(), "2010-04-19 06:00:00"));
-	data.push_back(factory.getData(16, aggregator.readParam(), "2010-04-19 18:00:00"));
-	kvalobs::correct(data.front(), 3);
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
 
-	ta_24::kvDataPtr result = aggregator.process(data.front(), data);
+	dl.push_back(factory.getData(12, aggregator.readParam().front(), "2010-04-19 12:00:00"));
+	dl.push_back(factory.getData(8, aggregator.readParam().front(), "2010-04-19 06:00:00"));
+	dl.push_back(factory.getData(16, aggregator.readParam().front(), "2010-04-19 18:00:00"));
+	kvalobs::correct(dl.front(), 3);
+
+	ta_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -217,11 +232,13 @@ TEST_F(ta_24Test, data3hoursUnsorted)
 
 TEST_F(ta_24Test, inclomplete24HourObservationPossiblyInterpretedAs3hourObs)
 {
-	kvservice::KvDataList data;
-	for (miutil::miTime t = "2010-04-19 00:00:00"; t < "2010-04-19 19:00:00"; t.addHour() )
-		data.push_back(factory.getData(t.hour(), aggregator.readParam(), t));
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
 
-	ta_24::kvDataPtr result = aggregator.process(data.back(), data);
+	for (miutil::miTime t = "2010-04-19 00:00:00"; t < "2010-04-19 19:00:00"; t.addHour() )
+		dl.push_back(factory.getData(t.hour(), aggregator.readParam().front(), t));
+
+	ta_24::kvDataPtr result = aggregator.process(dl.back(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -233,11 +250,13 @@ TEST_F(ta_24Test, inclomplete24HourObservationPossiblyInterpretedAs3hourObsTrigg
 {
 	// Generation at 7 should only happen when there are three observations
 
-	kvservice::KvDataList data;
-	for (miutil::miTime t = "2010-04-19 00:00:00"; t < "2010-04-19 20:00:00"; t.addHour() )
-		data.push_back(factory.getData(t.hour(), aggregator.readParam(), t));
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
 
-	ta_24::kvDataPtr result = aggregator.process(data.back(), data);
+	for (miutil::miTime t = "2010-04-19 00:00:00"; t < "2010-04-19 20:00:00"; t.addHour() )
+		dl.push_back(factory.getData(t.hour(), aggregator.readParam().front(), t));
+
+	ta_24::kvDataPtr result = aggregator.process(dl.back(), data);
 
 	ASSERT_FALSE( result.get() );
 }

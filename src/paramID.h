@@ -33,7 +33,8 @@
 
 namespace aggregator {
 
-  enum { RR_01 = 105, RR_1   = 106, 
+  enum {
+	 RR_01 = 105, RR_1   = 106,
 	 RR_12 = 109, RR_24  = 110,
 	 RA    = 104,
 	 TA    = 211, TAM_24 = 253,
@@ -41,7 +42,9 @@ namespace aggregator {
 	 TAX   = 215, TAX_12 = 216,
 	 TGN   = 223, TGN_12 = 224,
 	 UU    = 262, UUM_24 = 266,
-	 NN    =  15, NNM_24 = 16
+	 NN    =  15, NNM_24 =  16,
+	 PO    = 173, PR     = 178,
+	 UM_VS = 284, TM_VS  = 285
   };
 }
 

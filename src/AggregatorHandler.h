@@ -74,8 +74,12 @@ public:
 
 	void addHandler(AbstractAggregator *handler);
 
-	virtual std::list<kvalobs::kvData>
-	getRelevantObsList(const kvalobs::kvData & data,
+private:
+
+	void getRelevantObsList(
+			AbstractAggregator::ParameterSortedDataList & out,
+			const AbstractAggregator & user,
+			const kvalobs::kvData & data,
 			const AbstractAggregator::TimeSpan & obsTimes) const;
 
 private:

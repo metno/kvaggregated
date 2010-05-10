@@ -41,14 +41,14 @@ using namespace kvalobs;
 namespace aggregator
 {
 MinMax::MinMax(int readParam, int writeParam, int interestingHours, const set<miClock> &generateWhen, Func minmax) :
-	AbstractAggregator(readParam, writeParam, interestingHours, generateWhen),
+	StandardAggregator(readParam, writeParam, interestingHours, generateWhen),
 			function(minmax)
 {
 }
 
 bool MinMax::shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const
 {
-	if ( ! AbstractAggregator::shouldProcess(trigger, observations) )
+	if ( ! StandardAggregator::shouldProcess(trigger, observations) )
 		return false;
 
 	TimeSpan time = getTimeSpan(trigger);
