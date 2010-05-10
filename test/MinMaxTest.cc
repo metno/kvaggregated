@@ -313,3 +313,35 @@ TEST_F(MinMaxTest, testCompleteDataObservationInMiddle)
 	EXPECT_FLOAT_EQ( 0, d->corrected());
 	EXPECT_FLOAT_EQ( 0, d->original());
 }
+
+TEST_F(MinMaxTest, testCorrectedValues)
+{
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[1];
+	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
+//	dl.push_back( dataFactory.getData( 2, 1, "2007-06-05 18:00:00" ) );
+	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 19:00:00" ) );
+	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 20:00:00" ) );
+	dl.push_back( dataFactory.getData( 3, 1, "2007-06-05 21:00:00" ) );
+	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 22:00:00" ) );
+	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 23:00:00" ) );
+	kvalobs::correct(dl.back(), 2);
+	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 00:00:00" ) );
+	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 01:00:00" ) );
+	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 02:00:00" ) );
+	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 03:00:00" ) );
+	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
+	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 05:00:00" ) );
+	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
+
+	StandardAggregator::kvDataList::const_iterator p = dl.begin();
+	++p;
+
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
+	ASSERT_TRUE( d.get() );
+
+	EXPECT_EQ( 2, d->paramID() );
+	EXPECT_FLOAT_EQ( 2, d->corrected() );
+	EXPECT_FLOAT_EQ( 3, d->original() );
+	EXPECT_EQ(4, d->controlinfo().flag(kvalobs::flag::fmis)) << "Error in kvalobs version";
+}

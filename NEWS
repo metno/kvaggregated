@@ -6,3 +6,5 @@
    - TA_24
    - UU_24
    
+ * Setting fmis=4 when correcting data (if kvalobs version is upgraded)
+   

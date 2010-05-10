@@ -258,3 +258,25 @@ TEST_F(poTest, missingta)
 	ASSERT_TRUE(result);
 	EXPECT_TRUE(kvalobs::missing(* result));
 }
+
+
+TEST_F(poTest, testCorrectedValuesSetsFmis)
+{
+	p.hp = 208;
+
+	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	const kvalobs::kvData pr = factory.getData(1011.8, PR);
+	kvalobs::kvData ta = factory.getData(6.3, TA);
+	kvalobs::correct(ta, 23.2);
+
+	po::ParameterSortedDataList toProcess;
+	toProcess[PR].push_back(pr);
+	toProcess[TA].push_back(ta);
+
+	po::kvDataPtr result = p.process(pr, toProcess);
+
+	EXPECT_NEAR(986.5, result->original(), 0.05);
+	//EXPECT_NEAR(986.5, result->corrected(), 0.05); // We don't care
+	EXPECT_EQ(4, result->controlinfo().flag(kvalobs::flag::fmis)) << "Error in kvalobs version";
+
+}
