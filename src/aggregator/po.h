@@ -43,11 +43,10 @@ public:
 
 	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations);
 
+	// Unused, awaiting a system for identifying inversion correcting stations:
 	kvDataPtr processMethod2(const kvalobs::kvData & data, const ParameterSortedDataList & observations);
 
-
 	virtual const TimeSpan getTimeSpan(const kvalobs::kvData &data) const;
-
 
 protected:
 	// protected to be overrideable by tests

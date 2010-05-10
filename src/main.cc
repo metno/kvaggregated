@@ -58,6 +58,7 @@
 #include "aggregator/ta_24.h"
 #include "aggregator/uu_24.h"
 #include "aggregator/nn_24.h"
+#include "aggregator/po.h"
 #include <memory>
 
 using namespace std;
@@ -238,6 +239,8 @@ int main(int argc, char **argv)
 			handler.addHandler(& uu24);
 			nn_24 nn24;
 			handler.addHandler(& nn24);
+			po p;
+			handler.addHandler(& p);
 
 			try
 			{
