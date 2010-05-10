@@ -95,6 +95,7 @@ po::kvDataPtr po::processMethod2(const kvalobs::kvData & data, const ParameterSo
 po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDataList & observations, int method)
 {
 	milog::LogContext context("PO aggregation");
+
 	kvDataPtr ret;
 	try
 	{
@@ -117,6 +118,7 @@ po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDa
 								computePo(pr->original(), ta->original(), um, tm ,hp);
 				ret = kvDataPtr(new kvalobs::kvData(factory.getData(poOriginal, PO)));
 			}
+			ret->typeID(- std::abs(data.typeID()));
 
 			if ( not kvalobs::valid(* pr) or not kvalobs::valid(* ta) )
 				kvalobs::reject(* ret);
@@ -135,6 +137,7 @@ po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDa
 	catch ( std::exception & e )
 	{
 		LOGERROR(e.what());
+		return po::kvDataPtr();
 	}
 	return ret;
 }

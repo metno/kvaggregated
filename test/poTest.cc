@@ -68,6 +68,37 @@ protected:
 	TestingPo p;
 };
 
+
+TEST_F(poTest, createsNegativeTypeId)
+{
+	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	const kvalobs::kvData pr = factory.getData(1036.5, PR);
+	const kvalobs::kvData ta = factory.getData(6.3, TA);
+
+	po::ParameterSortedDataList toProcess;
+	toProcess[PR].push_back(pr);
+	toProcess[TA].push_back(ta);
+
+	po::kvDataPtr result = p.process(pr, toProcess);
+	ASSERT_TRUE(result);
+	EXPECT_EQ(-1, result->typeID());
+}
+
+TEST_F(poTest, createsNegativeTypeIdFromNegativeStart)
+{
+	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", -1);
+	const kvalobs::kvData pr = factory.getData(1036.5, PR);
+	const kvalobs::kvData ta = factory.getData(6.3, TA);
+
+	po::ParameterSortedDataList toProcess;
+	toProcess[PR].push_back(pr);
+	toProcess[TA].push_back(ta);
+
+	po::kvDataPtr result = p.process(pr, toProcess);
+	ASSERT_TRUE(result);
+	EXPECT_EQ(-1, result->typeID());
+}
+
 TEST_F(poTest, test1)
 {
 	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
@@ -80,7 +111,6 @@ TEST_F(poTest, test1)
 
 	po::kvDataPtr result = p.process(pr, toProcess);
 
-	// just made up some values
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 	EXPECT_NEAR(986.5, result->corrected(), 0.05);
 }
@@ -97,7 +127,6 @@ TEST_F(poTest, test2a)
 
 	po::kvDataPtr result = p.process(pr, toProcess);
 
-	// just made up some values
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 	EXPECT_NEAR(986.5, result->corrected(), 0.05);
 }
@@ -114,7 +143,6 @@ TEST_F(poTest, test2b)
 
 	po::kvDataPtr result = p.processMethod2(pr, toProcess);
 
-	// just made up some values
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 	EXPECT_NEAR(986.5, result->corrected(), 0.05);
 }
@@ -133,7 +161,6 @@ TEST_F(poTest, test3)
 
 	po::kvDataPtr result = p.process(pr, toProcess);
 
-	// just made up some values
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 	EXPECT_NEAR(986.5, result->corrected(), 0.05);
 }
@@ -152,7 +179,6 @@ TEST_F(poTest, test4a)
 
 	po::kvDataPtr result = p.process(pr, toProcess);
 
-	// just made up some values
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 	EXPECT_NEAR(986.5, result->corrected(), 0.05);
 }
@@ -171,7 +197,6 @@ TEST_F(poTest, test4b)
 
 	po::kvDataPtr result = p.processMethod2(pr, toProcess);
 
-	// just made up some values
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 	EXPECT_NEAR(986.5, result->corrected(), 0.05);
 }
