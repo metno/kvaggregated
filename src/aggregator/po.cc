@@ -136,6 +136,7 @@ po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDa
 	{
 		LOGERROR(e.what());
 	}
+	return po::kvDataPtr();
 }
 
 
