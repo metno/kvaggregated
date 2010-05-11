@@ -28,6 +28,7 @@
  */
 
 #include "AbstractAggregator.h"
+#include <kvalobs/kvDataOperations.h>
 
 namespace aggregator
 {
@@ -40,6 +41,52 @@ AbstractAggregator::AbstractAggregator(int readParam, int writeParam) :
 
 AbstractAggregator::~AbstractAggregator()
 {
+}
+
+namespace
+{
+float round(float f)
+{
+	if ( f < 0 )
+		f -= 0.05;
+	else
+		f += 0.05;
+	f *= 10;
+	f = int(f);
+	return f / 10.0;
+}
+}
+AbstractAggregator::kvDataPtr AbstractAggregator::getDataObject(const kvalobs::kvData &trigger,
+		const miutil::miTime &obsTime, float original, float corrected, const kvalobs::kvUseInfo & ui)
+{
+	int typeID = trigger.typeID();
+	if (typeID > 0)
+		typeID *= -1;
+
+	kvalobs::kvDataFactory f(trigger.stationID(), obsTime, typeID, trigger.sensor(),
+			trigger.level());
+
+	kvDataPtr ret;
+	if ( original == invalidParam )
+		ret = kvDataPtr(new kvalobs::kvData(f.getMissing(writeParam())));
+	else
+	{
+		original = round(original);
+		ret = kvDataPtr(new kvalobs::kvData(f.getData(original, writeParam())));
+	}
+
+	if (corrected == invalidParam)
+		kvalobs::reject(* ret);
+	else
+	{
+		corrected = round(corrected);
+		if (original != corrected)
+			kvalobs::correct(* ret, corrected);
+	}
+
+	ret->useinfo(ui);
+
+	return ret;
 }
 
 }

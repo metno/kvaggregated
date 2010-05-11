@@ -110,6 +110,38 @@ protected:
 		read_param.push_back(parameter);
 	}
 
+	/**
+	 * \brief Get a data object for the created agregate.
+	 *
+	 * Return an agregate object for sending to kvalobs.
+	 *
+	 * \param trigger  The piece of data which triggered the call to
+	 * this object.
+	 *
+	 * \param obsTime The time for the generated object.
+	 *
+	 * \param agregateValue The agregated value for the observation. This may
+	 * have the value \c invalidParam.
+	 *
+	 * \return The agregate data object to be sent to kvalobs, or an
+	 * empty object kvDataObj.clean() if the object is so similar to
+	 * what already exists in kvalobs that it should not be sent.
+	 */
+	kvDataPtr
+	getDataObject(const kvalobs::kvData &trigger,
+			const miutil::miTime &obsTime, float original, float corrected, const kvalobs::kvUseInfo & ui);
+
+	/**
+	 * \brief This is the kvalobs internal value for errors.
+	 *
+	 * If an error occurs which means that a correct value for an
+	 * observation cannot be given, this should be returned instead.
+	 *
+	 * \note Incoming observations to kvalobs may also have this
+	 * value. Each subclass must determine what to do if such a value
+	 * is encountered.
+	 */
+	static const float invalidParam = -32768;
 
 private:
 

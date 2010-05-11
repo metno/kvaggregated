@@ -96,7 +96,6 @@ po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDa
 {
 	milog::LogContext context("PO aggregation");
 
-	kvDataPtr ret;
 	try
 	{
 		const kvalobs::kvData * pr = getData(PR, data.obstime(), observations);
@@ -108,28 +107,29 @@ po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDa
 			float tm = getStationMetadata("VS", factory.getMissing(TM_VS));
 			float hp = getStationMetadata("hp", data);
 
-			if ( kvalobs::original_missing(* pr) or kvalobs::original_missing(* ta) )
-				ret = kvDataPtr(new kvalobs::kvData(factory.getMissing(PO)));
-			else
+			float original = invalidParam;
+			float corrected = invalidParam;
+
+			if ( not kvalobs::original_missing(* pr) and not kvalobs::original_missing(* ta) )
 			{
-				float poOriginal =
+				original =
 						method == 2 ?
 								computePoWithInversionCorrection(pr->original(), ta->original(), um, tm ,hp) :
 								computePo(pr->original(), ta->original(), um, tm ,hp);
-				ret = kvDataPtr(new kvalobs::kvData(factory.getData(poOriginal, PO)));
 			}
-			ret->typeID(- std::abs(data.typeID()));
 
-			if ( not kvalobs::valid(* pr) or not kvalobs::valid(* ta) )
-				kvalobs::reject(* ret);
-			else if ( pr->original() != pr->corrected() or ta->original() != ta->corrected() )
+			if ( kvalobs::valid(* pr) and kvalobs::valid(* ta) )
 			{
-				float poCorrected =
-						method == 2 ?
-								computePoWithInversionCorrection(pr->corrected(), ta->corrected(), um, tm ,hp) :
-								computePo(pr->corrected(), ta->corrected(), um, tm ,hp);
-				kvalobs::correct(* ret, poCorrected);
+				corrected = original;
+				if ( pr->original() != pr->corrected() or ta->original() != ta->corrected() )
+				{
+					corrected =
+							method == 2 ?
+									computePoWithInversionCorrection(pr->corrected(), ta->corrected(), um, tm ,hp) :
+									computePo(pr->corrected(), ta->corrected(), um, tm ,hp);
+				}
 			}
+			return getDataObject(data, data.obstime(), original, corrected, kvalobs::kvUseInfo());
 		}
 		else
 			LOGDEBUG("Missing complete data for PO generation");
@@ -137,9 +137,8 @@ po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDa
 	catch ( std::exception & e )
 	{
 		LOGERROR(e.what());
-		return po::kvDataPtr();
 	}
-	return ret;
+	return po::kvDataPtr();
 }
 
 const po::TimeSpan po::getTimeSpan(const kvalobs::kvData &data) const

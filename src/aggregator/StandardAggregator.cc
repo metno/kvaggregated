@@ -99,29 +99,6 @@ bool StandardAggregator::shouldProcess(const kvalobs::kvData &trigger,
 	return true;
 }
 
-kvalobs::kvData StandardAggregator::getDataObject_(const kvData &trigger,
-		const miTime &obsTime, float original, float corrected, const kvalobs::kvUseInfo & ui)
-{
-	int typeID = trigger.typeID();
-	if (typeID > 0)
-		typeID *= -1;
-
-	kvDataFactory f(trigger.stationID(), obsTime, typeID, trigger.sensor(),
-			trigger.level());
-
-	kvalobs::kvData ret = original == invalidParam ? f.getMissing(writeParam())
-			: f.getData(original, writeParam());
-
-	if (corrected == invalidParam)
-		reject(ret);
-	else if (original != corrected)
-		correct(ret, corrected);
-
-	ret.useinfo(ui);
-
-	return ret;
-}
-
 bool StandardAggregator::isInterestedIn(const kvalobs::kvData &data) const
 {
 	LogContext context(name + " Station=" + lexical_cast<string> (
@@ -143,20 +120,6 @@ bool StandardAggregator::isInterestedIn(const kvalobs::kvData &data) const
 		}
 	}
 	return true;
-}
-
-namespace
-{
-float round(float f)
-{
-	if ( f < 0 )
-		f -= 0.05;
-	else
-		f += 0.05;
-	f *= 10;
-	f = int(f);
-	return f / 10.0;
-}
 }
 
 AbstractAggregator::kvDataPtr StandardAggregator::process(
@@ -187,8 +150,8 @@ AbstractAggregator::kvDataPtr StandardAggregator::process(
 
 		boost::scoped_ptr<ExtraAggregationData> extraData(getExtraData(data));
 
-		float original = round(generateOriginal_(relevantData, extraData.get()));
-		float corrected = round(generateCorrected_(relevantData, extraData.get()));
+		float original = generateOriginal_(relevantData, extraData.get());
+		float corrected = generateCorrected_(relevantData, extraData.get());
 
 #ifdef AGGREGATE_USEINFO
 		kvalobs::kvUseInfo ui = calculateUseInfo(relevantData);
@@ -204,8 +167,7 @@ AbstractAggregator::kvDataPtr StandardAggregator::process(
 		miTime t = miTime(times.second.date(), miClock(times.second.hour(), 0,
 				0));
 
-		kvDataPtr ret(
-				new kvData(getDataObject_(data, t, original, corrected, ui)));
+		kvDataPtr ret = getDataObject(data, t, original, corrected, ui);
 
 		return ret;
 	} catch (exception & err)
