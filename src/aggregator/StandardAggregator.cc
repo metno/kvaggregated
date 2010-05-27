@@ -30,7 +30,6 @@
  */
 #include "StandardAggregator.h"
 //#include "AggregatorHandler.h"
-#include "useinfoAggregate.h"
 #include <proxy/KvalobsDataAccess.h>
 #include <kvalobs/kvDataOperations.h>
 #include <puTools/miTime.h>
@@ -153,21 +152,13 @@ AbstractAggregator::kvDataPtr StandardAggregator::process(
 		float original = generateOriginal_(relevantData, extraData.get());
 		float corrected = generateCorrected_(relevantData, extraData.get());
 
-#ifdef AGGREGATE_USEINFO
-		kvalobs::kvUseInfo ui = calculateUseInfo(relevantData);
-#else
-		kvalobs::kvUseInfo ui;
-#endif
-
-		//original = corrected; // revert to old behaviour
-
 		TimeSpan times = getTimeSpan(data);
 
 		// Create a data object for saving
 		miTime t = miTime(times.second.date(), miClock(times.second.hour(), 0,
 				0));
 
-		kvDataPtr ret = getDataObject(data, t, original, corrected, ui);
+		kvDataPtr ret = getDataObject(data, t, original, corrected, relevantData);
 
 		return ret;
 	} catch (exception & err)
@@ -182,17 +173,6 @@ AbstractAggregator::kvDataPtr StandardAggregator::process(
 		LOGERROR( "Unrecognized error" );
 		return kvDataPtr();
 	}
-}
-
-kvalobs::kvUseInfo StandardAggregator::calculateUseInfo(
-		const kvDataList & sourceData) const
-{
-	std::vector<kvalobs::kvUseInfo> ui;
-	for (kvDataList::const_iterator it = sourceData.begin(); it
-			!= sourceData.end(); ++it)
-		ui.push_back(it->useinfo());
-
-	return aggregateUseFlag(ui);
 }
 
 float StandardAggregator::getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const

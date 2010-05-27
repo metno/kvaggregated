@@ -186,15 +186,6 @@ protected:
 	virtual float calculate(const ValueList & source, ExtraData extraData) const = 0;
 
 	/**
-	 * Calculate value for new useinfo flag, based on the source data, which
-	 * aggregation was made on.
-	 *
-	 * \warning Unless AGGREGATE_USEINFO is defined, this method will never be
-	 *          called explicitly.
-	 */
-	kvalobs::kvUseInfo calculateUseInfo(const kvDataList & sourceData) const;
-
-	/**
 	 * Get station metadata from kvalobs. This i a service function to
 	 * subclasses. Will search the kvalobs database for metadata with the
 	 * given name, which it applicable to the given kvData object. Data is

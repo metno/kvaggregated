@@ -120,8 +120,13 @@ protected:
 	 *
 	 * \param obsTime The time for the generated object.
 	 *
-	 * \param agregateValue The agregated value for the observation. This may
+	 * \param original The original agregated value for the observation. This may
 	 * have the value \c invalidParam.
+	 *
+	 * \param corrected The corrected agregated value for the observation. This may
+	 * have the value \c invalidParam.
+	 *
+	 * \param fagg Flag value to use in controlinfo(0)
 	 *
 	 * \return The agregate data object to be sent to kvalobs, or an
 	 * empty object kvDataObj.clean() if the object is so similar to
@@ -129,7 +134,7 @@ protected:
 	 */
 	kvDataPtr
 	getDataObject(const kvalobs::kvData &trigger,
-			const miutil::miTime &obsTime, float original, float corrected, const kvalobs::kvUseInfo & ui);
+			const miutil::miTime &obsTime, float original, float corrected, const std::list<kvalobs::kvData> & sourceData);
 
 	/**
 	 * \brief This is the kvalobs internal value for errors.
@@ -144,6 +149,13 @@ protected:
 	static const float invalidParam = -32768;
 
 private:
+
+	/**
+	 * Calculate value for new controlinfo(0) - fagg, based on the source data which
+	 * aggregation was made on.
+	 */
+	int calculateAggregateFlag(const kvDataList & sourceData) const;
+
 
 	ParameterList read_param;
 	const int write_param;

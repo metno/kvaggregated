@@ -225,20 +225,16 @@ bool differentOriginal(const kvData & a, const kvData & b)
 	return false;
 }
 
-bool differentUseInfo(const kvData & a, const kvData & b)
+bool differentControlInfo(const kvData & a, const kvData & b)
 {
-	std::string fa = a.useinfo().flagstring().substr(0, 5);
-	std::string fb = a.useinfo().flagstring().substr(0, 5);
-	return fa != fb;
+	return a.controlinfo() != b.controlinfo();
 }
 
 bool different_(const kvData & a, const kvData & b)
 {
 	return differentCorrected(a, b)
 			or differentOriginal(a, b)
-#ifdef AGGREGATE_USEINFO
-			or differentUseInfo(a, b)
-#endif
+			or differentControlInfo(a, b)
 	;
 }
 }

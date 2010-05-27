@@ -129,7 +129,10 @@ po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDa
 									computePo(pr->corrected(), ta->corrected(), um, tm ,hp);
 				}
 			}
-			return getDataObject(data, data.obstime(), original, corrected, kvalobs::kvUseInfo());
+			std::list<kvalobs::kvData> sourceData;
+			sourceData.push_back(* pr);
+			sourceData.push_back(* ta);
+			return getDataObject(data, data.obstime(), original, corrected, sourceData);
 		}
 		else
 			LOGDEBUG("Missing complete data for PO generation");
