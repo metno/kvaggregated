@@ -41,34 +41,40 @@ using namespace kvalobs;
 
 namespace aggregator
 {
-rr_1::rr_1() :
-	StandardAggregator(RR_01, RR_1, 1, allHours), threadStopping(false)
+rr_1::rr_1(bool startThread) :
+	StandardAggregator(RR_01, RR_1, 1, allHours), thread(0), threadStopping(false)
 {
-	GenerateZero g0(*this);
-	thread = new boost::thread(g0);
+	if ( startThread )
+	{
+		GenerateZero g0(*this);
+		thread = new boost::thread(g0);
+	}
 }
 
 rr_1::~rr_1()
 {
 	LOGDEBUG("Stopping RR_1 autogeneration");
 	threadStopping = true;
-	thread->join();
-	delete thread;
+	if ( thread )
+	{
+		thread->join();
+		delete thread;
+	}
 }
 
 bool rr_1::shouldProcess(const kvData &trigger, const kvDataList &observations) const
 {
-	//return true;
-	// Will only generate when receiving values from GenerateZero thread
-	bool generate = (trigger.original() == GenerateZero::obsVal());
-	if (not generate)
-	{
-		const miTime & obstime = trigger.obstime();
-		generate = obstime.date() != miDate::today() or (obstime.clock()
-				<= miClock(6, 0, 0) and miClock::oclock()
-				> GenerateZero::genClock);
-	}
-	return generate;
+	return true;
+//	// Will only generate when receiving values from GenerateZero thread
+//	bool generate = (trigger.original() == GenerateZero::obsVal());
+//	if (not generate)
+//	{
+//		const miTime & obstime = trigger.obstime();
+//		generate = obstime.date() != miDate::today() or (obstime.clock()
+//				<= miClock(6, 0, 0) and miClock::oclock()
+//				> GenerateZero::genClock);
+//	}
+//	return generate;
 }
 
 float rr_1::calculate(const ValueList & source, ExtraData ) const
@@ -76,7 +82,7 @@ float rr_1::calculate(const ValueList & source, ExtraData ) const
 	float sum = 0;
 	for ( ValueList::const_iterator it = source.begin(); it != source.end(); ++ it )
 		if ( * it > 0 )
-			sum += 0;
+			sum += * it;
 	return sum;
 }
 

@@ -59,7 +59,7 @@ class rr_1: public StandardAggregator
 	bool threadStopping;
 public:
 
-	rr_1();
+	explicit rr_1(bool startThread);
 
 	virtual ~rr_1();
 
