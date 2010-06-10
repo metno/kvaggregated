@@ -80,7 +80,7 @@ AbstractAggregator::kvDataPtr AbstractAggregator::getDataObject(const kvalobs::k
 	else
 	{
 		corrected = round(corrected);
-		if (original != corrected)
+		if (abs(original - corrected) > 0.05)
 			kvalobs::correct(* ret, corrected);
 	}
 
