@@ -126,6 +126,11 @@ AggregatorConfiguration::ParseResult AggregatorConfiguration::parse(int & argc, 
 			help(messageStream_);
 			return Exit_Success;
 		}
+		if ( givenOptions_.count("version") )
+		{
+			version(messageStream_);
+			return Exit_Success;
+		}
 
 		getOptionList(std::back_inserter(stations_), "stations", givenOptions_);
 		getOptionList(std::back_inserter(parameters_), "parameter", givenOptions_);
