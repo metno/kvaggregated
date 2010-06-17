@@ -53,10 +53,10 @@ rr_1::rr_1(bool startThread) :
 
 rr_1::~rr_1()
 {
-	LOGDEBUG("Stopping RR_1 autogeneration");
 	threadStopping = true;
 	if ( thread )
 	{
+		LOGDEBUG("Stopping RR_1 autogeneration");
 		thread->join();
 		delete thread;
 	}
