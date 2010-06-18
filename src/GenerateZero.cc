@@ -106,6 +106,9 @@ namespace aggregator
 	
 	miTime to( nextGen.date(), miClock( 7,0,0 ) );
     miTime from( nextGen.date(), miClock( 6,0,0 ) );
+
+    from.addSec(-1);
+    to.addSec(-1);
     
 	for ( from.addDay( -1 ); from < to; from.addHour() ) 
 	{
