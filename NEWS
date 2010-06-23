@@ -5,6 +5,8 @@
    - NN_24
    - TA_24
    - UU_24
-   
+
+ * RR_01 observations are aggregated as soon as they arrive
+
  * Setting fmis=4 when correcting data (if kvalobs version is upgraded)
    
