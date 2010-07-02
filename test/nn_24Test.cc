@@ -162,3 +162,21 @@ TEST_F(nn_24Test, roundDataDownwardsToOneDecimalWhenNegative) // this is really 
 	EXPECT_FLOAT_EQ(-2.3, result->original());
 	EXPECT_FLOAT_EQ(-2.7, result->corrected());
 }
+
+TEST_F(nn_24Test, interprets9as8)
+{
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
+
+	dl.push_back(factory.getData(9, aggregator.readParam().front(), "2010-03-18 06:00:00"));
+	dl.push_back(factory.getData(9, aggregator.readParam().front(), "2010-03-18 12:00:00"));
+	dl.push_back(factory.getData(9, aggregator.readParam().front(), "2010-03-18 18:00:00"));
+
+	nn_24::kvDataPtr result = aggregator.process(dl.front(), data);
+
+	ASSERT_TRUE( result.get() );
+
+	// Note that we require exactly equal!
+	EXPECT_FLOAT_EQ(8, result->original());
+	EXPECT_FLOAT_EQ(8, result->corrected());
+}

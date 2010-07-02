@@ -62,4 +62,13 @@ void nn_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const
 		throw std::runtime_error("Unable to find correct periods for agregation");
 }
 
+float nn_24::calculate(const ValueList & source, ExtraData extraData) const
+{
+	// All values "9" should be interpreted as "8"
+	ValueList modified = source;
+	std::replace(modified.begin(), modified.end(), 9, 8);
+
+	return MeanValueAggregator::calculate(modified, extraData);
+}
+
 }
