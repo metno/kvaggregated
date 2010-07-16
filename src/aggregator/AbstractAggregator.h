@@ -162,6 +162,17 @@ private:
 	const std::set<miutil::miClock> generate_when;
 };
 
+namespace internal
+{
+/**
+ * Calculate value for fagg flag when data is aggregated.
+ *
+ * @param sourceData source data for aggregation
+ * @return value from fagg
+ */
+int calculateAggregateFlag_(const AbstractAggregator::kvDataList & sourceData);
+}
+
 }
 
 #endif /* ABSTRACTAGGREGATOR_H_ */

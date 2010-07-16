@@ -97,6 +97,13 @@ AbstractAggregator::kvDataPtr AbstractAggregator::getDataObject(const kvalobs::k
 	return ret;
 }
 
+int AbstractAggregator::calculateAggregateFlag(const kvDataList & sourceData) const
+{
+	return internal::calculateAggregateFlag_(sourceData);
+}
+
+namespace internal
+{
 namespace
 {
 int getFmis(const std::vector<kvalobs::kvControlInfo> & ci)
@@ -121,7 +128,7 @@ int getFmis(const std::vector<kvalobs::kvControlInfo> & ci)
 			return 3;
 		case 4:
 			if ( fmis == 0 )
-				fmis == 4;
+				fmis = 4;
 			break;
 		default:
 			break; // ignore invalid values
@@ -130,10 +137,10 @@ int getFmis(const std::vector<kvalobs::kvControlInfo> & ci)
 }
 }
 
-int AbstractAggregator::calculateAggregateFlag(const kvDataList & sourceData) const
+int calculateAggregateFlag_(const AbstractAggregator::kvDataList & sourceData)
 {
 	std::vector<kvalobs::kvControlInfo> ci;
-	for (kvDataList::const_iterator it = sourceData.begin(); it	!= sourceData.end(); ++it)
+	for (AbstractAggregator::kvDataList::const_iterator it = sourceData.begin(); it	!= sourceData.end(); ++it)
 		ci.push_back(it->controlinfo());
 
 	const int fmis = getFmis(ci);
@@ -146,7 +153,7 @@ int AbstractAggregator::calculateAggregateFlag(const kvDataList & sourceData) co
 	{
 		std::set<int> ui2;
 		std::set<int> ui3;
-		for (kvDataList::const_iterator it = sourceData.begin(); it	!= sourceData.end(); ++it)
+		for (AbstractAggregator::kvDataList::const_iterator it = sourceData.begin(); it	!= sourceData.end(); ++it)
 		{
 			const kvalobs::kvUseInfo & ui = it->useinfo();
 			ui2.insert(ui.flag(2));
@@ -182,6 +189,6 @@ int AbstractAggregator::calculateAggregateFlag(const kvDataList & sourceData) co
 	}
 	return fagg;
 }
-
+}
 
 }

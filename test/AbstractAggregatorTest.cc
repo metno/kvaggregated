@@ -38,3 +38,17 @@ TEST_P(AbstractAggregatorTest, testGetTimeSpan)
 	time.addHour(- GetParam()->interestingHours());
 	ASSERT_EQ(time, timeSpan.first);
 }
+
+TEST(AbstractAggregatorFaggTest, test)
+{
+	kvalobs::kvDataFactory f(100, "2010-07-16 06:00:00", 302);
+	kvalobs::kvData d = f.getData(1, 100);
+
+	aggregator::AbstractAggregator::kvDataList dl;
+
+	d.controlinfo(kvalobs::kvControlInfo("0600604000000000"));
+	d.useinfo(kvalobs::kvUseInfo("7033700000000002"));
+	dl.push_back(d);
+
+	EXPECT_EQ(6, aggregator::internal::calculateAggregateFlag_(dl));
+}
