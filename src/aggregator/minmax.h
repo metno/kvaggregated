@@ -81,7 +81,7 @@ public:
 
 	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
 
-	virtual float calculate(const ValueList & source, ExtraData extraData) const;
+	virtual float calculate(const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const;
 };
 
 /**

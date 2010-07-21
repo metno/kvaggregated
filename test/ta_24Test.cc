@@ -35,29 +35,39 @@
 
 using namespace aggregator;
 
-class TestExtraCalculationData : public ta_24::ExtraCalculationData
-{
-public:
-	TestExtraCalculationData(const kvalobs::kvData & d) : ta_24::ExtraCalculationData(d) {}
-	virtual float minimumTemperature(const kvservice::DataAccess * dataAccess) { return 7.5; }
-};
-
 /**
  * Testing version of class ta_24. This class will merely pretend to contact
  * kvalobs on calls to getStationMetadata.
  */
 class ta_24_test_version : public ta_24
 {
-	float ret_;
+	float stationMetadata_;
+	float tan24_;
 	bool throwOnCall_;
 public:
 	ta_24_test_version() :
-		ta_24(0), ret_(0.75), throwOnCall_(false)
+		ta_24(0), stationMetadata_(0.75), tan24_(7.5), throwOnCall_(false)
 	{}
+
+	class TestExtraCalculationData : public ta_24::ExtraCalculationData
+	{
+	public:
+		TestExtraCalculationData(const kvalobs::kvData & d, float tan24) : ExtraCalculationData(d)
+		{
+			originalTan24 = tan24;
+			correctedTan24 = tan24;
+		}
+
+	protected:
+		virtual void populate(const kvservice::DataAccess * dataAccess)	{}
+
+	private:
+
+	};
 
 	virtual ExtraData getExtraData(const kvalobs::kvData & data)
 	{
-		return new TestExtraCalculationData(data);
+		return new TestExtraCalculationData(data, tan24_);
 	}
 
 	/**
@@ -66,7 +76,12 @@ public:
 	 */
 	void setNextReturnValueForStationMetadata(float valueToReturn)
 	{
-		ret_ = valueToReturn;
+		stationMetadata_ = valueToReturn;
+	}
+
+	void setTan24(float val)
+	{
+		tan24_ = val;
 	}
 
 	/**
@@ -85,7 +100,7 @@ protected:
 	{
 		if ( throwOnCall_ )
 			throw std::runtime_error("Artificially generated error for testing");
-		return ret_;
+		return stationMetadata_;
 	}
 };
 
@@ -187,6 +202,25 @@ TEST_F(ta_24Test, data3hoursMissingMetadata)
 	ta_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_FALSE( result.get() );
+}
+
+TEST_F(ta_24Test, data3hoursMissingTan12)
+{
+	aggregator.setTan24(ta_24::ExtraCalculationData::missing_);
+
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
+
+	dl.push_back(factory.getData(6, aggregator.readParam().front(), "2010-04-19 06:00:00"));
+	dl.push_back(factory.getData(12, aggregator.readParam().front(), "2010-04-19 12:00:00"));
+	dl.push_back(factory.getData(18, aggregator.readParam().front(), "2010-04-19 18:00:00"));
+
+	ta_24::kvDataPtr result = aggregator.process(dl.front(), data);
+
+	ASSERT_TRUE( result.get() );
+
+	EXPECT_TRUE(kvalobs::original_missing(* result));
+	EXPECT_FALSE(kvalobs::valid(* result));
 }
 
 

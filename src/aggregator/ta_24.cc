@@ -30,6 +30,7 @@
 #include "ta_24.h"
 #include "paramID.h"
 #include <proxy/DataAccess.h>
+#include <kvalobs/kvDataOperations.h>
 #include <milog/milog.h>
 #include <numeric>
 
@@ -40,17 +41,21 @@ ta_24::ta_24(const kvservice::DataAccess * dataAccess) :
 		KoppenBasedMeanValueAggregator(TA, TAM_24),
 		dataAccess_(dataAccess)
 {
+	addAdditionalReadParam(TAN_12);
 }
 
 ta_24::~ta_24()
 {
 }
 
-float ta_24::calculateWithKoppensFormula(const ValueList & source, float koppenFactor, ExtraData extraData) const
+float ta_24::calculateWithKoppensFormula(const ValueList & source, float koppenFactor, CalculationDataType calcDataType, ExtraData extraData) const
 {
 	ExtraCalculationData * d = static_cast<ExtraCalculationData *>(extraData);
 
-	float minTemperature = d->minimumTemperature(dataAccess_);
+	float minTemperature = d->minimumTemperature(dataAccess_, calcDataType);
+
+	if ( minTemperature == d->missing_ )
+		return invalidParam;
 
 	float n = std::accumulate(source.begin(), source.end(), 0.0) / 3.0;
 
@@ -64,15 +69,19 @@ ta_24::ExtraData ta_24::getExtraData(const kvalobs::kvData & trigger)
 }
 
 ta_24::ExtraCalculationData::ExtraCalculationData(const kvalobs::kvData & trigger) :
-		KoppenExtraData(trigger), useCount(-1)
+		KoppenExtraData(trigger), originalTan24(missing_), correctedTan24(missing_)
 {
 }
 
-float ta_24::ExtraCalculationData::minimumTemperature(const kvservice::DataAccess * dataAccess)
+float ta_24::ExtraCalculationData::minimumTemperature(const kvservice::DataAccess * dataAccess, CalculationDataType calcDataType)
 {
-	if ( useCount ++ == -1 )
+	if ( calcDataType == Original )
 		populate(dataAccess);
-	return std::min(tan06[useCount], tan18[useCount]);
+
+	if ( calcDataType == Original )
+		return originalTan24;
+	else
+		return correctedTan24;
 }
 
 void ta_24::ExtraCalculationData::populate(const kvservice::DataAccess * dataAccess)
@@ -89,11 +98,20 @@ void ta_24::ExtraCalculationData::populate(const kvservice::DataAccess * dataAcc
 	if ( data.size() < 2 )
 		throw std::runtime_error("Unable to find both TAN_12 observations for period");
 
-	tan06[0] = data.front().original();
-	tan06[1] = data.front().corrected();
-	tan18[0] = data.back().original();
-	tan18[1] = data.back().corrected();
+	const kvalobs::kvData & a = data.front();
+	const kvalobs::kvData & b = data.back();
+
+	if ( kvalobs::original_missing(a) or kvalobs::original_missing(b) )
+		originalTan24 = missing_;
+	else
+		originalTan24 = std::min(a.original(), b.original());
+
+	if ( not kvalobs::valid(a) or not kvalobs::valid(b) )
+		correctedTan24 = missing_;
+	else
+		correctedTan24 = std::min(a.corrected(), b.corrected() );
 }
 
+const float ta_24::ExtraCalculationData::missing_ = -32767;
 
 }

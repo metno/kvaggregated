@@ -39,6 +39,7 @@ public:
 	// Making protected functions and typedefs public:
 	using aggregator::rr_1::ValueList;
 	using aggregator::rr_1::calculate;
+	using aggregator::StandardAggregator::Original;
 };
 
 TEST(tt_1Test, sumsCorrectly)
@@ -47,7 +48,7 @@ TEST(tt_1Test, sumsCorrectly)
 
 	TestingRR1::ValueList values = boost::assign::list_of(1.1)(2.1)(3.1)(4.1);
 
-	float sum = rr1.calculate(values, 0);
+	float sum = rr1.calculate(values, TestingRR1::Original, 0);
 
 	EXPECT_FLOAT_EQ(10.4, sum);
 }
@@ -57,7 +58,7 @@ TEST(tt_1Test, ignoreNegativeValues)
 	TestingRR1 rr1;
 	TestingRR1::ValueList values = boost::assign::list_of(0.1)(0.2)(-0.1)(0.3)(0.4)(0.5);
 
-	float sum = rr1.calculate(values, 0);
+	float sum = rr1.calculate(values, TestingRR1::Original, 0);
 
 	EXPECT_FLOAT_EQ(1.5, sum);
 }

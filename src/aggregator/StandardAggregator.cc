@@ -193,7 +193,7 @@ float StandardAggregator::generateOriginal_(const kvDataList & data, ExtraData e
 	for (kvDataList::const_iterator it = data.begin(); it != data.end(); ++it)
 		values.push_back(it->original());
 
-	return calculate(values, extraData);
+	return calculate(values, Original, extraData);
 }
 
 float StandardAggregator::generateCorrected_(const kvDataList & data, ExtraData extraData) const
@@ -207,7 +207,7 @@ float StandardAggregator::generateCorrected_(const kvDataList & data, ExtraData 
 	for (kvDataList::const_iterator it = data.begin(); it != data.end(); ++it)
 		values.push_back(it->corrected());
 
-	return calculate(values, extraData);
+	return calculate(values, Corrected, extraData);
 }
 
 }

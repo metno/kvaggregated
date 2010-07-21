@@ -77,7 +77,7 @@ bool rr_1::shouldProcess(const kvData &trigger, const kvDataList &observations) 
 //	return generate;
 }
 
-float rr_1::calculate(const ValueList & source, ExtraData ) const
+float rr_1::calculate(const ValueList & source, CalculationDataType, ExtraData ) const
 {
 	float sum = 0;
 	for ( ValueList::const_iterator it = source.begin(); it != source.end(); ++ it )

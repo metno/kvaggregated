@@ -93,7 +93,7 @@ bool ra2rr_12::shouldProcess(const kvData & trigger,
 	return false;
 }
 
-float ra2rr_12::calculate(const ValueList & source, ExtraData ) const
+float ra2rr_12::calculate(const ValueList & source, CalculationDataType, ExtraData ) const
 {
 	const float zero = 0.01;
 

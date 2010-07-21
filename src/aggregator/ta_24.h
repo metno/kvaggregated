@@ -46,7 +46,7 @@ public:
 	explicit ta_24(const kvservice::DataAccess * dataAccess);
 	virtual ~ta_24();
 
-	virtual float calculateWithKoppensFormula(const ValueList & source, float koppenFactor, ExtraData extraData) const;
+	virtual float calculateWithKoppensFormula(const ValueList & source, float koppenFactor, CalculationDataType calcDataType, ExtraData extraData) const;
 
 	virtual ExtraData getExtraData(const kvalobs::kvData & data);
 
@@ -61,14 +61,14 @@ class ta_24::ExtraCalculationData : public KoppenExtraData
 public:
 	explicit ExtraCalculationData(const kvalobs::kvData & trigger);
 
-	virtual float minimumTemperature(const kvservice::DataAccess * dataAccess);
+	float minimumTemperature(const kvservice::DataAccess * dataAccess, CalculationDataType calcDataType);
 
-private:
-	void populate(const kvservice::DataAccess * dataAccess);
+	static const float missing_;
+protected:
+	virtual void populate(const kvservice::DataAccess * dataAccess);
 
-	float tan06[2];
-	float tan18[2];
-	int useCount;
+	float originalTan24;
+	float correctedTan24;
 };
 
 

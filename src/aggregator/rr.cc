@@ -59,7 +59,7 @@ void rr::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kv
 }
 
 
-float rr::calculate(const ValueList & source, ExtraData ) const
+float rr::calculate(const ValueList & source, CalculationDataType, ExtraData ) const
 {
 	bool nothing = true;
 	float sum = 0;
