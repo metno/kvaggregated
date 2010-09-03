@@ -41,7 +41,7 @@ ta_24::ta_24(const kvservice::DataAccess * dataAccess) :
 		KoppenBasedMeanValueAggregator(TA, TAM_24),
 		dataAccess_(dataAccess)
 {
-	addAdditionalReadParam(TAN_12);
+//	addAdditionalReadParam(TAN_12);
 }
 
 ta_24::~ta_24()
