@@ -1,3 +1,9 @@
+kvagregated (2.2.4-1) unstable; urgency=low
+
+  * new build for new kvalobs version
+
+ --  <vegardb@dev-vm101>  Mon,  6 Sep 2010 09:11:52 +0200
+
 kvagregated (2.2.3-1) unstable; urgency=low
 
   * new release
