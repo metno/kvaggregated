@@ -36,4 +36,4 @@ kvAgregated_LDFLAGS = -rpath $(pkglibdir) -export-dynamic
 include src/aggregator/kvAgregated.mk
 include src/configuration/kvAgregated.mk
 include src/proxy/kvAgregated.mk
-
+include src/checkDecision/kvAgregated.mk

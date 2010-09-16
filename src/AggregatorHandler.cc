@@ -31,6 +31,7 @@
 #include "AggregatorHandler.h"
 #include "KvDataFunctors.h"
 #include "paramID.h"
+#include "checkDecision/CompleteCheckDecider.h"
 #include <kvcpp/KvApp.h>
 #include <kvalobs/kvDataOperations.h>
 #include <milog/milog.h>
@@ -71,37 +72,33 @@ void AggregatorHandler::addHandler(AbstractAggregator * handler)
 	proxy_.addInteresting(handler->writeParam());
 }
 
-#ifdef AGREGATOR_DEBUG
-struct largeStationNo
-{
-	bool operator() ( const kvalobs::kvData & data ) const
-	{
-		return data.stationID() > 99;
-	}
-};
-#endif // AGREGATOR_DEBUG
-
 void AggregatorHandler::newData(KvDataList &data)
 {
-#ifdef AGREGATOR_DEBUG
-	data.remove_if( largeStationNo() );
-#endif // AGREGATOR_DEBUG
-	for (IKvDataList d = data.begin(); d != data.end(); d++)
-	{
-		if (d->paramID() == RA)
-		{
-			LOGDEBUG("Found RA parameter in station " << d->stationID()
-					<< ", type " << d->typeID()
-					<< ". Ignoring all RR_1 observations from this station.");
-			StationHasParamid shp(RR_1, &*d);
-			data.remove_if(shp);
-			break;
-		}
-	}
+//	for (IKvDataList d = data.begin(); d != data.end(); d++)
+//	{
+//		if (d->paramID() == RA)
+//		{
+//			LOGDEBUG("Found RA parameter in station " << d->stationID()
+//					<< ", type " << d->typeID()
+//					<< ". Ignoring all RR_1 observations from this station.");
+//			StationHasParamid shp(RR_1, &*d);
+//			data.remove_if(shp);
+//			break;
+//		}
+//	}
+
+	CompleteCheckDecider checkDecider;
 
 	kvservice::KvDataList toSave;
 	for (CIKvDataList dl = data.begin(); dl != data.end(); ++dl)
-		process(toSave, *dl);
+	{
+		std::string skipParameterMessage;
+		if ( checkDecider.shouldRunChecksOn(* dl, data, skipParameterMessage) )
+			process(toSave, *dl);
+		else
+			LOGDEBUG(skipParameterMessage);
+	}
+
 	save(toSave);
 }
 

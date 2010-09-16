@@ -18,7 +18,8 @@ kvAgregatedTest_SOURCES = \
 	test/uu_24Test.cc \
 	test/ta_24Test.cc \
 	test/poTest.cc \
-	test/rr_1Test.cc	
+	test/rr_1Test.cc \
+	test/checkDecisionTest.cc
 	
 
 kvAgregatedTest_CPPFLAGS = \
