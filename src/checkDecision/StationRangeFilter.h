@@ -31,15 +31,28 @@
 #define FOREIGNSTATIONPRECIPITATIONFILTER_H_
 
 #include "RunCheckDecider.h"
+#include <set>
 
 namespace aggregator
 {
 
-class ForeignStationPrecipitationFilter : public RunCheckDecider
+class StationRangeFilter : public RunCheckDecider
 {
 public:
+	template<class OutputIterator>
+	StationRangeFilter(int minStationId, int maxStationId, OutputIterator whiteListStart, OutputIterator whiteListStop ) :
+		minStationId_(minStationId),
+		maxStationId_(maxStationId),
+		whiteList_(whiteListStart, whiteListStop)
+	{}
+
 	virtual bool shouldRunChecksOn(const kvalobs::kvData & sourceData,
 			const DataList & completeObservation, std::string & msgOut);
+
+private:
+	const int minStationId_;
+	const int maxStationId_;
+	const std::set<int> whiteList_;
 };
 
 }

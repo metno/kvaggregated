@@ -28,11 +28,12 @@
  */
 
 #include "CompleteCheckDecider.h"
-#include "ForeignStationPrecipitationFilter.h"
+#include "StationRangeFilter.h"
 #include "RaOverrideDecider.h"
 #include <boost/assign/list_of.hpp>
 #include <boost/shared_ptr.hpp>
 #include <vector>
+#include <limits>
 
 namespace aggregator
 {
@@ -41,8 +42,12 @@ namespace
 typedef boost::shared_ptr<RunCheckDecider> RunCheckDeciderPtr;
 typedef std::vector<RunCheckDeciderPtr> DeciderList;
 
+const int foreignStationWhiteListCount = 5;
+const int foreignStationWhiteList[foreignStationWhiteListCount] = {104, 105, 106, 109, 110};
+
+// Todo: make this depend on a configuration file
 DeciderList deciders = boost::assign::list_of
-		(RunCheckDeciderPtr(new ForeignStationPrecipitationFilter))
+		(RunCheckDeciderPtr(new StationRangeFilter(100000, std::numeric_limits<int>::max(), foreignStationWhiteList, foreignStationWhiteList + foreignStationWhiteListCount)))
 		(RunCheckDeciderPtr(new RaOverrideDecider))
 	;
 }

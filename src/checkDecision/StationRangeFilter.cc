@@ -27,7 +27,7 @@
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "ForeignStationPrecipitationFilter.h"
+#include "StationRangeFilter.h"
 #include <kvalobs/kvData.h>
 #include <boost/assign/list_of.hpp>
 #include <set>
@@ -39,18 +39,18 @@ namespace aggregator
 namespace
 {
 const std::set<int> precipitationParameters = boost::assign::list_of(104)(105)(106)(109)(110);
-
-const int LOWEST_FOREIGN_STATION_ID = 100000;
 }
 
-bool ForeignStationPrecipitationFilter::shouldRunChecksOn(const kvalobs::kvData & sourceData,
+
+bool StationRangeFilter::shouldRunChecksOn(const kvalobs::kvData & sourceData,
 		const DataList &, std::string & msgOut )
 {
-	if ( sourceData.stationID() >= LOWEST_FOREIGN_STATION_ID and
-			precipitationParameters.find(sourceData.paramID()) == precipitationParameters.end() )
+	if ( sourceData.stationID() >= minStationId_ and
+			sourceData.stationID() <= maxStationId_ and
+			whiteList_.find(sourceData.paramID()) == whiteList_.end() )
 	{
 		std::ostringstream msg;
-		msg << "Will not process station with id >= " << LOWEST_FOREIGN_STATION_ID << " and not whitelisted parameters";
+		msg << "Will not process station with id >= " << minStationId_ << " and not whitelisted parameters";
 		msgOut = msg.str();
 		return false;
 	}
