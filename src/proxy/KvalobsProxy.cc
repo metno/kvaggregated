@@ -116,7 +116,7 @@ private:
 };
 
 KvalobsProxy::KvalobsProxy(const std::string & proxyDatabaseName,
-		CallbackCollection & callbacks, bool repopulate) :
+		bool repopulate) :
 	cache_(proxyDatabaseName), oldestInProxy(miTime::nowTime())
 {
 	if (!KvApp::kvApp)

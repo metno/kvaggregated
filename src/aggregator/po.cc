@@ -29,7 +29,7 @@
 
 #include "po.h"
 #include <paramID.h>
-#include <proxy/KvalobsDataAccess.h>
+#include <proxy/KvalobsProxy.h>
 #include <kvalobs/kvDataOperations.h>
 #include <milog/milog.h>
 #include <algorithm>
@@ -38,10 +38,12 @@
 namespace aggregator
 {
 
-po::po() :
-		AbstractAggregator(PR, PO)
+po::po(const kvservice::proxy::KvalobsProxy & kvalobsProxy) :
+		AbstractAggregator(PR, PO),
+		kvalobsProxy_(kvalobsProxy)
 {
 	addAdditionalReadParam(TA);
+	addAdditionalReadParam(PO);
 }
 
 po::~po()
@@ -75,16 +77,42 @@ const kvalobs::kvData * getData(int parameter, const miutil::miTime & obstime, c
 	po::ParameterSortedDataList::const_iterator collection = observations.find(parameter);
 	if ( collection == observations.end() )
 		return 0;
-	po::kvDataList::const_iterator data = std::find_if(collection->second.begin(), collection->second.end(), has_obstime(obstime));
-	if ( data == collection->second.end() )
+
+	const po::kvDataList & data = collection->second;
+	po::kvDataList::const_iterator ret = std::find_if(data.begin(), data.end(), has_obstime(obstime));
+	if ( ret == data.end() )
 		return 0;
-	return &* data;
+	return &* ret;
 }
 }
 
-po::kvDataPtr po::process(const kvalobs::kvData & data, const ParameterSortedDataList & observations)
+po::kvDataPtr po::process(const kvalobs::kvData & data, const ParameterSortedDataList & observations, const ParameterSortedDataList & previouslyAggregatedData)
 {
-	return process_(data, observations, 1);
+	po::kvDataPtr ret = process_(data, observations, 1);
+
+	if ( ! ret )
+		return po::kvDataPtr();
+
+	const kvalobs::kvData * po = getData(PO, data.obstime(), observations);
+	const kvalobs::kvData * aggregatedPo = getData(PO, data.obstime(), previouslyAggregatedData);
+
+	if ( not aggregatedPo ) // if we have _not_ sent this data to kvalobs before
+	{
+		if ( po ) // and the observation contained its own PO observation
+		{
+			// check if the aggregated and reported values are very similar.
+			const float WRITE_TRESHOLD = 0.305;
+			if ( std::fabs(po->corrected() - ret->corrected()) < WRITE_TRESHOLD and
+					std::fabs(po->original() - ret->original()) < WRITE_TRESHOLD )
+			{
+				// If they are, we will not send any data to kvalobs.
+				LOGINFO("No essential difference between reported and calculated PO. Will not report aggregated value:\n"
+						"From station: " << po->corrected() << ". Calculated: " << ret->corrected());
+				return po::kvDataPtr();
+			}
+		}
+	}
+	return ret;
 }
 
 po::kvDataPtr po::processMethod2(const kvalobs::kvData & data, const ParameterSortedDataList & observations)
@@ -100,6 +128,7 @@ po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDa
 	{
 		const kvalobs::kvData * pr = getData(PR, data.obstime(), observations);
 		const kvalobs::kvData * ta = getData(TA, data.obstime(), observations);
+
 		if ( pr and ta )
 		{
 			kvalobs::kvDataFactory factory(data);
@@ -129,10 +158,13 @@ po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDa
 									computePo(pr->corrected(), ta->corrected(), um, tm ,hp);
 				}
 			}
+
 			std::list<kvalobs::kvData> sourceData;
 			sourceData.push_back(* pr);
 			sourceData.push_back(* ta);
-			return getDataObject(data, data.obstime(), original, corrected, sourceData);
+
+			AbstractAggregator::kvDataPtr ret = getDataObject(data, data.obstime(), original, corrected, sourceData);
+			return ret;
 		}
 		else
 			LOGDEBUG("Missing complete data for PO generation");
@@ -175,9 +207,7 @@ float po::computePoWithInversionCorrection(float pr, float ta, float um, float t
 
 float po::getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const
 {
-	kvservice::KvalobsDataAccess dataAccess;
-	return dataAccess.getStationMetadata(metadataName, validFor);
+	return kvalobsProxy_.directKvalobsAccess().getStationMetadata(metadataName, validFor);
 }
-
 
 }

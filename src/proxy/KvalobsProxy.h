@@ -53,7 +53,7 @@ class KvalobsProxy: public DataAccess, boost::noncopyable
 {
 public:
 	KvalobsProxy(const std::string & proxyDatabaseName,
-			CallbackCollection & callbacks, bool repopulate = false);
+			bool repopulate = false);
 	~KvalobsProxy();
 
 	/**
@@ -91,6 +91,9 @@ public:
 	}
 
 	void setOldestInProxy(const miutil::miTime & newTime);
+
+	KvalobsDataAccess & directKvalobsAccess() { return kvalobs_; }
+	const KvalobsDataAccess & directKvalobsAccess() const { return kvalobs_; }
 
 private:
 	/// True if the given data's values (original or corrected) are different from kvalobs'

@@ -89,6 +89,9 @@ void KvalobsDataAccess::getAllData(KvDataList & data, const miutil::miTime &from
 
     proxy::internal::KvDataReceiver dr( data );
 
+    if ( ! KvApp::kvApp )
+    	throw std::runtime_error("kvApp not initialized");
+
     bool result = KvApp::kvApp->getKvData( dr, wdh );
 
     if ( ! result )

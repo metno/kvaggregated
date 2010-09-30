@@ -60,7 +60,7 @@ TEST_F(nn_24Test, moreThanEnoughData)
 
 	kvalobs::correct(dl.front(), 4);
 
-	nn_24::kvDataPtr result = aggregator.process(dl.front(), data);
+	nn_24::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
 
 	ASSERT_TRUE( result.get() );
 
@@ -76,7 +76,7 @@ TEST_F(nn_24Test, tooLittleData)
 	dl.push_back(factory.getData(1, aggregator.readParam().front(), "2010-03-18 06:00:00"));
 	dl.push_back(factory.getData(3, aggregator.readParam().front(), "2010-03-18 18:00:00"));
 
-	nn_24::kvDataPtr result = aggregator.process(dl.front(), data);
+	nn_24::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
 
 	ASSERT_FALSE( result.get() );
 }
@@ -90,7 +90,7 @@ TEST_F(nn_24Test, missingPeriod6)
 	dl.push_back(factory.getData(2, aggregator.readParam().front(), "2010-03-18 12:00:00"));
 	dl.push_back(factory.getData(3, aggregator.readParam().front(), "2010-03-18 18:00:00"));
 
-	nn_24::kvDataPtr result = aggregator.process(dl.front(), data);
+	nn_24::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
 
 	ASSERT_FALSE( result.get() );
 }
@@ -104,7 +104,7 @@ TEST_F(nn_24Test, missingPeriod12)
 	dl.push_back(factory.getData(2, aggregator.readParam().front(), "2010-03-18 15:00:00"));
 	dl.push_back(factory.getData(3, aggregator.readParam().front(), "2010-03-18 18:00:00"));
 
-	nn_24::kvDataPtr result = aggregator.process(dl.front(), data);
+	nn_24::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
 
 	ASSERT_FALSE( result.get() );
 }
@@ -118,7 +118,7 @@ TEST_F(nn_24Test, missingPeriod18)
 	dl.push_back(factory.getData(2, aggregator.readParam().front(), "2010-03-18 12:00:00"));
 	dl.push_back(factory.getData(3, aggregator.readParam().front(), "2010-03-18 14:00:00"));
 
-	nn_24::kvDataPtr result = aggregator.process(dl.front(), data);
+	nn_24::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
 
 	ASSERT_FALSE( result.get() );
 }
@@ -134,7 +134,7 @@ TEST_F(nn_24Test, roundDataToOneDecimal) // this is really applicable to all agg
 
 	kvalobs::correct(dl.front(), 3);
 
-	nn_24::kvDataPtr result = aggregator.process(dl.front(), data);
+	nn_24::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
 
 	ASSERT_TRUE( result.get() );
 
@@ -154,7 +154,7 @@ TEST_F(nn_24Test, roundDataDownwardsToOneDecimalWhenNegative) // this is really 
 
 	kvalobs::correct(dl.front(), -3);
 
-	nn_24::kvDataPtr result = aggregator.process(dl.front(), data);
+	nn_24::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
 
 	ASSERT_TRUE( result.get() );
 
@@ -172,7 +172,7 @@ TEST_F(nn_24Test, interprets9as8)
 	dl.push_back(factory.getData(9, aggregator.readParam().front(), "2010-03-18 12:00:00"));
 	dl.push_back(factory.getData(9, aggregator.readParam().front(), "2010-03-18 18:00:00"));
 
-	nn_24::kvDataPtr result = aggregator.process(dl.front(), data);
+	nn_24::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
 
 	ASSERT_TRUE( result.get() );
 

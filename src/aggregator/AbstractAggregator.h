@@ -58,7 +58,9 @@ public:
 	 * Perform an agregation, based on the incoming data, using the list
 	 * observations as base data.
 	 */
-	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations) =0;
+	virtual kvDataPtr process(const kvalobs::kvData & data,
+			const ParameterSortedDataList & observations,
+			const ParameterSortedDataList & previouslyAggregatedData) =0;
 
 
 	/**

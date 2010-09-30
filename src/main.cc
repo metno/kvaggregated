@@ -203,7 +203,7 @@ int main(int argc, char **argv)
 			// Proxy database
 			kvservice::proxy::CallbackCollection callbacks;
 			LOGINFO("Using proxy database <" << conf.proxyDatabaseName() << ">");
-			kvservice::proxy::KvalobsProxy proxy(conf.proxyDatabaseName(), callbacks, conf.repopulateDatabase());
+			kvservice::proxy::KvalobsProxy proxy(conf.proxyDatabaseName(), conf.repopulateDatabase());
 
 			AggregatorHandler handler(callbacks, proxy);
 			handler.setParameterFilter(conf.parameters());
@@ -238,7 +238,7 @@ int main(int argc, char **argv)
 			handler.addHandler(& uu24);
 			nn_24 nn24;
 			handler.addHandler(& nn24);
-			po p;
+			po p(proxy);
 			handler.addHandler(& p);
 
 			try

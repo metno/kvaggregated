@@ -32,16 +32,24 @@
 
 #include "AbstractAggregator.h"
 
+namespace kvservice
+{
+namespace proxy
+{
+class KvalobsProxy;
+}
+}
+
 namespace aggregator
 {
 
 class po: public aggregator::AbstractAggregator
 {
 public:
-	po();
+	explicit po(const kvservice::proxy::KvalobsProxy & kvalobsProxy);
 	virtual ~po();
 
-	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations);
+	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations, const ParameterSortedDataList & previouslyAggregatedData);
 
 	// Unused, awaiting a system for identifying inversion correcting stations:
 	kvDataPtr processMethod2(const kvalobs::kvData & data, const ParameterSortedDataList & observations);
@@ -72,6 +80,9 @@ private:
 	 * \param hp reference value for air pressure
 	 */
 	float computePoWithInversionCorrection(float pr, float ta, float um, float tm, float hp) const;
+
+private:
+	const kvservice::proxy::KvalobsProxy & kvalobsProxy_;
 };
 
 }

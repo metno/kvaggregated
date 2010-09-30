@@ -58,7 +58,7 @@ TEST_F(MeanValueAgregatorTest, standard24hAgregate)
 	for ( miutil::miTime t = "2010-03-15 07:00:00"; t <= factory.obstime(); t.addHour() )
 		dl.push_back(factory.getData(++ i, 1, t));
 
-	MeanValueAggregator::kvDataPtr result = aggregator.process(dl.front(), data);
+	MeanValueAggregator::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
 
 	ASSERT_TRUE( result.get() );
 
@@ -75,7 +75,7 @@ TEST_F(MeanValueAgregatorTest, missingValue)
 
 	kvalobs::reject(dl.front());
 
-	MeanValueAggregator::kvDataPtr result = aggregator.process(dl.front(), data);
+	MeanValueAggregator::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
 
 	ASSERT_TRUE( result.get() );
 
@@ -93,7 +93,7 @@ TEST_F(MeanValueAgregatorTest, observationEach3Hours)
 
 	kvalobs::reject(dl.front());
 
-	MeanValueAggregator::kvDataPtr result = aggregator.process(dl.front(), data);
+	MeanValueAggregator::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
 
 	ASSERT_TRUE( result.get() );
 

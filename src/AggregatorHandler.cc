@@ -143,10 +143,26 @@ void AggregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvDa
 				getRelevantObsList(baseDataToAggregateFrom, * aggregator, data, aggregator->getTimeSpan(data));
 
 
+				// Find the trigger data
+				// Append it to the return list if not found, and we are in the correct parameter's list
+				// If found, update list to reflect the data of the trigger
+
+				AbstractAggregator::kvDataList & dataForParameter = baseDataToAggregateFrom[data.paramID()];
+				AbstractAggregator::kvDataList::iterator find =
+						std::find_if(dataForParameter.begin(), dataForParameter.end(), std::bind1st(kvalobs::compare::same_kvData(), data));
+				if ( find == dataForParameter.end() )
+					dataForParameter.push_back(data);
+
+				AbstractAggregator::ParameterSortedDataList alreadyAggregated;
+				kvalobs::kvData aggregatedData = data;
+				aggregatedData.typeID(-data.typeID());
+				getRelevantObsList(alreadyAggregated, * aggregator, aggregatedData, aggregator->getTimeSpan(data));
+
+
 //				const std::list<kvalobs::kvData> baseDataToAggregateFrom = getRelevantObsList(data, aggregator->getTimeSpan(data));
 
 				AbstractAggregator::kvDataPtr d =
-						aggregator->process(data, baseDataToAggregateFrom);
+						aggregator->process(data, baseDataToAggregateFrom, alreadyAggregated);
 
 				if ( d.get() )
 				{
@@ -220,18 +236,18 @@ AggregatorHandler::getRelevantObsList(
 
 		std::for_each(dataForParameter.begin(), dataForParameter.end(), assertObsTimeMatches(obsTimes));
 
-		// Find the trigger data
-		// Append it to the return list if not found, and we are in the correct parameter's list
-		// If found, update list to reflect the data of the trigger
-		AbstractAggregator::kvDataList::iterator find =
-				std::find_if(dataForParameter.begin(), dataForParameter.end(), std::bind1st(kvalobs::compare::same_kvData(), data));
-		if ( find == dataForParameter.end() )
-		{
-			if ( data.paramID() == * it )
-				dataForParameter.push_back(data);
-		}
-		else
-			* find = data;
+//		// Find the trigger data
+//		// Append it to the return list if not found, and we are in the correct parameter's list
+//		// If found, update list to reflect the data of the trigger
+//		AbstractAggregator::kvDataList::iterator find =
+//				std::find_if(dataForParameter.begin(), dataForParameter.end(), std::bind1st(kvalobs::compare::same_kvData(), data));
+//		if ( find == dataForParameter.end() )
+//		{
+//			if ( data.paramID() == * it )
+//				dataForParameter.push_back(data);
+//		}
+//		else
+//			* find = data;
 	}
 }
 

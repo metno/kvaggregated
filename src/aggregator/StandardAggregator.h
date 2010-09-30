@@ -96,7 +96,9 @@ public:
 	virtual bool isInterestedIn(const kvalobs::kvData &data) const;
 
 
-	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations);
+	virtual kvDataPtr process(const kvalobs::kvData & data,
+			const ParameterSortedDataList & observations,
+			const ParameterSortedDataList & previouslyAggregatedData);
 
 	/**
 	 * \brief Get the number of hours back in time we are interested

@@ -38,9 +38,9 @@ namespace kvservice
 /**
  * Access to data directly from kvalobs.
  *
- * This class implements some methods in addition to its interface. The idea
- * is that objects of this class will be used by anyone who needs to access
- * kvalobs in any way.
+ * This class implements some methods in addition to the DataAccess interface.
+ * The idea is that objects of this class will be used by anyone who needs to
+ * access kvalobs in any way.
  */
 class KvalobsDataAccess: public kvservice::DataAccess
 {

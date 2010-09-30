@@ -30,20 +30,31 @@
 #include <gtest/gtest.h>
 #include <aggregator/po.h>
 #include <paramID.h>
+#include <proxy/KvalobsProxy.h>
 #include <kvalobs/kvDataOperations.h>
+#include <kvcpp/mock/FakeKvApp.h>
 #include <map>
 
 using namespace aggregator;
 
 class TestingPo : public po
 {
+	static kvservice::proxy::KvalobsProxy & getProxy()
+	{
+		static kvservice::proxy::KvalobsProxy * kvalobsProxy = 0;
+		if ( ! kvalobsProxy )
+			kvalobsProxy = new kvservice::proxy::KvalobsProxy(":memory:");
+		return * kvalobsProxy;
+	}
 public:
-	TestingPo() : hp(408), um_vs(70), tm_vs(5.7)
-	{}
+	TestingPo() : po(getProxy()), hp(408), um_vs(70), tm_vs(5.7)//, reportedPo(-1)//, previouslyCalculatedPo(-1)
+	{
+	}
 
 	float hp;
 	float um_vs;
 	float tm_vs;
+
 
 protected:
 	virtual float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const
@@ -64,7 +75,12 @@ protected:
 
 class poTest : public testing::Test
 {
+public:
+	poTest()
+	{
+	}
 protected:
+	testing::FakeKvApp app;
 	TestingPo p;
 };
 
@@ -79,7 +95,7 @@ TEST_F(poTest, createsNegativeTypeId)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess);
+	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
 	ASSERT_TRUE(result);
 	EXPECT_EQ(-1, result->typeID());
 }
@@ -94,7 +110,7 @@ TEST_F(poTest, createsNegativeTypeIdFromNegativeStart)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess);
+	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
 	ASSERT_TRUE(result);
 	EXPECT_EQ(-1, result->typeID());
 }
@@ -109,7 +125,7 @@ TEST_F(poTest, test1)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess);
+	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
 
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 	EXPECT_NEAR(986.5, result->corrected(), 0.05);
@@ -125,7 +141,7 @@ TEST_F(poTest, test2a)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess);
+	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
 
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 	EXPECT_NEAR(986.5, result->corrected(), 0.05);
@@ -159,7 +175,7 @@ TEST_F(poTest, test3)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess);
+	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
 
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 	EXPECT_NEAR(986.5, result->corrected(), 0.05);
@@ -177,7 +193,7 @@ TEST_F(poTest, test4a)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess);
+	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
 
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 	EXPECT_NEAR(986.5, result->corrected(), 0.05);
@@ -209,7 +225,7 @@ TEST_F(poTest, noPr)
 	po::ParameterSortedDataList toProcess;
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(ta, toProcess);
+	po::kvDataPtr result = p.process(ta, toProcess, AbstractAggregator::ParameterSortedDataList());
 
 	EXPECT_FALSE(result);
 }
@@ -222,7 +238,7 @@ TEST_F(poTest, noTa)
 	po::ParameterSortedDataList toProcess;
 	toProcess[PR].push_back(pr);
 
-	po::kvDataPtr result = p.process(pr, toProcess);
+	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
 
 	EXPECT_FALSE(result);
 }
@@ -237,7 +253,7 @@ TEST_F(poTest, missingPr)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess);
+	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
 
 	ASSERT_TRUE(result);
 	EXPECT_TRUE(kvalobs::missing(* result));
@@ -253,7 +269,7 @@ TEST_F(poTest, missingta)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess);
+	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
 
 	ASSERT_TRUE(result);
 	EXPECT_TRUE(kvalobs::missing(* result));
@@ -273,10 +289,122 @@ TEST_F(poTest, testCorrectedValuesSetsFmis)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess);
+	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
 
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 	//EXPECT_NEAR(986.5, result->corrected(), 0.05); // We don't care
 	EXPECT_EQ(4, result->controlinfo().flag(kvalobs::flag::fmis)) << "Error in kvalobs version";
+}
 
+TEST_F(poTest, testMinorCorrectionsAreNotWritten)
+{
+	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	const kvalobs::kvData pr = factory.getData(1036.5, PR);
+	const kvalobs::kvData ta = factory.getData(6.3, TA);
+	const kvalobs::kvData po = factory.getData(986.21, PO);
+
+	po::ParameterSortedDataList toProcess;
+	toProcess[PR].push_back(pr);
+	toProcess[TA].push_back(ta);
+	toProcess[PO].push_back(po);
+
+	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	// calculation should give the value 986.5.
+	// but since the value of original PO observation is very close, we expect no return
+	EXPECT_TRUE(! result);
+}
+
+TEST_F(poTest, testMinorCorrectionsAreNotWritten2)
+{
+	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	const kvalobs::kvData pr = factory.getData(1036.5, PR);
+	const kvalobs::kvData ta = factory.getData(6.3, TA);
+	const kvalobs::kvData po = factory.getData(986.79, PO);
+
+	po::ParameterSortedDataList toProcess;
+	toProcess[PR].push_back(pr);
+	toProcess[TA].push_back(ta);
+	toProcess[PO].push_back(po);
+
+	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	// calculation should give the value 986.5.
+	// but since the value of original PO observation is very close, we expect no return
+	EXPECT_TRUE(! result);
+}
+
+TEST_F(poTest, testMajorCorrectionsAreWritten)
+{
+	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	const kvalobs::kvData pr = factory.getData(1036.5, PR);
+	const kvalobs::kvData ta = factory.getData(6.3, TA);
+	const kvalobs::kvData po = factory.getData(987, PO);
+
+	po::ParameterSortedDataList toProcess;
+	toProcess[PR].push_back(pr);
+	toProcess[TA].push_back(ta);
+	toProcess[PO].push_back(po);
+
+	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	ASSERT_TRUE(result);
+	EXPECT_NEAR(986.5, result->original(), 0.05);
+}
+
+TEST_F(poTest, testMinorCorrectionsAreWrittenIfOldDataExists)
+{
+	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	const kvalobs::kvData pr = factory.getData(1036.5, PR);
+	const kvalobs::kvData ta = factory.getData(6.3, TA);
+	const kvalobs::kvData po = factory.getData(986.21, PO);
+
+	po::ParameterSortedDataList toProcess;
+	toProcess[PR].push_back(pr);
+	toProcess[TA].push_back(ta);
+	toProcess[PO].push_back(po);
+
+	AbstractAggregator::ParameterSortedDataList aggregated;
+	kvalobs::kvDataFactory agFactory(42, "2010-05-06 09:00:00", -1);
+	aggregated[PO].push_back(agFactory.getData(986.21, PO));
+
+	po::kvDataPtr result = p.process(pr, toProcess, aggregated);
+	// calculation should give the value 986.5.
+	// normally, we would not expect a return, since almost the same data have
+	// been reported by the station. But since data have already been stored
+	// in database, we must send a correction.
+	ASSERT_TRUE(result);
+	EXPECT_NEAR(986.5, result->original(), 0.05);
+}
+
+TEST_F(poTest, testOriginalDifferenceCauseAggregation)
+{
+	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	const kvalobs::kvData pr = factory.getData(1036.5, PR);
+	const kvalobs::kvData ta = factory.getData(6.3, TA);
+	const kvalobs::kvData po = factory.getData(987, PO);
+
+	po::ParameterSortedDataList toProcess;
+	toProcess[PR].push_back(pr);
+	toProcess[TA].push_back(ta);
+	toProcess[PO].push_back(po);
+
+	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	ASSERT_TRUE(result);
+	EXPECT_NEAR(986.5, result->original(), 0.05);
+}
+
+TEST_F(poTest, testCorrectedDifferenceCauseAggregation)
+{
+	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	const kvalobs::kvData pr = factory.getData(1036.5, PR);
+	const kvalobs::kvData ta = factory.getData(6.3, TA);
+	kvalobs::kvData po = factory.getData(986.5, PO);
+	kvalobs::correct(po, 980);
+
+	po::ParameterSortedDataList toProcess;
+	toProcess[PR].push_back(pr);
+	toProcess[TA].push_back(ta);
+	toProcess[PO].push_back(po);
+
+	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	ASSERT_TRUE(result);
+	EXPECT_NEAR(986.5, result->original(), 0.05);
 }

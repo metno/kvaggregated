@@ -42,7 +42,6 @@ class KvalobsProxyTest : public Test
 protected:
 	typedef testing::NiceMock<testing::MockKvApp> MockKvApp;
 	MockKvApp * kvApp;
-	CallbackCollection callbacks;
 	KvalobsProxy * proxy;
 
 	kvservice::KvDataList sampleData;
@@ -53,7 +52,7 @@ protected:
 	virtual void SetUp()
 	{
 		kvApp = new MockKvApp;
-		proxy = new KvalobsProxy(":memory:", callbacks);
+		proxy = new KvalobsProxy(":memory:");
 		for ( int i = 1; i <= 3; ++ i )
 			proxy->addInteresting(i);
 		// this should cause oldestInProxy to be ignored when searching cache/kvalobs:
@@ -79,12 +78,12 @@ TEST_F(KvalobsProxyTest, createWithoutKvApp)
 {
 	delete kvApp;
 	kvApp = 0;
-	ASSERT_THROW(KvalobsProxy proxy(":memory:", callbacks), std::runtime_error);
+	ASSERT_THROW(KvalobsProxy proxy(":memory:"), std::runtime_error);
 }
 
 TEST_F(KvalobsProxyTest, nonExistingDatabaseFile)
 {
-	EXPECT_THROW(new KvalobsProxy("/no/such/file", callbacks), std::runtime_error);
+	EXPECT_THROW(new KvalobsProxy("/no/such/file"), std::runtime_error);
 }
 
 TEST_F(KvalobsProxyTest, sameDataShouldOnlyBeSentOnce)
