@@ -59,7 +59,9 @@ float ta_24::calculateWithKoppensFormula(const ValueList & source, float koppenF
 
 	float n = std::accumulate(source.begin(), source.end(), 0.0) / 3.0;
 
-	return n - (koppenFactor * (n - minTemperature));
+	float ret =  n - (koppenFactor * (n - minTemperature));
+
+	return ret;
 }
 
 ta_24::ExtraData ta_24::getExtraData(const kvalobs::kvData & trigger)
@@ -69,14 +71,17 @@ ta_24::ExtraData ta_24::getExtraData(const kvalobs::kvData & trigger)
 }
 
 ta_24::ExtraCalculationData::ExtraCalculationData(const kvalobs::kvData & trigger) :
-		KoppenExtraData(trigger), originalTan24(missing_), correctedTan24(missing_)
+		KoppenExtraData(trigger), originalTan24(missing_), correctedTan24(missing_), gotData_(false)
 {
 }
 
 float ta_24::ExtraCalculationData::minimumTemperature(const kvservice::DataAccess * dataAccess, CalculationDataType calcDataType)
 {
-	if ( calcDataType == Original )
+	if ( not gotData_ )
+	{
 		populate(dataAccess);
+		gotData_ = true;
+	}
 
 	if ( calcDataType == Original )
 		return originalTan24;

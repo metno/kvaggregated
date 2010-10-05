@@ -224,6 +224,26 @@ TEST_F(ta_24Test, data3hoursMissingTan12)
 }
 
 
+TEST_F(ta_24Test, data3hoursMissingOriginal)
+{
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
+
+	dl.push_back(factory.getData(6, aggregator.readParam().front(), "2010-04-19 06:00:00"));
+	kvalobs::kvData d12 = factory.getMissing(aggregator.readParam().front(), "2010-04-19 12:00:00");
+	kvalobs::correct(d12, 12);
+	dl.push_back(d12);
+	dl.push_back(factory.getData(18, aggregator.readParam().front(), "2010-04-19 18:00:00"));
+
+	ta_24::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
+
+	ASSERT_TRUE( result.get() );
+
+	EXPECT_TRUE(kvalobs::original_missing(* result));
+	EXPECT_FLOAT_EQ(8.6, result->corrected());
+}
+
+
 TEST_F(ta_24Test, data3hours)
 {
 	AbstractAggregator::ParameterSortedDataList data;
@@ -241,6 +261,7 @@ TEST_F(ta_24Test, data3hours)
 	EXPECT_FLOAT_EQ(8.6, result->original());
 	EXPECT_FLOAT_EQ(8.4, result->corrected());
 }
+
 
 TEST_F(ta_24Test, data3hoursUnsorted)
 {

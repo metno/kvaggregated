@@ -67,6 +67,7 @@ public:
 protected:
 	virtual void populate(const kvservice::DataAccess * dataAccess);
 
+	bool gotData_;
 	float originalTan24;
 	float correctedTan24;
 };
