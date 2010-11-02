@@ -71,8 +71,6 @@ public:
 
 	void operator ()()
 	{
-		d->stop_ = false;
-
 		boost::xtime time;
 		boost::xtime_get(&time, boost::TIME_UTC);
 
@@ -85,9 +83,13 @@ public:
 
 		time.nsec = 0;
 		time.sec += timeLeft;
+
 		while (not d->stop_)
 		{
 			boost::mutex::scoped_lock l(d->mutex_);
+			if (d->stop_)
+				break;
+
 			d->condition.timed_wait(l, time);
 			time.sec += 60 * 60 * 24;
 
@@ -107,6 +109,8 @@ public:
 private:
 	struct SharedData
 	{
+		SharedData() : stop_(false) {}
+
 		boost::condition condition;
 		boost::mutex mutex_;
 		bool stop_;
