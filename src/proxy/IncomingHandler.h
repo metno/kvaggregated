@@ -36,12 +36,9 @@
 #include <stdexcept>
 #include <kvcpp/kvevents.h>
 #include <kvcpp/KvGetDataReceiver.h>
+#include <boost/thread/condition.hpp>
 #include <boost/thread/mutex.hpp>
 
-namespace boost
-{
-class condition;
-}
 
 namespace kvservice
 {

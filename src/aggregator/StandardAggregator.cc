@@ -162,7 +162,7 @@ AbstractAggregator::kvDataPtr StandardAggregator::process(
 		kvDataPtr ret = getDataObject(data, t, original, corrected, relevantData);
 
 		return ret;
-	} catch (exception & err)
+	} catch (std::exception & err)
 	{
 		if (err.what()[0] != '\0')
 		{
