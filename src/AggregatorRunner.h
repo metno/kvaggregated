@@ -38,9 +38,9 @@
 
 namespace kvservice
 {
+class DataAccess;
 namespace proxy
 {
-class KvalobsProxy;
 class CallbackCollection;
 }
 }
@@ -48,7 +48,7 @@ class CallbackCollection;
 class AggregatorRunner : public WorkLoop
 {
 public:
-	AggregatorRunner(const std::vector<int> & stations, kvservice::proxy::KvalobsProxy & proxy,
+	AggregatorRunner(const std::vector<int> & stations, kvservice::DataAccess & dataAccess,
 			kvservice::proxy::CallbackCollection & callbacks);
 	~AggregatorRunner();
 

@@ -33,6 +33,7 @@
 #include "paramID.h"
 #include "checkDecision/CompleteCheckDecider.h"
 #include <kvcpp/KvApp.h>
+#include <decodeutility/kvDataFormatter.h>
 #include <kvalobs/kvDataOperations.h>
 #include <milog/milog.h>
 
@@ -44,8 +45,8 @@ namespace aggregator
 {
 AggregatorHandler *AggregatorHandler::agHandler = 0;
 
-AggregatorHandler::AggregatorHandler(CallbackCollection & callbacks, KvalobsProxy & proxy) :
-	Callback(callbacks), proxy_(proxy)
+AggregatorHandler::AggregatorHandler(CallbackCollection & callbacks, DataAccess & dataAccess) :
+	Callback(callbacks), dataAccess_(dataAccess)
 {
 	if (!agHandler)
 		agHandler = this;
@@ -66,10 +67,10 @@ void AggregatorHandler::addHandler(AbstractAggregator * handler)
 			<< handler->writeParam());
 	for ( AbstractAggregator::ParameterList::const_iterator it = handler->readParam().begin(); it !=  handler->readParam().end(); ++ it )
 	{
-		proxy_.addInteresting(* it);
+		dataAccess_.addInteresting(* it);
 		handlers.insert(Handler(* it, handler));
 	}
-	proxy_.addInteresting(handler->writeParam());
+	dataAccess_.addInteresting(handler->writeParam());
 }
 
 void AggregatorHandler::newData(KvDataList &data)
@@ -188,7 +189,7 @@ void AggregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvDa
 
 void AggregatorHandler::save( const kvservice::KvDataList & dl )
 {
-	CKvalObs::CDataSource::Result_var res = proxy_.sendData( dl );
+	CKvalObs::CDataSource::Result_var res = dataAccess_.sendData( dl );
 
 	if ( res->res != CKvalObs::CDataSource::OK )
 	{
@@ -231,7 +232,7 @@ AggregatorHandler::getRelevantObsList(
 	{
 		AbstractAggregator::kvDataList & dataForParameter = out[* it];
 
-		proxy_.getData( dataForParameter, data.stationID(), obsTimes.first, obsTimes.second,
+		dataAccess_.getData( dataForParameter, data.stationID(), obsTimes.first, obsTimes.second,
 				* it, data.typeID(), data.sensor(), data.level() );
 
 		std::for_each(dataForParameter.begin(), dataForParameter.end(), assertObsTimeMatches(obsTimes));

@@ -49,41 +49,43 @@ namespace kvservice
 {
 namespace proxy
 {
-class KvalobsProxy: public DataAccess, boost::noncopyable
+class KvalobsProxy: public DataAccess
 {
 public:
 	KvalobsProxy(const std::string & proxyDatabaseName,
 			bool repopulate = false);
-	~KvalobsProxy();
+	virtual ~KvalobsProxy();
 
-	/**
-	 * Get kvalobs data. The source is either the database, or the proxy database
-	 */
-	void getData(KvDataList &data, int station, const miutil::miTime &from,
+	virtual void getData(KvDataList &data, int station, const miutil::miTime &from,
 			const miutil::miTime &to, int paramid, int type, int sensor,
 			int lvl) const;
 
-	/**
-	 * Send data to kvalobs. Data will also be stored in proxy database
-	 */
-	CKvalObs::CDataSource::Result_var sendData(const KvDataList &data);
+	virtual CKvalObs::CDataSource::Result_var sendData(const KvDataList &data);
 
-	void cacheData(const KvDataList &data);
+	virtual void cacheData(const KvDataList &data);
 
 	/**
 	 * Add parameter to store in cache database.
 	 *
 	 * @warning Not thread-safe!
 	 */
-	void addInteresting(int param)
+	virtual void addInteresting(int param)
 	{
+		cache_.addInteresting(param);
+		kvalobs_.addInteresting(param);
 		interestingParameters_.insert(param);
+	}
+
+	virtual float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const
+	{
+		return kvalobs_.getStationMetadata(metadataName, validFor);
 	}
 
 	// Operations on proxy:
 	void db_clear();
 	void db_cleanup();
 	void db_populate(int hours = 24);
+	void db_populate(const miutil::miTime & from, const miutil::miTime & to);
 	void db_repopulate(int hours = 24)
 	{
 		db_clear();

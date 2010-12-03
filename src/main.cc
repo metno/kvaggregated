@@ -147,12 +147,12 @@ void runThreadWithBackProduction(BackProduction & back, AggregatorRunner & runne
 }
 
 void runAgregator(const AggregatorConfiguration & conf,
-		kvservice::proxy::KvalobsProxy & proxy, kvservice::proxy::CallbackCollection & callbacks)
+		kvservice::DataAccess & dataAccess, kvservice::proxy::CallbackCollection & callbacks)
 {
-	AggregatorRunner runner(conf.stations(), proxy, callbacks);
+	AggregatorRunner runner(conf.stations(), dataAccess, callbacks);
 	if ( conf.backProduction() )
 	{
-		BackProduction back(proxy, callbacks, runner, conf.backProductionSpec());
+		BackProduction back(callbacks, runner, conf.backProductionSpec());
 		if (!conf.daemonMode())
 			back(); // run outside a thread
 		else
@@ -166,7 +166,7 @@ void runAgregator(const AggregatorConfiguration & conf,
 		miutil::miTime from(to);
 		from.addHour(-3);
 
-		BackProduction back(proxy, callbacks, runner, from, to);
+		BackProduction back(callbacks, runner, from, to);
 		runThreadWithBackProduction(back, runner);
 	}
 }
@@ -202,10 +202,22 @@ int main(int argc, char **argv)
 
 			// Proxy database
 			kvservice::proxy::CallbackCollection callbacks;
-			LOGINFO("Using proxy database <" << conf.proxyDatabaseName() << ">");
-			kvservice::proxy::KvalobsProxy proxy(conf.proxyDatabaseName(), conf.repopulateDatabase());
 
-			AggregatorHandler handler(callbacks, proxy);
+			boost::scoped_ptr<kvservice::DataAccess> dataAccess;
+			if ( conf.runInDaemonMode() )
+			{
+				LOGINFO("Using proxy database <" << conf.proxyDatabaseName() << ">");
+				dataAccess.reset(
+						new kvservice::proxy::KvalobsProxy(conf.proxyDatabaseName(), conf.repopulateDatabase())
+				);
+			}
+			else
+			{
+				LOGINFO("Using no proxy database");
+				dataAccess.reset(new kvservice::KvalobsDataAccess);
+			}
+
+			AggregatorHandler handler(callbacks, * dataAccess);
 			handler.setParameterFilter(conf.parameters());
 			handler.setStationFilter(conf.stations());
 			handler.setTypeFilter(conf.types());
@@ -232,18 +244,18 @@ int main(int argc, char **argv)
 			handler.addHandler(&ra2rr_b);
 			ra2rr_12_forward ra2rr_f;
 			handler.addHandler(&ra2rr_f);
-			ta_24 ta24(& proxy);
+			ta_24 ta24(& * dataAccess);
 			handler.addHandler(& ta24);
 			uu_24 uu24;
 			handler.addHandler(& uu24);
 			nn_24 nn24;
 			handler.addHandler(& nn24);
-			po p(proxy);
+			po p(* dataAccess);
 			handler.addHandler(& p);
 
 			try
 			{
-				runAgregator(conf, proxy, callbacks);
+				runAgregator(conf, * dataAccess, callbacks);
 			}
 			catch (std::exception & e)
 			{

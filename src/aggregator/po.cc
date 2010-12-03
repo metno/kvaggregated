@@ -38,9 +38,9 @@
 namespace aggregator
 {
 
-po::po(const kvservice::proxy::KvalobsProxy & kvalobsProxy) :
+po::po(const kvservice::DataAccess & dataAccess) :
 		AbstractAggregator(PR, PO),
-		kvalobsProxy_(kvalobsProxy)
+		dataAccess_(dataAccess)
 {
 	addAdditionalReadParam(TA);
 	addAdditionalReadParam(PO);
@@ -207,7 +207,7 @@ float po::computePoWithInversionCorrection(float pr, float ta, float um, float t
 
 float po::getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const
 {
-	return kvalobsProxy_.directKvalobsAccess().getStationMetadata(metadataName, validFor);
+	return dataAccess_.getStationMetadata(metadataName, validFor);
 }
 
 }

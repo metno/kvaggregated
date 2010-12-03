@@ -1,7 +1,6 @@
 #include "BackProduction.h"
 #include "WorkLoop.h"
 #include "proxy/KvDataReceiver.h"
-#include "proxy/KvalobsProxy.h"
 #include <kvcpp/KvApp.h>
 #include <milog/milog.h>
 #include <boost/lexical_cast.hpp>
@@ -9,18 +8,16 @@
 
 using namespace std;
 
-BackProduction::BackProduction(kvservice::proxy::KvalobsProxy & proxy,
-		kvservice::proxy::CallbackCollection & callbacks,
+BackProduction::BackProduction(kvservice::proxy::CallbackCollection & callbacks,
 		const WorkLoop & mainLoop, const miutil::miTime & from,
 		const miutil::miTime & to) :
-	proxy_(proxy), callbacks_(callbacks), mainLoop_(mainLoop), from_(from), to_(to)
+	callbacks_(callbacks), mainLoop_(mainLoop), from_(from), to_(to)
 {
 }
 
-BackProduction::BackProduction(kvservice::proxy::KvalobsProxy & proxy,
-		kvservice::proxy::CallbackCollection & callbacks,
+BackProduction::BackProduction(kvservice::proxy::CallbackCollection & callbacks,
 		const WorkLoop & mainLoop, const std::string & timeSpec) :
-	proxy_(proxy), callbacks_(callbacks), mainLoop_(mainLoop)
+	callbacks_(callbacks), mainLoop_(mainLoop)
 {
 	const string::size_type sep = timeSpec.find_first_of(',');
 	if (sep == string::npos)

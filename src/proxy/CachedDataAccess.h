@@ -39,7 +39,7 @@
 namespace kvservice
 {
 
-class CachedDataAccess: public kvservice::DataAccess, boost::noncopyable
+class CachedDataAccess: public kvservice::DataAccess
 {
 public:
 	explicit CachedDataAccess(const std::string & proxyDatabaseName);

@@ -35,9 +35,9 @@
 #include <puTools/miTime.h>
 #include <boost/scoped_ptr.hpp>
 
-AggregatorRunner::AggregatorRunner(const std::vector<int> & stations, kvservice::proxy::KvalobsProxy & proxy,
+AggregatorRunner::AggregatorRunner(const std::vector<int> & stations, kvservice::DataAccess & dataAccess,
 		kvservice::proxy::CallbackCollection & callbacks) :
-	incomingHandler(proxy, callbacks)
+	incomingHandler(dataAccess, callbacks)
 {
     assert( kvservice::KvApp::kvApp );
 

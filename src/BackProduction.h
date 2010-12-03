@@ -5,12 +5,6 @@
 #include <puTools/miTime.h>
 #include <string>
 
-namespace kvservice {
-namespace proxy {
-class KvalobsProxy;
-}
-}
-
 class WorkLoop;
 
 /**
@@ -23,8 +17,7 @@ class WorkLoop;
 class BackProduction
 {
 public:
-	BackProduction(kvservice::proxy::KvalobsProxy & proxy,
-			kvservice::proxy::CallbackCollection & callbacks,
+	BackProduction(kvservice::proxy::CallbackCollection & callbacks,
 			const WorkLoop & mainLoop,
 			const miutil::miTime & from, 
 			const miutil::miTime & to);
@@ -38,8 +31,7 @@ public:
 	 * 
 	 * @throw std::logic_error if specification is invalid
 	 */
-	BackProduction(kvservice::proxy::KvalobsProxy & proxy,
-			kvservice::proxy::CallbackCollection & callbacks,
+	BackProduction(kvservice::proxy::CallbackCollection & callbacks,
 			const WorkLoop & mainLoop, const std::string & timeSpec);
 	
 	~BackProduction();
@@ -50,7 +42,6 @@ private:
 
 	void processData( const miutil::miTime & time);
 
-	kvservice::proxy::KvalobsProxy & proxy_;
 	kvservice::proxy::CallbackCollection & callbacks_;
 	const WorkLoop & mainLoop_;
 	miutil::miTime from_;

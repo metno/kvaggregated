@@ -34,10 +34,7 @@
 
 namespace kvservice
 {
-namespace proxy
-{
-class KvalobsProxy;
-}
+class DataAccess;
 }
 
 namespace aggregator
@@ -46,7 +43,7 @@ namespace aggregator
 class po: public aggregator::AbstractAggregator
 {
 public:
-	explicit po(const kvservice::proxy::KvalobsProxy & kvalobsProxy);
+	explicit po(const kvservice::DataAccess & dataAccess);
 	virtual ~po();
 
 	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations, const ParameterSortedDataList & previouslyAggregatedData);
@@ -82,7 +79,7 @@ private:
 	float computePoWithInversionCorrection(float pr, float ta, float um, float tm, float hp) const;
 
 private:
-	const kvservice::proxy::KvalobsProxy & kvalobsProxy_;
+	const kvservice::DataAccess & dataAccess_;
 };
 
 }

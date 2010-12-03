@@ -33,7 +33,7 @@
 
 #include "aggregator/AbstractAggregator.h"
 #include "proxy/Callback.h"
-#include "proxy/KvalobsProxy.h"
+#include "proxy/DataAccess.h"
 #include <map>
 
 namespace aggregator
@@ -47,7 +47,7 @@ class AggregatorHandler: public kvservice::proxy::Callback
 
 public:
 
-	AggregatorHandler(kvservice::proxy::CallbackCollection & callbacks, kvservice::proxy::KvalobsProxy &proxy);
+	AggregatorHandler(kvservice::proxy::CallbackCollection & callbacks, kvservice::DataAccess &dataAccess);
 	virtual ~AggregatorHandler();
 
 	virtual void newData(kvservice::KvDataList &data);
@@ -86,7 +86,7 @@ private:
 	typedef std::pair<int, AbstractAggregator *> Handler;
 	typedef std::multimap<int, AbstractAggregator *> HandlerMap;
 
-	kvservice::proxy::KvalobsProxy & proxy_;
+	kvservice::DataAccess & dataAccess_;
 
 	HandlerMap handlers;
 

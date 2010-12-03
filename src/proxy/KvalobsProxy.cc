@@ -163,13 +163,17 @@ void KvalobsProxy::db_clear()
 
 void KvalobsProxy::db_populate(int hours)
 {
-	KvDataList data;
 	miTime to = miTime::nowTime();
 	miTime from = to;
 	from.addHour(-hours);
 
-	kvalobs_.getAllData(data, from, to);
+	db_populate(from, to);
+}
 
+void KvalobsProxy::db_populate(const miutil::miTime & from, const miutil::miTime & to)
+{
+	KvDataList data;
+	kvalobs_.getAllData(data, from, to);
 	cache_.sendData(data);
 
 	ScopedWriteLock lock(timeMutex_);
@@ -179,6 +183,7 @@ void KvalobsProxy::db_populate(int hours)
 		oldestInProxy = min(oldestInProxy, from);
 	LOGINFO("Got data from source database. Current oldest observation:"
 			<< oldestInProxy << ".");
+
 }
 
 void KvalobsProxy::db_cleanup()
@@ -315,6 +320,10 @@ void KvalobsProxy::getData(KvDataList &data, int station,
 
 void KvalobsProxy::cacheData(const KvDataList & data)
 {
+	cache_.cacheData(data);
+	kvalobs_.cacheData(data);
+
+	// TODO: see if this is movable to cache_:
 	KvDataList toSave;
 	for (CIKvDataList it = data.begin(); it != data.end(); ++it)
 		if (interestingParameters_.find(it->paramID())

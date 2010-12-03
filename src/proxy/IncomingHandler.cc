@@ -29,8 +29,8 @@
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 #include "IncomingHandler.h"
-#include "KvalobsProxy.h"
 #include "Callback.h"
+#include <decodeutility/kvDataFormatter.h>
 #include <milog/milog.h>
 
 #include <boost/thread/thread.hpp>
@@ -102,9 +102,9 @@ void IncomingHandler::HandlerThread::operator()()
 	//LOGDEBUG( "Thread terminating" );
 }
 
-IncomingHandler::IncomingHandler(KvalobsProxy &proxy_,
+IncomingHandler::IncomingHandler(DataAccess &dataAccess_,
 		CallbackCollection & callbacks, bool doStartThreads, int noOfThreads_) :
-	proxy(proxy_), callbacks_(callbacks), noOfThreads(noOfThreads_),
+	dataAccess(dataAccess_), callbacks_(callbacks), noOfThreads(noOfThreads_),
 			threadsStopping(true)
 {
 	if (doStartThreads)
@@ -176,7 +176,7 @@ void IncomingHandler::process(KvObsDataListPtr & data)
 		LOGDEBUG( ss.str() );
 
 		for (IKvObsDataList it = data->begin(); it != data->end(); ++it)
-			proxy.cacheData(*it);
+			dataAccess.cacheData(*it);
 
 		callbacks_.send(*data);
 

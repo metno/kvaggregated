@@ -71,7 +71,7 @@ public:
 	 *
 	 * \return The value of the given metadata
 	 */
-	float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const;
+	virtual float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const;
 
 };
 

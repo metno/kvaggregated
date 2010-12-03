@@ -33,13 +33,15 @@
 
 #include <kvcpp/kvservicetypes.h>
 #include <kvskel/datasource.hh>
+#include <boost/noncopyable.hpp>
+#include <stdexcept>
 
 namespace kvservice
 {
 /**
  * Virtual base class for access to kvalobs data.
  */
-class DataAccess
+class DataAccess : boost::noncopyable
 {
 public:
 	virtual ~DataAccess() {}
@@ -55,6 +57,28 @@ public:
      * Send data to kvalobs. Data will also be stored in proxy database
      */
     virtual CKvalObs::CDataSource::Result_var sendData( const KvDataList &data ) =0;
+
+    virtual float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const
+    {
+    	throw std::runtime_error("Unable to get station meta data");
+    }
+
+    /**
+     * Tell subclass that we care about this particualer parameter. Subclasses
+     * are free to do as they like with parameters which have not been
+     * registered like this.
+     *
+     * @param param A parameter we are interested in.
+     */
+    virtual void addInteresting(int param) {}
+
+    /**
+     * Tell subclass to cache data for faster retrieval, if the subclass has
+     * such capabilities.
+     *
+     * @param data The data to be cached
+     */
+    virtual void cacheData(const KvDataList &data) {}
 };
 
 }
