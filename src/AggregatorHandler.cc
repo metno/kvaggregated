@@ -100,7 +100,8 @@ void AggregatorHandler::newData(KvDataList &data)
 			LOGDEBUG(skipParameterMessage);
 	}
 
-	save(toSave);
+	if ( KvApp::kvApp and not KvApp::kvApp->shutdown())
+		save(toSave);
 }
 
 namespace
@@ -154,16 +155,8 @@ void AggregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvDa
 				if ( find == dataForParameter.end() )
 					dataForParameter.push_back(data);
 
-				AbstractAggregator::ParameterSortedDataList alreadyAggregated;
-				kvalobs::kvData aggregatedData = data;
-				aggregatedData.typeID(-data.typeID());
-				getRelevantObsList(alreadyAggregated, * aggregator, aggregatedData, aggregator->getTimeSpan(data));
-
-
-//				const std::list<kvalobs::kvData> baseDataToAggregateFrom = getRelevantObsList(data, aggregator->getTimeSpan(data));
-
 				AbstractAggregator::kvDataPtr d =
-						aggregator->process(data, baseDataToAggregateFrom, alreadyAggregated);
+						aggregator->process(data, baseDataToAggregateFrom);
 
 				if ( d.get() )
 				{

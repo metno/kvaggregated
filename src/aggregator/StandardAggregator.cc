@@ -123,8 +123,7 @@ bool StandardAggregator::isInterestedIn(const kvalobs::kvData &data) const
 
 AbstractAggregator::kvDataPtr StandardAggregator::process(
 		const kvalobs::kvData & data,
-		const ParameterSortedDataList & p_observations,
-		const ParameterSortedDataList & previouslyAggregatedData)
+		const ParameterSortedDataList & p_observations)
 {
 	if ( p_observations.size() != 1 )
 		throw std::logic_error("internal error - StandardAggregator may only have one parameter dependency.");

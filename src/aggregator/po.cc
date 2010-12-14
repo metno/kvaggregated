@@ -86,18 +86,31 @@ const kvalobs::kvData * getData(int parameter, const miutil::miTime & obstime, c
 }
 }
 
+po::kvDataPtr po::process(const kvalobs::kvData & data,
+		const ParameterSortedDataList & observations)
+{
+	kvservice::KvDataList dataList;
+	dataAccess_.getData(dataList, data.stationID(), data.obstime(), data.obstime(), PO, - std::abs(data.typeID()), data.sensor(), data.level());
+	AbstractAggregator::ParameterSortedDataList alreadyAggregated;
+	for ( kvservice::KvDataList::const_iterator it = dataList.begin(); it != dataList.end(); ++ it )
+		alreadyAggregated[it->paramID()].push_back(* it);
+
+	return process(data, observations, alreadyAggregated);
+}
+
 po::kvDataPtr po::process(const kvalobs::kvData & data, const ParameterSortedDataList & observations, const ParameterSortedDataList & previouslyAggregatedData)
 {
 	po::kvDataPtr ret = process_(data, observations, 1);
 
 	if ( ! ret )
-		return po::kvDataPtr();
+		return ret;
 
-	const kvalobs::kvData * po = getData(PO, data.obstime(), observations);
+
 	const kvalobs::kvData * aggregatedPo = getData(PO, data.obstime(), previouslyAggregatedData);
 
 	if ( not aggregatedPo ) // if we have _not_ sent this data to kvalobs before
 	{
+		const kvalobs::kvData * po = getData(PO, data.obstime(), observations);
 		if ( po ) // and the observation contained its own PO observation
 		{
 			// check if the aggregated and reported values are very similar.

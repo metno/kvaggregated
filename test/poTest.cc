@@ -95,7 +95,7 @@ TEST_F(poTest, createsNegativeTypeId)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	po::kvDataPtr result = p.process(pr, toProcess);
 	ASSERT_TRUE(result);
 	EXPECT_EQ(-1, result->typeID());
 }
@@ -110,7 +110,7 @@ TEST_F(poTest, createsNegativeTypeIdFromNegativeStart)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	po::kvDataPtr result = p.process(pr, toProcess);
 	ASSERT_TRUE(result);
 	EXPECT_EQ(-1, result->typeID());
 }
@@ -125,7 +125,7 @@ TEST_F(poTest, test1)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	po::kvDataPtr result = p.process(pr, toProcess);
 
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 	EXPECT_NEAR(986.5, result->corrected(), 0.05);
@@ -141,7 +141,7 @@ TEST_F(poTest, test2a)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	po::kvDataPtr result = p.process(pr, toProcess);
 
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 	EXPECT_NEAR(986.5, result->corrected(), 0.05);
@@ -175,7 +175,7 @@ TEST_F(poTest, test3)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	po::kvDataPtr result = p.process(pr, toProcess);
 
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 	EXPECT_NEAR(986.5, result->corrected(), 0.05);
@@ -193,7 +193,7 @@ TEST_F(poTest, test4a)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	po::kvDataPtr result = p.process(pr, toProcess);
 
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 	EXPECT_NEAR(986.5, result->corrected(), 0.05);
@@ -225,7 +225,7 @@ TEST_F(poTest, noPr)
 	po::ParameterSortedDataList toProcess;
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(ta, toProcess, AbstractAggregator::ParameterSortedDataList());
+	po::kvDataPtr result = p.process(ta, toProcess);
 
 	EXPECT_FALSE(result);
 }
@@ -238,7 +238,7 @@ TEST_F(poTest, noTa)
 	po::ParameterSortedDataList toProcess;
 	toProcess[PR].push_back(pr);
 
-	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	po::kvDataPtr result = p.process(pr, toProcess);
 
 	EXPECT_FALSE(result);
 }
@@ -253,7 +253,7 @@ TEST_F(poTest, missingPr)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	po::kvDataPtr result = p.process(pr, toProcess);
 
 	ASSERT_TRUE(result);
 	EXPECT_TRUE(kvalobs::missing(* result));
@@ -269,7 +269,7 @@ TEST_F(poTest, missingta)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	po::kvDataPtr result = p.process(pr, toProcess);
 
 	ASSERT_TRUE(result);
 	EXPECT_TRUE(kvalobs::missing(* result));
@@ -289,7 +289,7 @@ TEST_F(poTest, testCorrectedValuesSetsFmis)
 	toProcess[PR].push_back(pr);
 	toProcess[TA].push_back(ta);
 
-	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	po::kvDataPtr result = p.process(pr, toProcess);
 
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 	//EXPECT_NEAR(986.5, result->corrected(), 0.05); // We don't care
@@ -308,7 +308,7 @@ TEST_F(poTest, testMinorCorrectionsAreNotWritten)
 	toProcess[TA].push_back(ta);
 	toProcess[PO].push_back(po);
 
-	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	po::kvDataPtr result = p.process(pr, toProcess);
 	// calculation should give the value 986.5.
 	// but since the value of original PO observation is very close, we expect no return
 	EXPECT_TRUE(! result);
@@ -326,7 +326,7 @@ TEST_F(poTest, testMinorCorrectionsAreNotWritten2)
 	toProcess[TA].push_back(ta);
 	toProcess[PO].push_back(po);
 
-	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	po::kvDataPtr result = p.process(pr, toProcess);
 	// calculation should give the value 986.5.
 	// but since the value of original PO observation is very close, we expect no return
 	EXPECT_TRUE(! result);
@@ -344,7 +344,7 @@ TEST_F(poTest, testMajorCorrectionsAreWritten)
 	toProcess[TA].push_back(ta);
 	toProcess[PO].push_back(po);
 
-	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	po::kvDataPtr result = p.process(pr, toProcess);
 	ASSERT_TRUE(result);
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 }
@@ -365,7 +365,7 @@ TEST_F(poTest, testMinorCorrectionsAreWrittenIfOldDataExists)
 	kvalobs::kvDataFactory agFactory(42, "2010-05-06 09:00:00", -1);
 	aggregated[PO].push_back(agFactory.getData(986.21, PO));
 
-	po::kvDataPtr result = p.process(pr, toProcess, aggregated);
+	po::kvDataPtr result = p.process(pr, toProcess , aggregated);
 	// calculation should give the value 986.5.
 	// normally, we would not expect a return, since almost the same data have
 	// been reported by the station. But since data have already been stored
@@ -386,7 +386,7 @@ TEST_F(poTest, testOriginalDifferenceCauseAggregation)
 	toProcess[TA].push_back(ta);
 	toProcess[PO].push_back(po);
 
-	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	po::kvDataPtr result = p.process(pr, toProcess);
 	ASSERT_TRUE(result);
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 }
@@ -404,7 +404,7 @@ TEST_F(poTest, testCorrectedDifferenceCauseAggregation)
 	toProcess[TA].push_back(ta);
 	toProcess[PO].push_back(po);
 
-	po::kvDataPtr result = p.process(pr, toProcess, AbstractAggregator::ParameterSortedDataList());
+	po::kvDataPtr result = p.process(pr, toProcess);
 	ASSERT_TRUE(result);
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 }

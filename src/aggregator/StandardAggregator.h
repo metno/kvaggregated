@@ -97,8 +97,7 @@ public:
 
 
 	virtual kvDataPtr process(const kvalobs::kvData & data,
-			const ParameterSortedDataList & observations,
-			const ParameterSortedDataList & previouslyAggregatedData);
+			const ParameterSortedDataList & observations);
 
 	/**
 	 * \brief Get the number of hours back in time we are interested

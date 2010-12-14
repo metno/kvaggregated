@@ -70,7 +70,7 @@ TEST_F(MinMaxTest, testNormal)
 	StandardAggregator::kvDataList::const_iterator p = dl.begin();
 	++p;
 	
-	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data, AbstractAggregator::ParameterSortedDataList() );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
 	ASSERT_TRUE( d.get() );
 	
 	EXPECT_EQ( 2, d->paramID() );
@@ -101,7 +101,7 @@ TEST_F(MinMaxTest, testModifiedValue)
 	StandardAggregator::kvDataList::const_iterator p = dl.begin();
 	++p;
 
-	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data, AbstractAggregator::ParameterSortedDataList() );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
 	ASSERT_TRUE( d.get() );
 
 	EXPECT_EQ( 2, d->paramID() );
@@ -132,7 +132,7 @@ TEST_F(MinMaxTest, testRejectedValue)
 	StandardAggregator::kvDataList::const_iterator p = dl.begin();
 	++p;
 
-	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data, AbstractAggregator::ParameterSortedDataList() );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
 	ASSERT_TRUE( d.get() );
 
 	EXPECT_EQ( 2, d->paramID() );
@@ -163,7 +163,7 @@ TEST_F(MinMaxTest, testMissingValueCorrected)
 	StandardAggregator::kvDataList::const_iterator p = dl.begin();
 	++p;
 
-	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data, AbstractAggregator::ParameterSortedDataList() );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
 	ASSERT_TRUE( d.get() );
 
 	EXPECT_EQ( 2, d->paramID() );
@@ -194,7 +194,7 @@ TEST_F(MinMaxTest, testOneValueMissingOtherRejected)
 	StandardAggregator::kvDataList::const_iterator p = dl.begin();
 	++p;
 
-	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data, AbstractAggregator::ParameterSortedDataList() );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
 	ASSERT_TRUE( d.get() );
 
 	EXPECT_EQ( 2, d->paramID() );
@@ -222,7 +222,7 @@ TEST_F(MinMaxTest, testIncompleteData)
 	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 05:00:00" ) );
 	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 06:00:00" ) );
 
-	StandardAggregator::kvDataPtr d = agregatorToTest.process( dl.back(), data, AbstractAggregator::ParameterSortedDataList() );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( dl.back(), data );
 	ASSERT_TRUE(d.get());
 	
 	EXPECT_EQ( 2, d->paramID() );
@@ -248,7 +248,7 @@ TEST_F(MinMaxTest, testMissingRow)
 	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 05:00:00" ) );
 	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 06:00:00" ) );
 
-	StandardAggregator::kvDataPtr d = agregatorToTest.process( dl.back(), data, AbstractAggregator::ParameterSortedDataList() );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( dl.back(), data );
 	ASSERT_TRUE( ! d.get() );
 }
 
@@ -272,7 +272,7 @@ TEST_F(MinMaxTest, testWrongInputDates)
 	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 05:00:00" ) );
 	dl.push_back( dataFactory.getData( 4, 1, "2007-06-06 06:00:00" ) );
 
-	StandardAggregator::kvDataPtr d = agregatorToTest.process( dl.back(), data, AbstractAggregator::ParameterSortedDataList() );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( dl.back(), data );
 	ASSERT_TRUE( ! d.get() );
 //	EXPECT_FLOAT_EQ(4, d->original());
 //	EXPECT_FLOAT_EQ(4, d->corrected());
@@ -301,7 +301,7 @@ TEST_F(MinMaxTest, testCompleteDataObservationInMiddle)
 	StandardAggregator::kvDataList::const_iterator randomElement = dl.begin();
 	std::advance( randomElement, 4 );
 	
-	StandardAggregator::kvDataPtr d = agregatorToTest.process( * randomElement, data, AbstractAggregator::ParameterSortedDataList() );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( * randomElement, data );
 	ASSERT_TRUE(d.get());
 	
 	EXPECT_EQ( 2, d->paramID() );
@@ -337,7 +337,7 @@ TEST_F(MinMaxTest, testCorrectedValues)
 	StandardAggregator::kvDataList::const_iterator p = dl.begin();
 	++p;
 
-	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data, AbstractAggregator::ParameterSortedDataList() );
+	StandardAggregator::kvDataPtr d = agregatorToTest.process( *p, data );
 	ASSERT_TRUE( d.get() );
 
 	EXPECT_EQ( 2, d->paramID() );

@@ -100,7 +100,7 @@ TEST_F(uu_24Test, data24hours)
 		dl.push_back(factory.getData(t.hour(), aggregator.readParam().front(), t));
 	kvalobs::correct(dl.front(), 3);
 
-	uu_24::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
+	uu_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -117,7 +117,7 @@ TEST_F(uu_24Test, data8hours)
 		dl.push_back(factory.getData(t.hour(), aggregator.readParam().front(), t));
 	kvalobs::correct(dl.front(), 3);
 
-	uu_24::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
+	uu_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -135,7 +135,7 @@ TEST_F(uu_24Test, data3hoursWrongTimes)
 
 	ASSERT_EQ(3u, dl.size()) << "test precondition error";
 
-	uu_24::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
+	uu_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_FALSE( result.get() );
 }
@@ -150,7 +150,7 @@ TEST_F(uu_24Test, data3hoursStartAt7)
 	dl.push_back(factory.getData(18, aggregator.readParam().front(), "2010-04-19 19:00:00"));
 	kvalobs::correct(dl.front(), 3);
 
-	uu_24::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
+	uu_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -172,7 +172,7 @@ TEST_F(uu_24Test, data3hoursMissingMetadata)
 	dl.push_back(factory.getData(18, aggregator.readParam().front(), "2010-04-19 18:00:00"));
 	kvalobs::correct(dl.front(), 3);
 
-	uu_24::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
+	uu_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_FALSE( result.get() );
 }
@@ -188,7 +188,7 @@ TEST_F(uu_24Test, data3hours)
 	dl.push_back(factory.getData(18, aggregator.readParam().front(), "2010-04-19 18:00:00"));
 	kvalobs::correct(dl.front(), 3);
 
-	uu_24::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
+	uu_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -210,7 +210,7 @@ TEST_F(uu_24Test, data3hoursUnsorted)
 	dl.push_back(factory.getData(16, aggregator.readParam().front(), "2010-04-19 18:00:00"));
 	kvalobs::correct(dl.front(), 3);
 
-	uu_24::kvDataPtr result = aggregator.process(dl.front(), data, AbstractAggregator::ParameterSortedDataList());
+	uu_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -226,7 +226,7 @@ TEST_F(uu_24Test, inclomplete24HourObservationPossiblyInterpretedAs3hourObs)
 	for (miutil::miTime t = "2010-04-19 00:00:00"; t < "2010-04-19 19:00:00"; t.addHour() )
 		dl.push_back(factory.getData(t.hour(), aggregator.readParam().front(), t));
 
-	uu_24::kvDataPtr result = aggregator.process(dl.back(), data, AbstractAggregator::ParameterSortedDataList());
+	uu_24::kvDataPtr result = aggregator.process(dl.back(), data);
 
 	ASSERT_TRUE( result.get() );
 
@@ -244,7 +244,7 @@ TEST_F(uu_24Test, inclomplete24HourObservationPossiblyInterpretedAs3hourObsTrigg
 	for (miutil::miTime t = "2010-04-19 00:00:00"; t < "2010-04-19 20:00:00"; t.addHour() )
 		dl.push_back(factory.getData(t.hour(), aggregator.readParam().front(), t));
 
-	uu_24::kvDataPtr result = aggregator.process(dl.back(), data, AbstractAggregator::ParameterSortedDataList());
+	uu_24::kvDataPtr result = aggregator.process(dl.back(), data);
 
 	ASSERT_FALSE( result.get() );
 }

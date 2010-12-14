@@ -46,7 +46,8 @@ public:
 	explicit po(const kvservice::DataAccess & dataAccess);
 	virtual ~po();
 
-	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations, const ParameterSortedDataList & previouslyAggregatedData);
+	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations);
+	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations, const ParameterSortedDataList & alreadyAggregated);
 
 	// Unused, awaiting a system for identifying inversion correcting stations:
 	kvDataPtr processMethod2(const kvalobs::kvData & data, const ParameterSortedDataList & observations);

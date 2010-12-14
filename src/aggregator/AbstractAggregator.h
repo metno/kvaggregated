@@ -59,8 +59,7 @@ public:
 	 * observations as base data.
 	 */
 	virtual kvDataPtr process(const kvalobs::kvData & data,
-			const ParameterSortedDataList & observations,
-			const ParameterSortedDataList & previouslyAggregatedData) =0;
+			const ParameterSortedDataList & observations) =0;
 
 
 	/**
