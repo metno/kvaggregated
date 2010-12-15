@@ -36,6 +36,7 @@
 #include "proxy/DataAccess.h"
 #include <map>
 
+
 namespace aggregator
 {
 class GenerateZero;
@@ -83,7 +84,6 @@ private:
 			const AbstractAggregator::TimeSpan & obsTimes) const;
 
 private:
-	typedef std::pair<int, AbstractAggregator *> Handler;
 	typedef std::multimap<int, AbstractAggregator *> HandlerMap;
 
 	kvservice::DataAccess & dataAccess_;

@@ -68,26 +68,12 @@ void AggregatorHandler::addHandler(AbstractAggregator * handler)
 	for ( AbstractAggregator::ParameterList::const_iterator it = handler->readParam().begin(); it !=  handler->readParam().end(); ++ it )
 	{
 		dataAccess_.addInteresting(* it);
-		handlers.insert(Handler(* it, handler));
+		handlers.insert(std::make_pair(* it, handler));
 	}
 	dataAccess_.addInteresting(handler->writeParam());
 }
-
 void AggregatorHandler::newData(KvDataList &data)
 {
-//	for (IKvDataList d = data.begin(); d != data.end(); d++)
-//	{
-//		if (d->paramID() == RA)
-//		{
-//			LOGDEBUG("Found RA parameter in station " << d->stationID()
-//					<< ", type " << d->typeID()
-//					<< ". Ignoring all RR_1 observations from this station.");
-//			StationHasParamid shp(RR_1, &*d);
-//			data.remove_if(shp);
-//			break;
-//		}
-//	}
-
 	CompleteCheckDecider checkDecider;
 
 	kvservice::KvDataList toSave;
