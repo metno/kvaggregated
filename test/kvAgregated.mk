@@ -19,6 +19,7 @@ kvAgregatedTest_SOURCES = \
 	test/ta_24Test.cc \
 	test/poTest.cc \
 	test/rr_1Test.cc \
+	test/ot_24Test.cc \
 	test/checkDecisionTest.cc
 	
 

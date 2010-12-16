@@ -44,7 +44,8 @@ namespace aggregator {
 	 UU    = 262, UUM_24 = 266,
 	 NN    =  15, NNM_24 =  16,
 	 PO    = 173, PR     = 178,
-	 UM_VS = 284, TM_VS  = 285
+	 UM_VS = 284, TM_VS  = 285,
+	 OT_1  = 121, OT_24  = 122
   };
 }
 

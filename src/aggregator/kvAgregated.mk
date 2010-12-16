@@ -28,4 +28,7 @@ kvAgregated_SOURCES += \
 	src/aggregator/nn_24.h \
 	src/aggregator/nn_24.cc \
 	src/aggregator/po.h \
-	src/aggregator/po.cc
+	src/aggregator/po.cc \
+	src/aggregator/ot_24.h \
+	src/aggregator/ot_24.cc
+	
