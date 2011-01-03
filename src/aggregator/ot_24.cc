@@ -30,6 +30,7 @@
 #include "ot_24.h"
 #include <paramID.h>
 #include <times.h>
+#include <numeric>
 
 namespace aggregator
 {
@@ -46,16 +47,7 @@ void ot_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const
 
 float ot_24::calculate(const ValueList & source, CalculationDataType, ExtraData) const
 {
-	float sum = 0;
-	for ( ValueList::const_iterator it = source.begin(); it != source.end(); ++ it )
-	{
-		if ( * it < 0 )
-			return invalidParam;
-		if ( * it > 60 )
-			return invalidParam;
-		sum += * it;
-	}
-	return sum;
+	return std::accumulate(source.begin(), source.end(), 0.0);
 }
 
 }

@@ -71,7 +71,7 @@ TEST(ot_24Test, failOnNegativeOriginal)
 	ot_24::kvDataPtr result = aggregator.process(d.back(), data);
 
 	ASSERT_TRUE(result);
-	EXPECT_TRUE(kvalobs::original_missing(* result));
+	EXPECT_EQ((30*23) -1, result->original());
 	EXPECT_EQ(30*24, result->corrected());
 }
 
@@ -93,7 +93,7 @@ TEST(ot_24Test, failOnNegativeCorrected)
 
 	ASSERT_TRUE(result);
 	EXPECT_EQ(30*24, result->original());
-	EXPECT_TRUE(not kvalobs::valid(* result));
+	EXPECT_EQ((30*23) -8, result->corrected());
 }
 
 TEST(ot_24Test, failOnTooHighOriginal)
@@ -114,7 +114,7 @@ TEST(ot_24Test, failOnTooHighOriginal)
 	ot_24::kvDataPtr result = aggregator.process(d.back(), data);
 
 	ASSERT_TRUE(result);
-	EXPECT_TRUE(kvalobs::original_missing(* result));
+	EXPECT_EQ((30*23) +61, result->original());
 	EXPECT_EQ(30*24, result->corrected());
 }
 
@@ -136,5 +136,5 @@ TEST(ot_24Test, failOnTooHighCorrected)
 
 	ASSERT_TRUE(result);
 	EXPECT_EQ(30*24, result->original());
-	EXPECT_TRUE(not kvalobs::valid(* result));
+	EXPECT_EQ((30*23) +422, result->corrected());
 }
