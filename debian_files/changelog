@@ -1,3 +1,10 @@
+kvagregated (2.2.5-1) unstable; urgency=low
+
+  * new version - no autoaggregation of RR_01 + removed sanity checks
+    from OT_24 aggregation
+
+ --  Vegard Bones <vegard.bones@met.no>  Mon,  3 Jan 2011 13:33:42 +0100
+
 kvagregated (2.2.4-1) unstable; urgency=low
 
   * new build for new kvalobs version
