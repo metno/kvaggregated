@@ -235,11 +235,11 @@ int main(int argc, char **argv)
 			handler.addHandler(&tax12);
 			MinMax tgn12 = min(TGN, TGN_12, 12, six);
 			handler.addHandler(&tgn12);
-			rr_1 rr1(conf.runInDaemonMode());
+			rr_1 rr1;
 			handler.addHandler(&rr1);
-			rr_12 rr12 = rr_12();
+			rr_12 rr12;
 			handler.addHandler(&rr12);
-			rr_24 rr24 = rr_24();
+			rr_24 rr24;
 			handler.addHandler(&rr24);
 			ra2rr_12_backward ra2rr_b;
 			handler.addHandler(&ra2rr_b);

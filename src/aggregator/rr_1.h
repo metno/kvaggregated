@@ -33,11 +33,6 @@
 
 #include "StandardAggregator.h"
 
-
-namespace boost
-{
-class thread;
-}
 namespace aggregator
 {
 
@@ -55,18 +50,11 @@ namespace aggregator
  */
 class rr_1: public StandardAggregator
 {
-	boost::thread *thread;
-	bool threadStopping;
 public:
 
-	explicit rr_1(bool startThread);
+	rr_1();
 
 	virtual ~rr_1();
-
-	bool threadIsStopping() const
-	{
-		return threadStopping;
-	}
 
 	/**
 	 * \return False unless trigger.original() == GenerateZero::obsVal()

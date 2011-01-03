@@ -34,8 +34,6 @@
 class TestingRR1 : public aggregator::rr_1
 {
 public:
-	TestingRR1() : aggregator::rr_1(false) {}
-
 	// Making protected functions and typedefs public:
 	using aggregator::rr_1::ValueList;
 	using aggregator::rr_1::calculate;

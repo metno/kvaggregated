@@ -7,8 +7,6 @@ kvAgregated_SOURCES = \
 	src/AggregatorHandler.cc \
 	src/KvDataFunctors.h \
 	src/KvDataFunctors.cc \
-	src/GenerateZero.h \
-	src/GenerateZero.cc \
 	src/BackProduction.h \
 	src/BackProduction.cc \
 	src/paramID.h \
