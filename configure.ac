@@ -1,5 +1,5 @@
 AC_PREREQ([2.61])
-AC_INIT([kvAgregated], [2.2.5], [kvoss@met.no])
+AC_INIT([kvAgregated], [2.2.666666], [kvoss@met.no])
 
 AC_CONFIG_SRCDIR([src/main.cc])
 AC_CONFIG_HEADER([config.h])
