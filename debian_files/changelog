@@ -1,3 +1,9 @@
+kvagregated (2.2.6-1) lucid; urgency=low
+
+  * new compile - for new kvalobs version
+
+ --  Vegard Bones <vegard.bones@met.no>  Wed, 26 Jan 2011 09:19:46 +0000
+
 kvagregated (2.2.6-1) unstable; urgency=low
 
   * newly compiled version - for new kvalobs version
