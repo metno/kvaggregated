@@ -88,7 +88,7 @@ TEST_F(KvalobsProxyTest, nonExistingDatabaseFile)
 
 TEST_F(KvalobsProxyTest, sameDataShouldOnlyBeSentOnce)
 {
-	EXPECT_CALL(* kvApp, sendDataToKv(_,"kv2kvDecoder")).
+	EXPECT_CALL(* kvApp, sendDataToKv(_,StrEq("kv2kvDecoder"))).
 			Times(1);
 
 	proxy->sendData(sampleData);
@@ -99,7 +99,7 @@ TEST_F(KvalobsProxyTest, sameDataShouldOnlyBeSentOnce)
 /// If the database contains invalidated data, we can overwrite it
 TEST_F(KvalobsProxyTest, canOverwriteInvalidData)
 {
-	EXPECT_CALL(* kvApp, sendDataToKv(_,"kv2kvDecoder")).
+	EXPECT_CALL(* kvApp, sendDataToKv(_,StrEq("kv2kvDecoder"))).
 			Times(2);
 
 	kvservice::KvDataList modifiedList = sampleData;
@@ -122,7 +122,7 @@ TEST_F(KvalobsProxyTest, canOverwriteInvalidData)
 
 TEST_F(KvalobsProxyTest, canOverwriteInvalidData2)
 {
-	EXPECT_CALL(* kvApp, sendDataToKv(_,"kv2kvDecoder")).
+	EXPECT_CALL(* kvApp, sendDataToKv(_,StrEq("kv2kvDecoder"))).
 			Times(2);
 
 	kvservice::KvDataList modifiedList = sampleData;
@@ -140,7 +140,7 @@ TEST_F(KvalobsProxyTest, canOverwriteInvalidData2)
 
 TEST_F(KvalobsProxyTest, canModifyOriginalValue)
 {
-	EXPECT_CALL(* kvApp, sendDataToKv(_,"kv2kvDecoder")).
+	EXPECT_CALL(* kvApp, sendDataToKv(_,StrEq("kv2kvDecoder"))).
 			Times(2);
 
 	kvservice::KvDataList missingData;
