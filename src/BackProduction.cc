@@ -93,6 +93,11 @@ void BackProduction::processData(const miutil::miTime & time)
 		LOGERROR(err_msg);
 		return;
 	}
+	if ( dataList.empty() )
+	{
+		LOGWARN("No data from kvalobs");
+		return;
+	}
 
 	LOGDEBUG("Got data. Processing...");
 	callbacks_.send(dataList);
