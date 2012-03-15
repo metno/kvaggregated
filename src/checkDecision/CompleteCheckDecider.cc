@@ -29,7 +29,7 @@
 
 #include "CompleteCheckDecider.h"
 #include "StationRangeFilter.h"
-#include "RaOverrideDecider.h"
+#include "RR1OverridesRADecider.h"
 #include <boost/assign/list_of.hpp>
 #include <boost/shared_ptr.hpp>
 #include <vector>
@@ -48,7 +48,7 @@ const int foreignStationWhiteList[foreignStationWhiteListCount] = {104, 105, 106
 // Todo: make this depend on a configuration file
 DeciderList deciders = boost::assign::list_of
 		(RunCheckDeciderPtr(new StationRangeFilter(100000, std::numeric_limits<int>::max(), foreignStationWhiteList, foreignStationWhiteList + foreignStationWhiteListCount)))
-		(RunCheckDeciderPtr(new RaOverrideDecider))
+		(RunCheckDeciderPtr(new RR1OverridesRADecider))
 	;
 }
 

@@ -4,6 +4,6 @@ kvAgregated_SOURCES += \
 	src/checkDecision/CompleteCheckDecider.h \
 	src/checkDecision/StationRangeFilter.cc \
 	src/checkDecision/StationRangeFilter.h \
-	src/checkDecision/RaOverrideDecider.cc \
-	src/checkDecision/RaOverrideDecider.h
+	src/checkDecision/RR1OverridesRADecider.cc \
+	src/checkDecision/RR1OverridesRADecider.h
 	

@@ -98,6 +98,6 @@ TEST(RaOverridesRr1Check, stationWithRaAndRr1)
 	data.push_back(factory.getData(0, RR_1));
 
 	CompleteCheckDecider filter;
-	EXPECT_TRUE(filter.shouldRunChecksOn(data.front(), data, dummy));
-	EXPECT_FALSE(filter.shouldRunChecksOn(data.back(), data, dummy));
+	EXPECT_FALSE(filter.shouldRunChecksOn(data.front(), data, dummy));
+	EXPECT_TRUE(filter.shouldRunChecksOn(data.back(), data, dummy));
 }

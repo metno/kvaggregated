@@ -27,30 +27,21 @@
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "RaOverrideDecider.h"
-#include <KvDataFunctors.h>
-#include <paramID.h>
-#include <kvalobs/kvData.h>
+#ifndef RAOVERRIDEDECIDER_H_
+#define RAOVERRIDEDECIDER_H_
+
+#include "RunCheckDecider.h"
 
 namespace aggregator
 {
 
-bool RaOverrideDecider::shouldRunChecksOn(const kvalobs::kvData & sourceData,
-		const DataList & completeObservation, std::string & msgOut)
+class RR1OverridesRADecider: public RunCheckDecider
 {
-	if ( sourceData.paramID() == RR_1 )
-	{
-		DataList::const_iterator find = std::find_if(
-				completeObservation.begin(), completeObservation.end(),
-				StationHasParamid(int(RA), & sourceData));
-
-		if ( completeObservation.end() != find )
-		{
-			msgOut = "Data contains both RA and RR_1, so we do not aggregate from RR_1";
-			return false;
-		}
-	}
-	return true;
-}
+public:
+	virtual bool shouldRunChecksOn(const kvalobs::kvData & sourceData,
+			const DataList & completeObservation, std::string & msgOut);
+};
 
 }
+
+#endif /* RAOVERRIDEDECIDER_H_ */
