@@ -31,7 +31,13 @@
 #define COMPLETECHECKDECIDER_H_
 
 #include "RunCheckDecider.h"
+#include <boost/shared_ptr.hpp>
 #include <vector>
+
+namespace kvservice
+{
+class DataAccess;
+}
 
 namespace aggregator
 {
@@ -45,8 +51,19 @@ namespace aggregator
 class CompleteCheckDecider: public RunCheckDecider
 {
 public:
+	explicit CompleteCheckDecider(kvservice::DataAccess * dataAccess = 0);
+
 	virtual bool shouldRunChecksOn(const kvalobs::kvData & sourceData,
 			const DataList & completeObservation, std::string & msgOut);
+
+private:
+	typedef boost::shared_ptr<RunCheckDecider> RunCheckDeciderPtr;
+	typedef std::vector<RunCheckDeciderPtr> DeciderList;
+
+
+	// Todo: make this depend on a configuration file
+	DeciderList deciders_;
+	kvservice::DataAccess * dataAccess_;
 };
 
 }

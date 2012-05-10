@@ -32,14 +32,26 @@
 
 #include "RunCheckDecider.h"
 
+namespace kvservice
+{
+class DataAccess;
+}
+
 namespace aggregator
 {
 
 class RR1OverridesRADecider: public RunCheckDecider
 {
 public:
+	explicit RR1OverridesRADecider(kvservice::DataAccess * dataAccess);
+
 	virtual bool shouldRunChecksOn(const kvalobs::kvData & sourceData,
 			const DataList & completeObservation, std::string & msgOut);
+
+private:
+	bool rr1ShouldOverrideRa(const kvalobs::kvData & sourceData, std::string & msgOut);
+
+	kvservice::DataAccess * dataAccess_;
 };
 
 }

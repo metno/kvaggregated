@@ -30,10 +30,17 @@
 #include "RR1OverridesRADecider.h"
 #include <KvDataFunctors.h>
 #include <paramID.h>
+#include <proxy/DataAccess.h>
 #include <kvalobs/kvData.h>
+#include <kvalobs/kvDataOperations.h>
 
 namespace aggregator
 {
+
+RR1OverridesRADecider::RR1OverridesRADecider(kvservice::DataAccess * dataAccess) :
+		dataAccess_(dataAccess)
+{
+}
 
 bool RR1OverridesRADecider::shouldRunChecksOn(const kvalobs::kvData & sourceData,
 		const DataList & completeObservation, std::string & msgOut)
@@ -46,9 +53,41 @@ bool RR1OverridesRADecider::shouldRunChecksOn(const kvalobs::kvData & sourceData
 
 		if ( completeObservation.end() != find )
 		{
-			msgOut = "Data contains both RA and RR_1, so we do not aggregate from RA";
-			return false;
+			if ( rr1ShouldOverrideRa(sourceData, msgOut) )
+			{
+				msgOut = "Data contains both RA and RR_1, so we do not aggregate from RA";
+				return false;
+			}
+			return true;
 		}
+	}
+	else if ( sourceData.paramID() == RR_1 )
+		return rr1ShouldOverrideRa(sourceData, msgOut);
+
+	return true;
+}
+
+bool RR1OverridesRADecider::rr1ShouldOverrideRa(const kvalobs::kvData & sourceData, std::string & msgOut)
+{
+	if ( dataAccess_ )
+	{
+		kvservice::KvDataList data;
+
+		miutil::miTime from = sourceData.obstime();
+		from.addHour(-11);
+		miutil::miTime to = sourceData.obstime();
+		dataAccess_->getData(data, sourceData.stationID(), from, to, RR_1, sourceData.typeID(), sourceData.sensor(), sourceData.level());
+
+		if ( data.empty() )
+			return false;
+
+		for ( kvservice::KvDataList::const_iterator it = data.begin(); it != data.end(); ++ it )
+			if ( kvalobs::original_missing(* it) or ! kvalobs::valid(* it) )
+			{
+				msgOut = "Data contains both RA and RR_1, but some RR_1 values are invalid, so instead we aggregate from RA";
+				return false;
+			}
+		return true;
 	}
 	return true;
 }

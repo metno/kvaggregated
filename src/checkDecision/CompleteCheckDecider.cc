@@ -31,7 +31,6 @@
 #include "StationRangeFilter.h"
 #include "RR1OverridesRADecider.h"
 #include <boost/assign/list_of.hpp>
-#include <boost/shared_ptr.hpp>
 #include <vector>
 #include <limits>
 
@@ -39,24 +38,25 @@ namespace aggregator
 {
 namespace
 {
-typedef boost::shared_ptr<RunCheckDecider> RunCheckDeciderPtr;
-typedef std::vector<RunCheckDeciderPtr> DeciderList;
-
 const int foreignStationWhiteListCount = 5;
 const int foreignStationWhiteList[foreignStationWhiteListCount] = {104, 105, 106, 109, 110};
 
-// Todo: make this depend on a configuration file
-DeciderList deciders = boost::assign::list_of
-		(RunCheckDeciderPtr(new StationRangeFilter(100000, std::numeric_limits<int>::max(), foreignStationWhiteList, foreignStationWhiteList + foreignStationWhiteListCount)))
-		(RunCheckDeciderPtr(new RR1OverridesRADecider))
-	;
 }
 
+CompleteCheckDecider::CompleteCheckDecider(kvservice::DataAccess * dataAccess) :
+		dataAccess_(dataAccess)
+{
+	// Todo: make this depend on a configuration file
+	deciders_ = boost::assign::list_of
+			(RunCheckDeciderPtr(new StationRangeFilter(100000, std::numeric_limits<int>::max(), foreignStationWhiteList, foreignStationWhiteList + foreignStationWhiteListCount)))
+			(RunCheckDeciderPtr(new RR1OverridesRADecider(dataAccess_)))
+		;
+}
 
 bool CompleteCheckDecider::shouldRunChecksOn(const kvalobs::kvData & sourceData,
 		const DataList & completeObservation, std::string & msgOut)
 {
-	for ( DeciderList::iterator it = deciders.begin(); it != deciders.end(); ++ it )
+	for ( DeciderList::iterator it = deciders_.begin(); it != deciders_.end(); ++ it )
 		if ( not (*it)->shouldRunChecksOn(sourceData, completeObservation, msgOut) )
 			return false;
 	return true;

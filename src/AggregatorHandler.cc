@@ -74,7 +74,7 @@ void AggregatorHandler::addHandler(AbstractAggregator * handler)
 }
 void AggregatorHandler::newData(KvDataList &data)
 {
-	CompleteCheckDecider checkDecider;
+	CompleteCheckDecider checkDecider(& dataAccess_);
 
 	kvservice::KvDataList toSave;
 	for (CIKvDataList dl = data.begin(); dl != data.end(); ++dl)
