@@ -75,7 +75,7 @@ public:
 	 * observation: val = minmax(val, nexObservation)
 	 */
 	MinMax(int readParam, int writeParam, int interestingHours, const std::set<
-			miutil::miClock> &generateWhen, Func minmax);
+			boost::posix_time::time_duration> &generateWhen, Func minmax);
 
     virtual bool shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const;
 
@@ -102,7 +102,7 @@ public:
  * \return A MinMax object for calculating minimum value of all
  * observation.
  */
-inline MinMax min(int readParam, int writeParam, int hours, const std::set<miutil::miClock> &when)
+inline MinMax min(int readParam, int writeParam, int hours, const std::set<boost::posix_time::time_duration> &when)
 {
 	return MinMax(readParam, writeParam, hours, when, std::min<float>);
 }
@@ -126,7 +126,7 @@ inline MinMax min(int readParam, int writeParam, int hours, const std::set<miuti
  * observation.
  */
 inline MinMax max(int readParam, int writeParam, int hours, const std::set<
-		miutil::miClock> &when)
+		boost::posix_time::time_duration> &when)
 {
 	return MinMax(readParam, writeParam, hours, when, std::max<float>);
 }

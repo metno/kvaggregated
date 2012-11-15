@@ -40,7 +40,6 @@
 
 
 using namespace std;
-using namespace miutil;
 using namespace kvalobs;
 using namespace boost;
 
@@ -48,7 +47,7 @@ namespace aggregator
 {
 
 rr::rr(int readParam, int writeParam, int interestingHours,
-		const set<miClock> &generateWhen) :
+		const set<boost::posix_time::time_duration> &generateWhen) :
 	StandardAggregator(readParam, writeParam, interestingHours, generateWhen)
 {
 }

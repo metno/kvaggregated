@@ -31,7 +31,6 @@
 #include "times.h"
 #include <kvalobs/kvDataOperations.h>
 
-using namespace miutil;
 using namespace kvalobs;
 
 
@@ -46,19 +45,19 @@ rr_24::rr_24() :
 bool rr_24::shouldProcess(const kvData &trigger, const kvDataList &observations) const
 {
 	// These are the times from which we will generate data:
-	const std::set<miClock> &when = sixAmSixPm;
+	const std::set<boost::posix_time::time_duration> &when = sixAmSixPm;
 
-	const miTime &time = trigger.obstime();
-	if (when.find(time.clock()) == when.end())
+	const boost::posix_time::ptime &time = trigger.obstime();
+	if (when.find(time.time_of_day()) == when.end())
 		return false;
 
-	for (std::set<miClock>::const_iterator genTime = when.begin(); genTime != when.end(); genTime++)
+	for (std::set<boost::posix_time::time_duration>::const_iterator genTime = when.begin(); genTime != when.end(); genTime++)
 	{
 		kvDataList::const_iterator search = observations.begin();
 		while (search != observations.end())
 		{
-			const miTime &t = search->obstime();
-			if (t.clock() == *genTime)
+			const boost::posix_time::ptime &t = search->obstime();
+			if (t.time_of_day() == *genTime)
 				break;
 			search++;
 		}
@@ -70,15 +69,15 @@ bool rr_24::shouldProcess(const kvData &trigger, const kvDataList &observations)
 
 void rr_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
 {
-	const std::set<miClock> & when = sixAmSixPm;
+	const std::set<boost::posix_time::time_duration> & when = sixAmSixPm;
 
-	for (std::set<miClock>::const_iterator it = when.begin(); it != when.end(); it++)
+	for (std::set<boost::posix_time::time_duration>::const_iterator it = when.begin(); it != when.end(); it++)
 	{
 		//std::cout << * it << std::endl;
 		for (kvDataList::const_iterator dataIt = dataIn.begin(); dataIt != dataIn.end(); dataIt++)
 		{
-			miTime t = dataIt->obstime();
-			if (t.clock() == *it)
+			boost::posix_time::ptime t = dataIt->obstime();
+			if (t.time_of_day() == *it)
 				out.push_back(*dataIt);
 		}
 	}

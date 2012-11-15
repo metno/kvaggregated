@@ -34,8 +34,8 @@
 #include "AbstractAggregator.h"
 #include <kvalobs/kvData.h>
 #include <kvalobs/kvStation.h>
-#include <puTools/miTime.h>
 #include <kvskel/datasource.hh>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <list>
 #include <set>
 #include <map>
@@ -89,7 +89,7 @@ public:
 	 * data. Agregates will only be generated for these times.
 	 */
 	StandardAggregator(int readParam, int writeParam, int interestingHours,
-			const std::set<miutil::miClock> & generateWhen);
+			const std::set<boost::posix_time::time_duration> & generateWhen);
 
 	virtual ~StandardAggregator();
 
@@ -112,7 +112,7 @@ public:
 	 * \brief Get the list of specifict times at which we want to
 	 * generate agregate values.
 	 */
-	const std::set<miutil::miClock> & generateWhen() const
+	const std::set<boost::posix_time::time_duration> & generateWhen() const
 	{
 		return generate_when;
 	}
@@ -224,7 +224,7 @@ private:
 	float generateCorrected_(const kvDataList & data, ExtraData extraData) const;
 
 	const int interesting_hours;
-	const std::set<miutil::miClock> generate_when;
+	const std::set<boost::posix_time::time_duration> generate_when;
 };
 }
 

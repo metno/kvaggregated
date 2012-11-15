@@ -67,8 +67,8 @@ namespace
 }
 
 
-void KvalobsDataAccess::getData(KvDataList &data, int station, const miutil::miTime &from,
-		const miutil::miTime &to, int paramid, int type, int sensor, int lvl) const
+void KvalobsDataAccess::getData(KvDataList &data, int station, const boost::posix_time::ptime &from,
+		const boost::posix_time::ptime &to, int paramid, int type, int sensor, int lvl) const
 {
 	KvDataList tmpData;
 
@@ -78,12 +78,12 @@ void KvalobsDataAccess::getData(KvDataList &data, int station, const miutil::miT
     data.insert(data.end(), tmpData.begin(), tmpData.end());
 }
 
-void KvalobsDataAccess::getAllData(KvDataList & data, const miutil::miTime &from, const miutil::miTime &to, int station) const
+void KvalobsDataAccess::getAllData(KvDataList & data, const boost::posix_time::ptime &from, const boost::posix_time::ptime &to, int station) const
 {
     WhichDataHelper wdh( CKvalObs::CService::All );
-    miutil::miTime newFrom = from;
+    boost::posix_time::ptime newFrom = from;
     if ( from != to )
-      newFrom.addSec(); // We don't want inclusive from
+      newFrom += boost::posix_time::seconds(1); // We don't want inclusive from
 
     wdh.addStation( station, newFrom, to );
 
@@ -122,9 +122,9 @@ bool compatible(const kvalobs::kvStationMetadata & metadata, const kvalobs::kvDa
 {
 	if ( metadata.stationID() != d.stationID() )
 		return false;
-	if ( not metadata.fromtime().undef() and metadata.fromtime() > d.obstime() )
+	if ( not metadata.fromtime().is_not_a_date_time() and metadata.fromtime() > d.obstime() )
 		return false;
-	if ( not metadata.totime().undef() and metadata.totime() < d.obstime() )
+	if ( not metadata.totime().is_not_a_date_time() and metadata.totime() < d.obstime() )
 		return false;
 	if ( metadata.haveSpecificParam() and metadata.paramID() != d.paramID() )
 		return false;

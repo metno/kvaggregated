@@ -46,26 +46,34 @@ protected:
 	MinMaxTest() : agregatorToTest(1, 2, 12, sixAmSixPm, std::min<float>) {}
 };
 
+namespace
+{
+boost::posix_time::ptime pt(const std::string & s)
+{
+	return boost::posix_time::time_from_string(s);
+}
+}
+
 INSTANTIATE_TEST_CASE_P(MinMaxTest, AbstractAggregatorTest, testing::Values(AggregatorPtr(new MinMax(1, 2, 12, sixAmSixPm, std::min<float>))));
 
 TEST_F(MinMaxTest, testNormal)
 {
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[1];
-	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
-//	dl.push_back( dataFactory.getData( 2, 1, "2007-06-05 18:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 19:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 20:00:00" ) );
-	dl.push_back( dataFactory.getData( 3, 1, "2007-06-05 21:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 22:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 23:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 00:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 01:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 02:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 03:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 05:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
+	const kvDataFactory dataFactory( 42, pt("2007-06-06 06:00:00"), 302 );
+//	dl.push_back( dataFactory.getData( 2, 1, pt("2007-06-05 18:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 19:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 20:00:00") ) );
+	dl.push_back( dataFactory.getData( 3, 1, pt("2007-06-05 21:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 22:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 23:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 00:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 01:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 02:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 03:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 06:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 05:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 06:00:00") ) );
 
 	StandardAggregator::kvDataList::const_iterator p = dl.begin();
 	++p;
@@ -82,19 +90,19 @@ TEST_F(MinMaxTest, testModifiedValue)
 {
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[1];
-	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 19:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 20:00:00" ) );
-	dl.push_back( dataFactory.getData( 3, 1, "2007-06-05 21:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 22:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 23:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 00:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 01:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 02:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 03:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 05:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
+	const kvDataFactory dataFactory( 42, pt("2007-06-06 06:00:00"), 302 );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 19:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 20:00:00") ) );
+	dl.push_back( dataFactory.getData( 3, 1, pt("2007-06-05 21:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 22:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 23:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 00:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 01:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 02:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 03:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 06:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 05:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 06:00:00") ) );
 
 	kvalobs::correct(dl.front(), -42);
 
@@ -113,19 +121,19 @@ TEST_F(MinMaxTest, testRejectedValue)
 {
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[1];
-	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 19:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 20:00:00" ) );
-	dl.push_back( dataFactory.getData( 3, 1, "2007-06-05 21:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 22:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 23:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 00:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 01:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 02:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 03:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 05:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
+	const kvDataFactory dataFactory( 42, pt("2007-06-06 06:00:00"), 302 );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 19:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 20:00:00") ) );
+	dl.push_back( dataFactory.getData( 3, 1, pt("2007-06-05 21:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 22:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 23:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 00:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 01:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 02:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 03:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 06:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 05:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 06:00:00") ) );
 
 	kvalobs::reject(dl.front());
 
@@ -144,19 +152,19 @@ TEST_F(MinMaxTest, testMissingValueCorrected)
 {
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[1];
-	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
-	dl.push_back( dataFactory.getMissing( 1, "2007-06-05 19:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 20:00:00" ) );
-	dl.push_back( dataFactory.getData( 3, 1, "2007-06-05 21:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 22:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 23:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 00:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 01:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 02:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 03:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 05:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
+	const kvDataFactory dataFactory( 42, pt("2007-06-06 06:00:00"), 302 );
+	dl.push_back( dataFactory.getMissing( 1, pt("2007-06-05 19:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 20:00:00") ) );
+	dl.push_back( dataFactory.getData( 3, 1, pt("2007-06-05 21:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 22:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 23:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 00:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 01:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 02:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 03:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 06:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 05:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 06:00:00") ) );
 
 	kvalobs::correct(dl.front(), -42);
 
@@ -175,19 +183,19 @@ TEST_F(MinMaxTest, testOneValueMissingOtherRejected)
 {
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[1];
-	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 19:00:00" ) );
-	dl.push_back( dataFactory.getMissing( 1, "2007-06-05 20:00:00" ) );
-	dl.push_back( dataFactory.getData( 3, 1, "2007-06-05 21:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 22:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 23:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 00:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 01:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 02:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 03:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 05:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
+	const kvDataFactory dataFactory( 42, pt("2007-06-06 06:00:00"), 302 );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 19:00:00") ) );
+	dl.push_back( dataFactory.getMissing( 1, pt("2007-06-05 20:00:00") ) );
+	dl.push_back( dataFactory.getData( 3, 1, pt("2007-06-05 21:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 22:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 23:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 00:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 01:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 02:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 03:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 06:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 05:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 06:00:00") ) );
 
 	kvalobs::reject(dl.front());
 
@@ -207,20 +215,20 @@ TEST_F(MinMaxTest, testIncompleteData)
 {
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[1];
-	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
-//	dl.push_back( dataFactory.getData( 5, 1, "2007-06-05 18:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-05 19:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-05 20:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-05 21:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-05 22:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-05 23:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 00:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 01:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 02:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 03:00:00" ) );
-	dl.push_back( dataFactory.getMissing( 1, "2007-06-06 04:00:00" ) ); // <- Here
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 05:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 06:00:00" ) );
+	const kvDataFactory dataFactory( 42, pt("2007-06-06 06:00:00"), 302 );
+//	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-05 18:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-05 19:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-05 20:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-05 21:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-05 22:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-05 23:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 00:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 01:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 02:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 03:00:00") ) );
+	dl.push_back( dataFactory.getMissing( 1, pt("2007-06-06 04:00:00") ) ); // <- Here
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 05:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 06:00:00") ) );
 
 	StandardAggregator::kvDataPtr d = agregatorToTest.process( dl.back(), data );
 	ASSERT_TRUE(d.get());
@@ -233,20 +241,20 @@ TEST_F(MinMaxTest, testMissingRow)
 {
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[1];
-	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
-//	dl.push_back( dataFactory.getData( 5, 1, "2007-06-05 18:00:00" ) );
-	dl.push_back( dataFactory.getData( 3, 1, "2007-06-05 19:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-05 20:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-05 21:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-05 22:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-05 23:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 00:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 01:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 02:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 03:00:00" ) );
-//	dl.push_back( dataFactory.getMissing( 1, "2007-06-06 04:00:00" ) ); // <- Here
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 05:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 06:00:00" ) );
+	const kvDataFactory dataFactory( 42, pt("2007-06-06 06:00:00"), 302 );
+//	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-05 18:00:00") ) );
+	dl.push_back( dataFactory.getData( 3, 1, pt("2007-06-05 19:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-05 20:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-05 21:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-05 22:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-05 23:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 00:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 01:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 02:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 03:00:00") ) );
+//	dl.push_back( dataFactory.getMissing( 1, pt("2007-06-06 04:00:00") ) ); // <- Here
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 05:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 06:00:00") ) );
 
 	StandardAggregator::kvDataPtr d = agregatorToTest.process( dl.back(), data );
 	ASSERT_TRUE( ! d.get() );
@@ -257,20 +265,20 @@ TEST_F(MinMaxTest, testWrongInputDates)
 {
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[1];
-	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
-	dl.push_back( dataFactory.getData( 1, 1, "2007-06-02 18:00:00" ) ); // <- this should be ignored
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-05 19:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-05 20:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-05 21:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-05 22:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-05 23:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 00:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 01:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 02:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 03:00:00" ) );
-//	dl.push_back( dataFactory.getMissing( 1, "2007-06-06 04:00:00" ) ); // <- Here one is missing
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 05:00:00" ) );
-	dl.push_back( dataFactory.getData( 4, 1, "2007-06-06 06:00:00" ) );
+	const kvDataFactory dataFactory( 42, pt("2007-06-06 06:00:00"), 302 );
+	dl.push_back( dataFactory.getData( 1, 1, pt("2007-06-02 18:00:00") ) ); // <- this should be ignored
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-05 19:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-05 20:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-05 21:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-05 22:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-05 23:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 00:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 01:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 02:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 03:00:00") ) );
+//	dl.push_back( dataFactory.getMissing( 1, pt("2007-06-06 04:00:00") ) ); // <- Here one is missing
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 05:00:00") ) );
+	dl.push_back( dataFactory.getData( 4, 1, pt("2007-06-06 06:00:00") ) );
 
 	StandardAggregator::kvDataPtr d = agregatorToTest.process( dl.back(), data );
 	ASSERT_TRUE( ! d.get() );
@@ -283,20 +291,20 @@ TEST_F(MinMaxTest, testCompleteDataObservationInMiddle)
 {
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[1];
-	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
-//	dl.push_back( dataFactory.getData( 12, 1, "2007-06-05 18:00:00" ) );
-	dl.push_back( dataFactory.getData( 11, 1, "2007-06-05 19:00:00" ) );
-	dl.push_back( dataFactory.getData( 10, 1, "2007-06-05 20:00:00" ) );
-	dl.push_back( dataFactory.getData( 9, 1, "2007-06-05 21:00:00" ) );
-	dl.push_back( dataFactory.getData( 8, 1, "2007-06-05 22:00:00" ) );
-	dl.push_back( dataFactory.getData( 7, 1, "2007-06-05 23:00:00" ) );
-	dl.push_back( dataFactory.getData( 6, 1, "2007-06-06 00:00:00" ) );
-	dl.push_back( dataFactory.getData( 5, 1, "2007-06-06 01:00:00" ) );
-	dl.push_back( dataFactory.getData( 4, 1, "2007-06-06 02:00:00" ) );
-	dl.push_back( dataFactory.getData( 3, 1, "2007-06-06 03:00:00" ) );
-	dl.push_back( dataFactory.getData( 2, 1, "2007-06-06 06:00:00" ) );
-	dl.push_back( dataFactory.getData( 1, 1, "2007-06-06 05:00:00" ) );
-	dl.push_back( dataFactory.getData( 0, 1, "2007-06-06 06:00:00" ) );
+	const kvDataFactory dataFactory( 42, pt("2007-06-06 06:00:00"), 302 );
+//	dl.push_back( dataFactory.getData( 12, 1, pt("2007-06-05 18:00:00") ) );
+	dl.push_back( dataFactory.getData( 11, 1, pt("2007-06-05 19:00:00") ) );
+	dl.push_back( dataFactory.getData( 10, 1, pt("2007-06-05 20:00:00") ) );
+	dl.push_back( dataFactory.getData( 9, 1, pt("2007-06-05 21:00:00") ) );
+	dl.push_back( dataFactory.getData( 8, 1, pt("2007-06-05 22:00:00") ) );
+	dl.push_back( dataFactory.getData( 7, 1, pt("2007-06-05 23:00:00") ) );
+	dl.push_back( dataFactory.getData( 6, 1, pt("2007-06-06 00:00:00") ) );
+	dl.push_back( dataFactory.getData( 5, 1, pt("2007-06-06 01:00:00") ) );
+	dl.push_back( dataFactory.getData( 4, 1, pt("2007-06-06 02:00:00") ) );
+	dl.push_back( dataFactory.getData( 3, 1, pt("2007-06-06 03:00:00") ) );
+	dl.push_back( dataFactory.getData( 2, 1, pt("2007-06-06 06:00:00") ) );
+	dl.push_back( dataFactory.getData( 1, 1, pt("2007-06-06 05:00:00") ) );
+	dl.push_back( dataFactory.getData( 0, 1, pt("2007-06-06 06:00:00") ) );
 	
 	StandardAggregator::kvDataList::const_iterator randomElement = dl.begin();
 	std::advance( randomElement, 4 );
@@ -318,21 +326,21 @@ TEST_F(MinMaxTest, testCorrectedValues)
 {
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[1];
-	const kvDataFactory dataFactory( 42, "2007-06-06 06:00:00", 302 );
-//	dl.push_back( dataFactory.getData( 2, 1, "2007-06-05 18:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 19:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 20:00:00" ) );
-	dl.push_back( dataFactory.getData( 3, 1, "2007-06-05 21:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 22:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-05 23:00:00" ) );
+	const kvDataFactory dataFactory( 42, pt("2007-06-06 06:00:00"), 302 );
+//	dl.push_back( dataFactory.getData( 2, 1, pt("2007-06-05 18:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 19:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 20:00:00") ) );
+	dl.push_back( dataFactory.getData( 3, 1, pt("2007-06-05 21:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 22:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-05 23:00:00") ) );
 	kvalobs::correct(dl.back(), 2);
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 00:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 01:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 02:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 03:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 05:00:00" ) );
-	dl.push_back( dataFactory.getData( 15, 1, "2007-06-06 06:00:00" ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 00:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 01:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 02:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 03:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 06:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 05:00:00") ) );
+	dl.push_back( dataFactory.getData( 15, 1, pt("2007-06-06 06:00:00") ) );
 
 	StandardAggregator::kvDataList::const_iterator p = dl.begin();
 	++p;

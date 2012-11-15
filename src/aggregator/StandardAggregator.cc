@@ -32,8 +32,6 @@
 //#include "AggregatorHandler.h"
 #include <proxy/KvalobsDataAccess.h>
 #include <kvalobs/kvDataOperations.h>
-#include <puTools/miTime.h>
-#include <puTools/miString.h>
 #include <milog/milog.h>
 #include <decodeutility/kvDataFormatter.h>
 #include <boost/functional.hpp>
@@ -49,7 +47,6 @@
 using namespace std;
 using namespace kvservice;
 using namespace kvalobs;
-using namespace miutil;
 using namespace dnmi::db;
 using namespace milog;
 using namespace boost;
@@ -57,7 +54,7 @@ using namespace boost;
 namespace aggregator
 {
 StandardAggregator::StandardAggregator(int readParam, int writeParam,
-		int interestingHours, const set<miClock> &generateWhen) :
+		int interestingHours, const set<boost::posix_time::time_duration> &generateWhen) :
 		AbstractAggregator(readParam, writeParam),
 	name("Agregator(" + lexical_cast<string> (readParam) + ", " + lexical_cast<
 			string> (writeParam) + ")"), interesting_hours(interestingHours), generate_when(
@@ -73,17 +70,17 @@ const StandardAggregator::TimeSpan StandardAggregator::getTimeSpan(
 		const kvData & data) const
 {
 	// Find out what times of day we are interested in:
-	miTime time = data.obstime();
-	miDate date = time.date();
-	set<miClock>::const_iterator it = generate_when.lower_bound(time.clock());
+	boost::posix_time::ptime time = data.obstime();
+	boost::gregorian::date date = time.date();
+	set<boost::posix_time::time_duration>::const_iterator it = generate_when.lower_bound(time.time_of_day());
 	if (it == generate_when.end())
 	{
 		it = generate_when.begin();
-		date.addDay();
+		date += boost::gregorian::days(1);
 	}
-	miTime genTime(date, *it);
-	miTime startTime = genTime;
-	startTime.addHour(-interesting_hours);
+	boost::posix_time::ptime genTime(date, *it);
+	boost::posix_time::ptime startTime = genTime;
+	startTime -= boost::posix_time::hours(interesting_hours);
 
 	const TimeSpan ret(startTime, genTime);
 
@@ -107,13 +104,12 @@ bool StandardAggregator::isInterestedIn(const kvalobs::kvData &data) const
 	TimeSpan times = getTimeSpan(data);
 
 	// Immediatly return if we obviously are supposed to agregate
-	if (data.obstime().hour() != 6 and data.obstime().hour() != 18)
+	if (data.obstime().time_of_day() != boost::posix_time::hours(6) and data.obstime().time_of_day() != boost::posix_time::hours(18) )
 	{
-		miTime t = miTime::nowTime();
-		t.addMin(30);
+		boost::posix_time::ptime t = boost::posix_time::second_clock::universal_time() + boost::posix_time::minutes(30);
 		if (data.obstime() < t)
 		{
-			t.addHour(2);
+			t += boost::posix_time::hours(2);
 			if (times.second > t)
 				return false;
 		}
@@ -158,8 +154,7 @@ AbstractAggregator::kvDataPtr StandardAggregator::process(
 		TimeSpan times = getTimeSpan(data);
 
 		// Create a data object for saving
-		miTime t = miTime(times.second.date(), miClock(times.second.hour(), 0,
-				0));
+		boost::posix_time::ptime t(times.second.date(), boost::posix_time::hours(times.second.time_of_day().hours()));
 
 		kvDataPtr ret = getDataObject(data, t, original, corrected, relevantData);
 

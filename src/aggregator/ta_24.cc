@@ -96,8 +96,8 @@ void ta_24::ExtraCalculationData::populate(const kvservice::DataAccess * dataAcc
 
 	kvservice::KvDataList data;
 	dataAccess->getData(data, trigger.stationID(),
-			miutil::miTime(trigger.obstime().date(), "05:59:59"),
-			miutil::miTime(trigger.obstime().date(), "18:00:00"),
+			boost::posix_time::ptime(trigger.obstime().date(), boost::posix_time::time_duration(5,59,59)),
+			boost::posix_time::ptime(trigger.obstime().date(), boost::posix_time::hours(18)),
 			TAN_12, trigger.typeID(), trigger.sensor(), trigger.level());
 
 	if ( data.size() < 2 )

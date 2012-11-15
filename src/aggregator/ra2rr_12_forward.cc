@@ -40,8 +40,8 @@ ra2rr_12_forward::ra2rr_12_forward()
 const ra2rr_12_forward::TimeSpan ra2rr_12_forward::getTimeSpan(const kvalobs::kvData &data) const
 {
 	TimeSpan ts = ra2rr_12::getTimeSpan(data);
-	ts.first.addHour(timeOffset() + 1);
-	ts.second.addHour(timeOffset());
+	ts.first += boost::posix_time::hours(timeOffset() + 1);
+	ts.second += boost::posix_time::hours(timeOffset());
 	return ts;
 }
 

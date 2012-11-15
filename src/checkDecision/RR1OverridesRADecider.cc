@@ -73,9 +73,8 @@ bool RR1OverridesRADecider::rr1ShouldOverrideRa(const kvalobs::kvData & sourceDa
 	{
 		kvservice::KvDataList data;
 
-		miutil::miTime from = sourceData.obstime();
-		from.addHour(-11);
-		miutil::miTime to = sourceData.obstime();
+		boost::posix_time::ptime from = sourceData.obstime() - boost::posix_time::hours(11);
+		boost::posix_time::ptime to = sourceData.obstime();
 		dataAccess_->getData(data, sourceData.stationID(), from, to, RR_1, sourceData.typeID(), sourceData.sensor(), sourceData.level());
 
 		if ( data.empty() )

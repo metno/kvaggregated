@@ -2,7 +2,6 @@
 #define BACKPRODUCTION_H_
 
 #include "proxy/CallbackCollection.h"
-#include <puTools/miTime.h>
 #include <string>
 
 class WorkLoop;
@@ -19,8 +18,8 @@ class BackProduction
 public:
 	BackProduction(kvservice::proxy::CallbackCollection & callbacks,
 			const WorkLoop & mainLoop,
-			const miutil::miTime & from, 
-			const miutil::miTime & to);
+			const boost::posix_time::ptime & from,
+			const boost::posix_time::ptime & to);
 	
 	/**
 	 * @param timeSpec A string specification of what times to use. The 
@@ -40,12 +39,12 @@ public:
 	
 private:
 
-	void processData( const miutil::miTime & time);
+	void processData( const boost::posix_time::ptime & time);
 
 	kvservice::proxy::CallbackCollection & callbacks_;
 	const WorkLoop & mainLoop_;
-	miutil::miTime from_;
-	miutil::miTime to_;
+	boost::posix_time::ptime from_;
+	boost::posix_time::ptime to_;
 };
 
 

@@ -51,7 +51,7 @@ bool MeanValueAggregator::shouldProcess( const kvalobs::kvData &trigger, const k
 		return true;
 	case 8:
 		for ( kvDataList::const_iterator it = observations.begin(); it != observations.end(); ++ it )
-			if ( it->obstime().hour() % 3 != 0 )
+			if ( it->obstime().time_of_day().hours() % 3 != 0 )
 				return false;
 		return true;
 	}

@@ -35,11 +35,20 @@
 
 using namespace aggregator;
 
+namespace
+{
+boost::posix_time::ptime pt(const std::string & s)
+{
+	return boost::posix_time::time_from_string(s);
+}
+}
+
+
 class MeanValueAgregatorTest : public AbstractAggregatorTest
 {
 protected:
 	MeanValueAgregatorTest() :
-		factory(1, "2010-03-16 06:00:00", 1),
+		factory(1, pt("2010-03-16 06:00:00"), 1),
 		aggregator(1, 2)
 	{}
 
@@ -55,7 +64,7 @@ TEST_F(MeanValueAgregatorTest, standard24hAgregate)
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[1];
 	int i = 0;
-	for ( miutil::miTime t = "2010-03-15 07:00:00"; t <= factory.obstime(); t.addHour() )
+	for ( boost::posix_time::ptime t = pt("2010-03-15 07:00:00"); t <= factory.obstime(); t += boost::posix_time::hours(1) )
 		dl.push_back(factory.getData(++ i, 1, t));
 
 	MeanValueAggregator::kvDataPtr result = aggregator.process(dl.front(), data);
@@ -70,7 +79,7 @@ TEST_F(MeanValueAgregatorTest, missingValue)
 {
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[1];
-	for ( miutil::miTime t = "2010-03-15 07:00:00"; t <= factory.obstime(); t.addHour() )
+	for ( boost::posix_time::ptime t = pt("2010-03-15 07:00:00"); t <= factory.obstime(); t += boost::posix_time::hours(1) )
 		dl.push_back(factory.getData(1, 1, t));
 
 	kvalobs::reject(dl.front());
@@ -88,7 +97,7 @@ TEST_F(MeanValueAgregatorTest, observationEach3Hours)
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[1];
 	int i = 0;
-	for ( miutil::miTime t = "2010-03-15 09:00:00"; t <= factory.obstime(); t.addHour(3) )
+	for ( boost::posix_time::ptime t = pt("2010-03-15 09:00:00"); t <= factory.obstime(); t += boost::posix_time::hours(3) )
 		dl.push_back(factory.getData(++ i, 1, t));
 
 	kvalobs::reject(dl.front());

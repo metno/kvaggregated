@@ -50,7 +50,7 @@ CachedDataAccess::~CachedDataAccess()
 }
 
 void CachedDataAccess::getData(KvDataList &data, int station,
-		const miutil::miTime &from, const miutil::miTime &to, int paramid,
+		const boost::posix_time::ptime &from, const boost::posix_time::ptime &to, int paramid,
 		int type, int sensor, int lvl) const
 {
 	LogContext context("proxy_getData");
@@ -138,7 +138,7 @@ void CachedDataAccess::clear()
 	connection_.get().exec("delete from data");
 }
 
-void CachedDataAccess::deleteOldData(const miutil::miTime & olderThanThis)
+void CachedDataAccess::deleteOldData(const boost::posix_time::ptime & olderThanThis)
 {
 	ostringstream query;
 	query << "delete from data where obstime < \'" << olderThanThis << "\';";

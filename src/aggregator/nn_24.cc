@@ -49,10 +49,10 @@ bool nn_24::shouldProcess( const kvalobs::kvData &trigger, const kvDataList &obs
 
 void nn_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
 {
-	std::set<miutil::miTime> wantedTimes;
-	wantedTimes.insert(miutil::miTime(trigger.obstime().date(), miutil::miClock(6,0,0)));
-	wantedTimes.insert(miutil::miTime(trigger.obstime().date(), miutil::miClock(12,0,0)));
-	wantedTimes.insert(miutil::miTime(trigger.obstime().date(), miutil::miClock(18,0,0)));
+	std::set<boost::posix_time::ptime> wantedTimes;
+	wantedTimes.insert(boost::posix_time::ptime(trigger.obstime().date(), boost::posix_time::time_duration(6,0,0)));
+	wantedTimes.insert(boost::posix_time::ptime(trigger.obstime().date(), boost::posix_time::time_duration(12,0,0)));
+	wantedTimes.insert(boost::posix_time::ptime(trigger.obstime().date(), boost::posix_time::time_duration(18,0,0)));
 
 	for ( kvDataList::const_iterator it = dataIn.begin(); it != dataIn.end(); ++ it )
 		if ( wantedTimes.find(it->obstime()) != wantedTimes.end() )

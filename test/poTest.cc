@@ -37,6 +37,15 @@
 
 using namespace aggregator;
 
+namespace
+{
+boost::posix_time::ptime pt(const std::string & s)
+{
+	return boost::posix_time::time_from_string(s);
+}
+}
+
+
 class TestingPo : public po
 {
 	static kvservice::proxy::KvalobsProxy & getProxy()
@@ -87,7 +96,7 @@ protected:
 
 TEST_F(poTest, createsNegativeTypeId)
 {
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getData(1036.5, PR);
 	const kvalobs::kvData ta = factory.getData(6.3, TA);
 
@@ -102,7 +111,7 @@ TEST_F(poTest, createsNegativeTypeId)
 
 TEST_F(poTest, createsNegativeTypeIdFromNegativeStart)
 {
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", -1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), -1);
 	const kvalobs::kvData pr = factory.getData(1036.5, PR);
 	const kvalobs::kvData ta = factory.getData(6.3, TA);
 
@@ -117,7 +126,7 @@ TEST_F(poTest, createsNegativeTypeIdFromNegativeStart)
 
 TEST_F(poTest, test1)
 {
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getData(1036.5, PR);
 	const kvalobs::kvData ta = factory.getData(6.3, TA);
 
@@ -133,7 +142,7 @@ TEST_F(poTest, test1)
 
 TEST_F(poTest, test2a)
 {
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getData(1038.9, PR);
 	const kvalobs::kvData ta = factory.getData(-6.3, TA);
 
@@ -149,7 +158,7 @@ TEST_F(poTest, test2a)
 
 TEST_F(poTest, test2b)
 {
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getData(1037.9, PR); // modified
 	const kvalobs::kvData ta = factory.getData(-6.3, TA);
 
@@ -167,7 +176,7 @@ TEST_F(poTest, test3)
 {
 	p.hp = 208;
 
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getData(1011.8, PR);
 	const kvalobs::kvData ta = factory.getData(6.3, TA);
 
@@ -185,7 +194,7 @@ TEST_F(poTest, test4a)
 {
 	p.hp = 208;
 
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getData(1013.0, PR);
 	const kvalobs::kvData ta = factory.getData(-6.3, TA);
 
@@ -203,7 +212,7 @@ TEST_F(poTest, test4b)
 {
 	p.hp = 208;
 
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getData(1012.4, PR);
 	const kvalobs::kvData ta = factory.getData(-6.3, TA);
 
@@ -219,7 +228,7 @@ TEST_F(poTest, test4b)
 
 TEST_F(poTest, noPr)
 {
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData ta = factory.getData(12.6, TA);
 
 	po::ParameterSortedDataList toProcess;
@@ -232,7 +241,7 @@ TEST_F(poTest, noPr)
 
 TEST_F(poTest, noTa)
 {
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getData(1001.1, PR);
 
 	po::ParameterSortedDataList toProcess;
@@ -245,7 +254,7 @@ TEST_F(poTest, noTa)
 
 TEST_F(poTest, missingPr)
 {
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getMissing(PR);
 	const kvalobs::kvData ta = factory.getData(12.6, TA);
 
@@ -261,7 +270,7 @@ TEST_F(poTest, missingPr)
 
 TEST_F(poTest, missingta)
 {
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getData(1001.1, PR);
 	const kvalobs::kvData ta = factory.getMissing(TA);
 
@@ -280,7 +289,7 @@ TEST_F(poTest, testCorrectedValuesSetsFmis)
 {
 	p.hp = 208;
 
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getData(1011.8, PR);
 	kvalobs::kvData ta = factory.getData(6.3, TA);
 	kvalobs::correct(ta, 23.2);
@@ -298,7 +307,7 @@ TEST_F(poTest, testCorrectedValuesSetsFmis)
 
 TEST_F(poTest, testMinorCorrectionsAreNotWritten)
 {
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getData(1036.5, PR);
 	const kvalobs::kvData ta = factory.getData(6.3, TA);
 	const kvalobs::kvData po = factory.getData(986.21, PO);
@@ -316,7 +325,7 @@ TEST_F(poTest, testMinorCorrectionsAreNotWritten)
 
 TEST_F(poTest, testMinorCorrectionsAreNotWritten2)
 {
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getData(1036.5, PR);
 	const kvalobs::kvData ta = factory.getData(6.3, TA);
 	const kvalobs::kvData po = factory.getData(986.79, PO);
@@ -334,7 +343,7 @@ TEST_F(poTest, testMinorCorrectionsAreNotWritten2)
 
 TEST_F(poTest, testMajorCorrectionsAreWritten)
 {
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getData(1036.5, PR);
 	const kvalobs::kvData ta = factory.getData(6.3, TA);
 	const kvalobs::kvData po = factory.getData(987, PO);
@@ -351,7 +360,7 @@ TEST_F(poTest, testMajorCorrectionsAreWritten)
 
 TEST_F(poTest, testMinorCorrectionsAreWrittenIfOldDataExists)
 {
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getData(1036.5, PR);
 	const kvalobs::kvData ta = factory.getData(6.3, TA);
 	const kvalobs::kvData po = factory.getData(986.21, PO);
@@ -362,7 +371,7 @@ TEST_F(poTest, testMinorCorrectionsAreWrittenIfOldDataExists)
 	toProcess[PO].push_back(po);
 
 	AbstractAggregator::ParameterSortedDataList aggregated;
-	kvalobs::kvDataFactory agFactory(42, "2010-05-06 09:00:00", -1);
+	kvalobs::kvDataFactory agFactory(42, pt("2010-05-06 09:00:00"), -1);
 	aggregated[PO].push_back(agFactory.getData(986.21, PO));
 
 	po::kvDataPtr result = p.process(pr, toProcess , aggregated);
@@ -376,7 +385,7 @@ TEST_F(poTest, testMinorCorrectionsAreWrittenIfOldDataExists)
 
 TEST_F(poTest, testOriginalDifferenceCauseAggregation)
 {
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getData(1036.5, PR);
 	const kvalobs::kvData ta = factory.getData(6.3, TA);
 	const kvalobs::kvData po = factory.getData(987, PO);
@@ -393,7 +402,7 @@ TEST_F(poTest, testOriginalDifferenceCauseAggregation)
 
 TEST_F(poTest, testCorrectedDifferenceCauseAggregation)
 {
-	kvalobs::kvDataFactory factory(42, "2010-05-06 09:00:00", 1);
+	kvalobs::kvDataFactory factory(42, pt("2010-05-06 09:00:00"), 1);
 	const kvalobs::kvData pr = factory.getData(1036.5, PR);
 	const kvalobs::kvData ta = factory.getData(6.3, TA);
 	kvalobs::kvData po = factory.getData(986.5, PO);

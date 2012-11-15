@@ -35,12 +35,11 @@
 #include <stdexcept>
 
 using namespace std;
-using namespace miutil;
 using namespace kvalobs;
 
 namespace aggregator
 {
-MinMax::MinMax(int readParam, int writeParam, int interestingHours, const set<miClock> &generateWhen, Func minmax) :
+MinMax::MinMax(int readParam, int writeParam, int interestingHours, const set<boost::posix_time::time_duration> &generateWhen, Func minmax) :
 	StandardAggregator(readParam, writeParam, interestingHours, generateWhen),
 			function(minmax)
 {

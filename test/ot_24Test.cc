@@ -33,6 +33,14 @@
 #include <kvalobs/kvDataOperations.h>
 #include <iterator>
 
+namespace
+{
+boost::posix_time::ptime pt(const std::string & s)
+{
+	return boost::posix_time::time_from_string(s);
+}
+}
+
 
 using namespace aggregator;
 
@@ -40,10 +48,10 @@ TEST(ot_24Test, sumsCorrectly)
 {
 	ot_24 aggregator;
 
-	kvalobs::kvDataFactory f(100, "2010-12-16 00:00:00", 302);
+	kvalobs::kvDataFactory f(100, pt("2010-12-16 00:00:00"), 302);
 	ot_24::ParameterSortedDataList data;
 	ot_24::kvDataList & d = data[OT_1];
-	for ( miutil::miTime t = "2010-12-15 01:00:00"; t <= f.obstime(); t.addHour() )
+	for ( boost::posix_time::ptime t = pt("2010-12-15 01:00:00"); t <= f.obstime(); t += boost::posix_time::hours(1) )
 		d.push_back(f.getData(30, OT_1, t));
 
 	ot_24::kvDataPtr result = aggregator.process(d.back(), data);
@@ -57,15 +65,15 @@ TEST(ot_24Test, failOnNegativeOriginal)
 {
 	ot_24 aggregator;
 
-	kvalobs::kvDataFactory f(100, "2010-12-16 00:00:00", 302);
+	kvalobs::kvDataFactory f(100, pt("2010-12-16 00:00:00"), 302);
 	ot_24::ParameterSortedDataList data;
 	ot_24::kvDataList & d = data[OT_1];
-	for ( miutil::miTime t = "2010-12-15 01:00:00"; t <= f.obstime(); t.addHour() )
+	for ( boost::posix_time::ptime t = pt("2010-12-15 01:00:00"); t <= f.obstime(); t += boost::posix_time::hours(1) )
 		d.push_back(f.getData(30, OT_1, t));
 
 	ot_24::kvDataList::iterator d3 = d.begin();
 	std::advance(d3, 3);
-	* d3 = f.getData(-1, OT_1, "2010-12-15 04:00:00");
+	* d3 = f.getData(-1, OT_1, pt("2010-12-15 04:00:00"));
 	kvalobs::correct(* d3, 30);
 
 	ot_24::kvDataPtr result = aggregator.process(d.back(), data);
@@ -79,10 +87,10 @@ TEST(ot_24Test, failOnNegativeCorrected)
 {
 	ot_24 aggregator;
 
-	kvalobs::kvDataFactory f(100, "2010-12-16 00:00:00", 302);
+	kvalobs::kvDataFactory f(100, pt("2010-12-16 00:00:00"), 302);
 	ot_24::ParameterSortedDataList data;
 	ot_24::kvDataList & d = data[OT_1];
-	for ( miutil::miTime t = "2010-12-15 01:00:00"; t <= f.obstime(); t.addHour() )
+	for ( boost::posix_time::ptime t = pt("2010-12-15 01:00:00"); t <= f.obstime(); t += boost::posix_time::hours(1) )
 		d.push_back(f.getData(30, OT_1, t));
 
 	ot_24::kvDataList::iterator d2 = d.begin();
@@ -100,15 +108,15 @@ TEST(ot_24Test, failOnTooHighOriginal)
 {
 	ot_24 aggregator;
 
-	kvalobs::kvDataFactory f(100, "2010-12-16 00:00:00", 302);
+	kvalobs::kvDataFactory f(100, pt("2010-12-16 00:00:00"), 302);
 	ot_24::ParameterSortedDataList data;
 	ot_24::kvDataList & d = data[OT_1];
-	for ( miutil::miTime t = "2010-12-15 01:00:00"; t <= f.obstime(); t.addHour() )
+	for ( boost::posix_time::ptime t = pt("2010-12-15 01:00:00"); t <= f.obstime(); t += boost::posix_time::hours(1) )
 		d.push_back(f.getData(30, OT_1, t));
 
 	ot_24::kvDataList::iterator d3 = d.begin();
 	std::advance(d3, 3);
-	* d3 = f.getData(61, OT_1, "2010-12-15 04:00:00");
+	* d3 = f.getData(61, OT_1, pt("2010-12-15 04:00:00"));
 	kvalobs::correct(* d3, 30);
 
 	ot_24::kvDataPtr result = aggregator.process(d.back(), data);
@@ -122,10 +130,10 @@ TEST(ot_24Test, failOnTooHighCorrected)
 {
 	ot_24 aggregator;
 
-	kvalobs::kvDataFactory f(100, "2010-12-16 00:00:00", 302);
+	kvalobs::kvDataFactory f(100, pt("2010-12-16 00:00:00"), 302);
 	ot_24::ParameterSortedDataList data;
 	ot_24::kvDataList & d = data[OT_1];
-	for ( miutil::miTime t = "2010-12-15 01:00:00"; t <= f.obstime(); t.addHour() )
+	for ( boost::posix_time::ptime t = pt("2010-12-15 01:00:00"); t <= f.obstime(); t += boost::posix_time::hours(1) )
 		d.push_back(f.getData(30, OT_1, t));
 
 	ot_24::kvDataList::iterator d2 = d.begin();

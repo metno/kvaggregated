@@ -36,11 +36,11 @@
 #include <kvalobs/kvStation.h>
 #include <milog/milog.h>
 #include <milog/FLogStream.h>
-#include <puTools/miClock.h>
 #include <set>
 #include <fileutil/pidfileutil.h>
 #include <kvalobs/kvPath.h>
 #include <boost/scoped_ptr.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
@@ -163,9 +163,9 @@ void runAgregator(const AggregatorConfiguration & conf,
 	{
 		// even if no backproduction was set, we want to generate data for 3
 		// hours back in time
-		miutil::miTime to(miutil::miDate::today(), miutil::miClock(	miutil::miClock::oclock().hour(), 0, 0));
-		miutil::miTime from(to);
-		from.addHour(-3);
+		boost::posix_time::ptime now = boost::posix_time::second_clock::universal_time();
+		boost::posix_time::ptime to(now.date(), boost::posix_time::hours(now.time_of_day().hours()));
+		boost::posix_time::ptime from = to - boost::posix_time::hours(3);
 
 		BackProduction back(callbacks, runner, from, to);
 		runThreadWithBackProduction(back, runner);
@@ -224,9 +224,9 @@ int main(int argc, char **argv)
 			handler.setTypeFilter(conf.types());
 
 			// Standard times
-			set<miClock> six;
-			six.insert(miClock(6, 0, 0));
-			six.insert(miClock(18, 0, 0));
+			set<boost::posix_time::time_duration> six;
+			six.insert(boost::posix_time::hours(6));
+			six.insert(boost::posix_time::hours(18));
 
 			// Add handlers
 			MinMax tan12 = min(TAN, TAN_12, 12, six);

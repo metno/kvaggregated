@@ -65,7 +65,7 @@ public:
 	/**
 	 * \brief A time range.
 	 */
-	typedef std::pair<miutil::miTime, miutil::miTime> TimeSpan;
+	typedef std::pair<boost::posix_time::ptime, boost::posix_time::ptime> TimeSpan;
 
 	/**
 	 * \brief Find the earliest and latest interesting point in time
@@ -135,7 +135,7 @@ protected:
 	 */
 	kvDataPtr
 	getDataObject(const kvalobs::kvData &trigger,
-			const miutil::miTime &obsTime, float original, float corrected, const std::list<kvalobs::kvData> & sourceData);
+			const boost::posix_time::ptime &obsTime, float original, float corrected, const std::list<kvalobs::kvData> & sourceData);
 
 	/**
 	 * \brief This is the kvalobs internal value for errors.
@@ -160,7 +160,7 @@ private:
 
 	ParameterList read_param;
 	const int write_param;
-	const std::set<miutil::miClock> generate_when;
+	const std::set<boost::posix_time::time_duration> generate_when;
 };
 
 namespace internal

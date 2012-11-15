@@ -34,11 +34,20 @@
 
 using namespace aggregator;
 
+namespace
+{
+boost::posix_time::ptime pt(const std::string & s)
+{
+	return boost::posix_time::time_from_string(s);
+}
+}
+
+
 class nn_24Test : public AbstractAggregatorTest
 {
 protected:
 	nn_24Test() :
-		factory(1, "2010-03-16 06:00:00", 1)
+		factory(1, pt("2010-03-16 06:00:00"), 1)
 	{}
 
 	kvalobs::kvDataFactory factory;
@@ -53,10 +62,10 @@ TEST_F(nn_24Test, moreThanEnoughData)
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
 
-	dl.push_back(factory.getData(1, aggregator.readParam().front(), "2010-03-18 06:00:00"));
-	dl.push_back(factory.getData(2, aggregator.readParam().front(), "2010-03-18 12:00:00"));
-	dl.push_back(factory.getData(3, aggregator.readParam().front(), "2010-03-18 18:00:00"));
-	dl.push_back(factory.getData(900, aggregator.readParam().front(), "2010-03-18 00:00:00"));
+	dl.push_back(factory.getData(1, aggregator.readParam().front(), pt("2010-03-18 06:00:00")));
+	dl.push_back(factory.getData(2, aggregator.readParam().front(), pt("2010-03-18 12:00:00")));
+	dl.push_back(factory.getData(3, aggregator.readParam().front(), pt("2010-03-18 18:00:00")));
+	dl.push_back(factory.getData(900, aggregator.readParam().front(), pt("2010-03-18 00:00:00")));
 
 	kvalobs::correct(dl.front(), 4);
 
@@ -73,8 +82,8 @@ TEST_F(nn_24Test, tooLittleData)
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
 
-	dl.push_back(factory.getData(1, aggregator.readParam().front(), "2010-03-18 06:00:00"));
-	dl.push_back(factory.getData(3, aggregator.readParam().front(), "2010-03-18 18:00:00"));
+	dl.push_back(factory.getData(1, aggregator.readParam().front(), pt("2010-03-18 06:00:00")));
+	dl.push_back(factory.getData(3, aggregator.readParam().front(), pt("2010-03-18 18:00:00")));
 
 	nn_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
@@ -86,9 +95,9 @@ TEST_F(nn_24Test, missingPeriod6)
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
 
-	dl.push_back(factory.getData(1, aggregator.readParam().front(), "2010-03-18 09:00:00"));
-	dl.push_back(factory.getData(2, aggregator.readParam().front(), "2010-03-18 12:00:00"));
-	dl.push_back(factory.getData(3, aggregator.readParam().front(), "2010-03-18 18:00:00"));
+	dl.push_back(factory.getData(1, aggregator.readParam().front(), pt("2010-03-18 09:00:00")));
+	dl.push_back(factory.getData(2, aggregator.readParam().front(), pt("2010-03-18 12:00:00")));
+	dl.push_back(factory.getData(3, aggregator.readParam().front(), pt("2010-03-18 18:00:00")));
 
 	nn_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
@@ -100,9 +109,9 @@ TEST_F(nn_24Test, missingPeriod12)
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
 
-	dl.push_back(factory.getData(1, aggregator.readParam().front(), "2010-03-18 06:00:00"));
-	dl.push_back(factory.getData(2, aggregator.readParam().front(), "2010-03-18 15:00:00"));
-	dl.push_back(factory.getData(3, aggregator.readParam().front(), "2010-03-18 18:00:00"));
+	dl.push_back(factory.getData(1, aggregator.readParam().front(), pt("2010-03-18 06:00:00")));
+	dl.push_back(factory.getData(2, aggregator.readParam().front(), pt("2010-03-18 15:00:00")));
+	dl.push_back(factory.getData(3, aggregator.readParam().front(), pt("2010-03-18 18:00:00")));
 
 	nn_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
@@ -114,9 +123,9 @@ TEST_F(nn_24Test, missingPeriod18)
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
 
-	dl.push_back(factory.getData(1, aggregator.readParam().front(), "2010-03-18 06:00:00"));
-	dl.push_back(factory.getData(2, aggregator.readParam().front(), "2010-03-18 12:00:00"));
-	dl.push_back(factory.getData(3, aggregator.readParam().front(), "2010-03-18 14:00:00"));
+	dl.push_back(factory.getData(1, aggregator.readParam().front(), pt("2010-03-18 06:00:00")));
+	dl.push_back(factory.getData(2, aggregator.readParam().front(), pt("2010-03-18 12:00:00")));
+	dl.push_back(factory.getData(3, aggregator.readParam().front(), pt("2010-03-18 14:00:00")));
 
 	nn_24::kvDataPtr result = aggregator.process(dl.front(), data);
 
@@ -128,9 +137,9 @@ TEST_F(nn_24Test, roundDataToOneDecimal) // this is really applicable to all agg
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
 
-	dl.push_back(factory.getData(2, aggregator.readParam().front(), "2010-03-18 06:00:00"));
-	dl.push_back(factory.getData(2, aggregator.readParam().front(), "2010-03-18 12:00:00"));
-	dl.push_back(factory.getData(3, aggregator.readParam().front(), "2010-03-18 18:00:00"));
+	dl.push_back(factory.getData(2, aggregator.readParam().front(), pt("2010-03-18 06:00:00")));
+	dl.push_back(factory.getData(2, aggregator.readParam().front(), pt("2010-03-18 12:00:00")));
+	dl.push_back(factory.getData(3, aggregator.readParam().front(), pt("2010-03-18 18:00:00")));
 
 	kvalobs::correct(dl.front(), 3);
 
@@ -148,9 +157,9 @@ TEST_F(nn_24Test, roundDataDownwardsToOneDecimalWhenNegative) // this is really 
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
 
-	dl.push_back(factory.getData(-2, aggregator.readParam().front(), "2010-03-18 06:00:00"));
-	dl.push_back(factory.getData(-2, aggregator.readParam().front(), "2010-03-18 12:00:00"));
-	dl.push_back(factory.getData(-3, aggregator.readParam().front(), "2010-03-18 18:00:00"));
+	dl.push_back(factory.getData(-2, aggregator.readParam().front(), pt("2010-03-18 06:00:00")));
+	dl.push_back(factory.getData(-2, aggregator.readParam().front(), pt("2010-03-18 12:00:00")));
+	dl.push_back(factory.getData(-3, aggregator.readParam().front(), pt("2010-03-18 18:00:00")));
 
 	kvalobs::correct(dl.front(), -3);
 
@@ -168,9 +177,9 @@ TEST_F(nn_24Test, interprets9as8)
 	AbstractAggregator::ParameterSortedDataList data;
 	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
 
-	dl.push_back(factory.getData(9, aggregator.readParam().front(), "2010-03-18 06:00:00"));
-	dl.push_back(factory.getData(9, aggregator.readParam().front(), "2010-03-18 12:00:00"));
-	dl.push_back(factory.getData(9, aggregator.readParam().front(), "2010-03-18 18:00:00"));
+	dl.push_back(factory.getData(9, aggregator.readParam().front(), pt("2010-03-18 06:00:00")));
+	dl.push_back(factory.getData(9, aggregator.readParam().front(), pt("2010-03-18 12:00:00")));
+	dl.push_back(factory.getData(9, aggregator.readParam().front(), pt("2010-03-18 18:00:00")));
 
 	nn_24::kvDataPtr result = aggregator.process(dl.front(), data);
 

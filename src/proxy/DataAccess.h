@@ -50,7 +50,7 @@ public:
      * Get kvalobs data. The source is either the database, or the proxy database
      */
     virtual void getData( KvDataList &data, int station,
-                  const miutil::miTime &from, const miutil::miTime &to,
+                  const boost::posix_time::ptime &from, const boost::posix_time::ptime &to,
                   int paramid, int type, int sensor, int lvl ) const = 0;
 
     /**

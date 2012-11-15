@@ -28,6 +28,7 @@
  */
 
 #include "KoppenBasedMeanValueAggregator.h"
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <iomanip>
 
 namespace aggregator
@@ -46,8 +47,8 @@ namespace
 {
 struct have_obstime
 {
-	const miutil::miTime t_;
-	have_obstime(const miutil::miTime & t) : t_(t) {}
+	const boost::posix_time::ptime t_;
+	have_obstime(const boost::posix_time::ptime & t) : t_(t) {}
 
 	bool operator () (const kvalobs::kvData & d) const
 	{
@@ -55,22 +56,22 @@ struct have_obstime
 	}
 };
 
-bool obstimeInList(const miutil::miTime & t, const StandardAggregator::kvDataList & observations )
+bool obstimeInList(const boost::posix_time::ptime & t, const StandardAggregator::kvDataList & observations )
 {
 	return std::find_if(observations.begin(), observations.end(), have_obstime(t)) != observations.end();
 }
 
-bool matchingObsTimes(const KoppenBasedMeanValueAggregator::kvDataList & observations, const miutil::miClock & firstObs = "06:00:00")
+bool matchingObsTimes(const KoppenBasedMeanValueAggregator::kvDataList & observations, const boost::posix_time::time_duration & firstObs = boost::posix_time::hours(6))
 {
-	const miutil::miDate d = observations.front().obstime().date();
+	const boost::gregorian::date d = observations.front().obstime().date();
 
-	miutil::miClock c = firstObs;
+	boost::posix_time::time_duration c = firstObs;
 	for ( int i = 0; i < 3; ++ i )
 	{
-		miutil::miTime t(d, c);
+		boost::posix_time::ptime t(d, c);
 		if ( not obstimeInList(t, observations) )
 			return false;
-		c.addHour(6);
+		c += boost::posix_time::hours(6);
 	}
 	return true;
 }
@@ -81,11 +82,11 @@ bool KoppenBasedMeanValueAggregator::shouldProcess( const kvalobs::kvData &trigg
 	if ( MeanValueAggregator::shouldProcess(trigger, observations) )
 		return true;
 
-	int offsetFrom6 = trigger.obstime().hour() % 6;
+	int offsetFrom6 = trigger.obstime().time_of_day().hours() % 6;
 	if ( offsetFrom6 == 0 )
 		return matchingObsTimes(observations);
 	else if ( offsetFrom6 == 1 )
-		return observations.size() == 3 and matchingObsTimes(observations, "07:00:00");
+		return observations.size() == 3 and matchingObsTimes(observations, boost::posix_time::hours(7));
 	return false;
 }
 
@@ -97,7 +98,7 @@ struct have_obshour
 	have_obshour(int hour) : hour_(hour) {}
 	bool operator () (const kvalobs::kvData & d)
 	{
-		return d.obstime().hour() == hour_;
+		return d.obstime().time_of_day().hours() == hour_;
 	}
 };
 
@@ -113,7 +114,7 @@ void KoppenBasedMeanValueAggregator::extractUsefulData(kvDataList & out, const k
 		out = dataIn;
 	else
 	{
-		const int offsetFrom6 = trigger.obstime().hour() % 6;
+		const int offsetFrom6 = trigger.obstime().time_of_day().hours() % 6;
 		for ( int i = 6 + offsetFrom6; i < 24; i += 6 )
 		{
 			kvDataList::const_iterator find = std::find_if(dataIn.begin(), dataIn.end(), have_obshour(i));
@@ -137,7 +138,7 @@ float KoppenBasedMeanValueAggregator::calculate(const ValueList & source, Calcul
 		const kvalobs::kvData & trigger = static_cast<KoppenExtraData *>(extraData)->trigger;
 
 		std::ostringstream metadataParameterName;
-		metadataParameterName << "koppen_" << std::setfill('0') << std::setw(2) << trigger.obstime().month();
+		metadataParameterName << "koppen_" << std::setfill('0') << std::setw(2) << trigger.obstime().date().month();
 		float factor = getStationMetadata(metadataParameterName.str(), trigger);
 		return calculateWithKoppensFormula(source, factor, calcDataType, extraData);
 	}
