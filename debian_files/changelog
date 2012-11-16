@@ -1,3 +1,9 @@
+kvagregated (2.2.8-1) lucid; urgency=low
+
+  * new version
+
+ -- Vegard Bones <vegard.bones@met.no>  Fri, 16 Nov 2012 10:43:54 +0100
+
 kvagregated (2.2.7-1) lucid; urgency=low
 
   * update

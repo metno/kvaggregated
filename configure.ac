@@ -1,5 +1,5 @@
 AC_PREREQ([2.61])
-AC_INIT([kvAgregated], [2.2.7], [kvoss@met.no])
+AC_INIT([kvAgregated], [2.2.8], [kvoss@met.no])
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -20,8 +20,8 @@ AC_PROG_LN_S
 PKG_CHECK_MODULES(kvcpp, libkvcpp2)
 PKG_CHECK_MODULES(sqlite3, sqlite3)
 
-GTEST_CHECK
-GMOCK_CHECK
+#GTEST_CHECK
+#GMOCK_CHECK
 
 AX_BOOST_BASE
 AX_BOOST_THREAD
