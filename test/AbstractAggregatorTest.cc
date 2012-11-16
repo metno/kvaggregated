@@ -11,7 +11,7 @@ boost::posix_time::ptime pt(const std::string & s)
 }
 boost::gregorian::date dt(const std::string & s)
 {
-	return boost::gregorian::date_from_iso_string(s);
+	return boost::gregorian::from_simple_string(s);
 }
 }
 
