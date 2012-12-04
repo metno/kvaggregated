@@ -1,3 +1,9 @@
+kvagregated (2.2.8~rc1-1) precise; urgency=low
+
+  * new rc
+
+ -- Vegard Bones <vegard.bones@met.no>  Tue, 04 Dec 2012 08:33:56 +0100
+
 kvagregated (2.2.7-1) lucid; urgency=low
 
   * update
