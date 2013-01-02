@@ -32,7 +32,6 @@
 #include <kvcpp/kvevents.h>
 #include <kvcpp/KvApp.h>
 #include <milog/milog.h>
-#include <puTools/miTime.h>
 #include <boost/scoped_ptr.hpp>
 
 AggregatorRunner::AggregatorRunner(const std::vector<int> & stations, kvservice::DataAccess & dataAccess,

@@ -34,7 +34,6 @@
 #include "StandardAggregator.h"
 #include "paramID.h"
 #include <kvalobs/kvData.h>
-#include <puTools/miClock.h>
 #include <set>
 
 
@@ -63,8 +62,7 @@ public:
 	 * \param generateWhen The times of day when we will generate
 	 * data. Agregates will only be generated for these times.
 	 */
-	rr(int readParam, int writeParam, int interestingHours, const std::set<
-			miutil::miClock> &generateWhen);
+	rr(int readParam, int writeParam, int interestingHours, const std::set<boost::posix_time::time_duration> &generateWhen);
 
 protected:
 	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;

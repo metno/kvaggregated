@@ -46,14 +46,14 @@ public:
 	virtual ~CachedDataAccess();
 
     virtual void getData( KvDataList &data, int station,
-                  const miutil::miTime &from, const miutil::miTime &to,
+                  const boost::posix_time::ptime &from, const boost::posix_time::ptime &to,
                   int paramid, int type, int sensor, int lvl ) const;
 
     virtual CKvalObs::CDataSource::Result_var sendData( const KvDataList & data );
 
     void clear();
 
-    void deleteOldData(const miutil::miTime & olderThanThis);
+    void deleteOldData(const boost::posix_time::ptime & olderThanThis);
 
 private:
     mutable ProxyDatabaseConnection connection_;

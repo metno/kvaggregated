@@ -37,6 +37,15 @@ using namespace kvservice::proxy;
 
 using namespace testing;
 
+namespace
+{
+boost::posix_time::ptime pt(const std::string & s)
+{
+	return boost::posix_time::time_from_string(s);
+}
+}
+
+
 class KvalobsProxyTest : public Test
 {
 protected:
@@ -47,7 +56,7 @@ protected:
 	kvservice::KvDataList sampleData;
 	kvalobs::kvDataFactory factory;
 
-	KvalobsProxyTest() : factory(1, "2010-02-11 00:00:00", 2) {}
+	KvalobsProxyTest() : factory(1, pt("2010-02-11 00:00:00"), 2) {}
 
 	virtual void SetUp()
 	{
@@ -56,7 +65,7 @@ protected:
 		for ( int i = 1; i <= 3; ++ i )
 			proxy->addInteresting(i);
 		// this should cause oldestInProxy to be ignored when searching cache/kvalobs:
-		proxy->setOldestInProxy(miutil::miTime());
+		proxy->setOldestInProxy(boost::posix_time::ptime());
 
 		sampleData.push_back(factory.getData(1,1));
 		sampleData.push_back(factory.getData(1,2));
@@ -113,7 +122,7 @@ TEST_F(KvalobsProxyTest, canOverwriteInvalidData)
 
 	kvservice::KvDataList proxyStore;
 	// Get a random row from database
-	proxy->getData(proxyStore, 1, "2010-02-10 00:00:00", "2010-02-11 00:00:00", 3, 2, 0,0);
+	proxy->getData(proxyStore, 1, pt("2010-02-10 00:00:00"), pt("2010-02-11 00:00:00"), 3, 2, 0,0);
 
 	ASSERT_EQ(1u, proxyStore.size());
 
@@ -152,7 +161,7 @@ TEST_F(KvalobsProxyTest, canModifyOriginalValue)
 	proxy->sendData(existingData);
 
 	kvservice::KvDataList proxyStore;
-	proxy->getData(proxyStore, 1, "2010-02-10 00:00:00", "2010-02-11 00:00:00", 1, 2, 0,0);
+	proxy->getData(proxyStore, 1, pt("2010-02-10 00:00:00"), pt("2010-02-11 00:00:00"), 1, 2, 0,0);
 
 	ASSERT_EQ(1, proxyStore.size());
 	const kvalobs::kvData & data = proxyStore.front();

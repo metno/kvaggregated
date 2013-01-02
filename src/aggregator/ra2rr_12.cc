@@ -34,7 +34,6 @@
 #include "times.h"
 
 using namespace std;
-using namespace miutil;
 using namespace kvalobs;
 
 namespace aggregator
@@ -48,8 +47,8 @@ namespace
 {
 struct has_obstime
 {
-	const miutil::miTime obstime;
-	has_obstime(const miutil::miTime & t) :
+	const boost::posix_time::ptime obstime;
+	has_obstime(const boost::posix_time::ptime & t) :
 		obstime(t)
 	{
 	}
@@ -62,13 +61,13 @@ struct has_obstime
 template<int clock>
 bool hasObsHour(const kvData & d)
 {
-	return clock == d.obstime().hour();
+	return boost::posix_time::hours(clock) == d.obstime().time_of_day();
 }
 
 bool hasObsHourSix(const kvData & d)
 {
-	int hour = d.obstime().hour();
-	return 6 == hour or 18 == hour;
+	return d.obstime().time_of_day() == boost::posix_time::hours(6) or
+			d.obstime().time_of_day() == boost::posix_time::hours(18);
 }
 
 struct lt_obstime
@@ -84,9 +83,9 @@ struct lt_obstime
 bool ra2rr_12::shouldProcess(const kvData & trigger,
 		const kvDataList & observations) const
 {
-	const set<miClock> & gw = generateWhen();
+	const set<boost::posix_time::time_duration> & gw = generateWhen();
 	if (observations.size() > 1 and
-			gw.find(trigger.obstime().clock()) != gw.end() and
+			gw.find(trigger.obstime().time_of_day()) != gw.end() and
 			find_if(observations.begin(), observations.end(),hasObsHour<6> ) != observations.end() and
 			find_if(observations.begin(), observations.end(), hasObsHour<18> ) != observations.end())
 		return true;
@@ -140,10 +139,10 @@ void ra2rr_12::extractUsefulData(kvDataList & out, const kvDataList & dataIn, co
 
 	if ( ret.size() == 2 )
 	{
-		const miutil::miTime & t1 = ret.front().obstime();
-		const miutil::miTime & t2 = ret.back().obstime();
-		//std::cout << miutil::miTime::hourDiff(t1, t2) << std::endl;
-		if ( std::abs(miutil::miTime::hourDiff(t1, t2)) != std::abs(timeOffset()) )
+		const boost::posix_time::ptime & t1 = ret.front().obstime();
+		const boost::posix_time::ptime & t2 = ret.back().obstime();
+		//std::cout << boost::posix_time::ptime::hourDiff(t1, t2) << std::endl;
+		if ( std::abs((t1 - t2).hours()) != std::abs(timeOffset()) )
 			throw runtime_error("Missing middle period for ra generation");
 	}
 	else if ( ret.size() != 3 )

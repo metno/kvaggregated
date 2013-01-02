@@ -40,11 +40,15 @@ namespace
 {
 std::string dummy;
 
+boost::posix_time::ptime pt(const std::string & s)
+{
+	return boost::posix_time::time_from_string(s);
+}
 }
 
 TEST(ForeignStationPrecipitationFilterCheck, skipForeignStationWithoutPrecipitation)
 {
-	const kvalobs::kvDataFactory foreign(102313, "2010-09-15 06:00:00", 302);
+	const kvalobs::kvDataFactory foreign(102313, pt("2010-09-15 06:00:00"), 302);
 
 	CompleteCheckDecider filter;
 	ASSERT_FALSE(
@@ -54,7 +58,7 @@ TEST(ForeignStationPrecipitationFilterCheck, skipForeignStationWithoutPrecipitat
 
 TEST(ForeignStationPrecipitationFilterCheck, checkForeignStationWithPrecipitation)
 {
-	const kvalobs::kvDataFactory foreign(102313, "2010-09-15 06:00:00", 302);
+	const kvalobs::kvDataFactory foreign(102313, pt("2010-09-15 06:00:00"), 302);
 
 	CompleteCheckDecider filter;
 	EXPECT_TRUE(
@@ -64,7 +68,7 @@ TEST(ForeignStationPrecipitationFilterCheck, checkForeignStationWithPrecipitatio
 
 TEST(ForeignStationPrecipitationFilterCheck, checkRegularStationWithPrecipitation)
 {
-	const kvalobs::kvDataFactory foreign(1023, "2010-09-15 06:00:00", 302);
+	const kvalobs::kvDataFactory foreign(1023, pt("2010-09-15 06:00:00"), 302);
 
 	CompleteCheckDecider filter;
 	EXPECT_TRUE(
@@ -74,7 +78,7 @@ TEST(ForeignStationPrecipitationFilterCheck, checkRegularStationWithPrecipitatio
 
 TEST(RaOverridesRr1Check, stationWithRr1ButNotRa)
 {
-	const kvalobs::kvDataFactory factory(1023, "2010-09-15 06:00:00", 302);
+	const kvalobs::kvDataFactory factory(1023, pt("2010-09-15 06:00:00"), 302);
 	CompleteCheckDecider::DataList data;
 	data.push_back(factory.getData(0, RR_1));
 
@@ -84,7 +88,7 @@ TEST(RaOverridesRr1Check, stationWithRr1ButNotRa)
 
 TEST(RaOverridesRr1Check, stationWithRaButNotRr1)
 {
-	const kvalobs::kvDataFactory factory(1023, "2010-09-15 06:00:00", 302);
+	const kvalobs::kvDataFactory factory(1023, pt("2010-09-15 06:00:00"), 302);
 	CompleteCheckDecider::DataList data;
 	data.push_back(factory.getData(0, RA));
 
@@ -94,7 +98,7 @@ TEST(RaOverridesRr1Check, stationWithRaButNotRr1)
 
 TEST(RaOverridesRr1Check, stationWithRaAndRr1)
 {
-	const kvalobs::kvDataFactory factory(1023, "2010-09-15 06:00:00", 302);
+	const kvalobs::kvDataFactory factory(1023, pt("2010-09-15 06:00:00"), 302);
 	CompleteCheckDecider::DataList data;
 	data.push_back(factory.getData(0, RA));
 	data.push_back(factory.getData(0, RR_1));
@@ -108,13 +112,13 @@ TEST(RaOverridesRr1Check, completeRr1Data)
 {
 	kvservice::CachedDataAccess dataAccess(":memory:");
 
-	const kvalobs::kvDataFactory factory(1023, "2010-09-15 06:00:00", 302);
+	const kvalobs::kvDataFactory factory(1023, pt("2010-09-15 06:00:00"), 302);
 	CompleteCheckDecider::DataList data;
 	data.push_back(factory.getData(0, RA));
 	data.push_back(factory.getData(0, RR_1));
 
 	kvservice::KvDataList dbData;
-	for ( miutil::miTime obsTime = "2010-09-14 18:00:00"; obsTime <= "2010-09-15 06:00:00"; obsTime.addHour(1) )
+	for ( boost::posix_time::ptime obsTime = pt("2010-09-14 18:00:00"); obsTime <= pt("2010-09-15 06:00:00"); obsTime += boost::posix_time::hours(1) )
 		dbData.push_back(factory.getData(0, RR_1, obsTime));
 
 	dataAccess.sendData(dbData);
@@ -129,13 +133,13 @@ TEST(RaOverridesRr1Check, missingRr1Data)
 {
 	kvservice::CachedDataAccess dataAccess(":memory:");
 
-	const kvalobs::kvDataFactory factory(1023, "2010-09-15 06:00:00", 302);
+	const kvalobs::kvDataFactory factory(1023, pt("2010-09-15 06:00:00"), 302);
 	CompleteCheckDecider::DataList data;
 	data.push_back(factory.getData(0, RA));
 	data.push_back(factory.getMissing(RR_1));
 
 	kvservice::KvDataList dbData;
-	for ( miutil::miTime obsTime = "2010-09-14 18:00:00"; obsTime <= "2010-09-15 06:00:00"; obsTime.addHour(1) )
+	for ( boost::posix_time::ptime obsTime = pt("2010-09-14 18:00:00"); obsTime <= pt("2010-09-15 06:00:00"); obsTime += boost::posix_time::hours(1) )
 		dbData.push_back(factory.getMissing(RR_1, obsTime));
 
 	dataAccess.sendData(dbData);
@@ -150,13 +154,13 @@ TEST(RaOverridesRr1Check, rejectedRr1Data)
 {
 	kvservice::CachedDataAccess dataAccess(":memory:");
 
-	const kvalobs::kvDataFactory factory(1023, "2010-09-15 06:00:00", 302);
+	const kvalobs::kvDataFactory factory(1023, pt("2010-09-15 06:00:00"), 302);
 	CompleteCheckDecider::DataList data;
 	data.push_back(factory.getData(0, RA));
 	data.push_back(factory.getData(0, RR_1));
 
 	kvservice::KvDataList dbData;
-	for ( miutil::miTime obsTime = "2010-09-14 18:00:00"; obsTime <= "2010-09-15 06:00:00"; obsTime.addHour(1) )
+	for ( boost::posix_time::ptime obsTime = pt("2010-09-14 18:00:00"); obsTime <= pt("2010-09-15 06:00:00"); obsTime += boost::posix_time::hours(1) )
 	{
 		dbData.push_back(factory.getData(0, RR_1, obsTime));
 		kvalobs::reject(dbData.back());
@@ -174,13 +178,13 @@ TEST(RaOverridesRr1Check, oneValidRr1Data)
 {
 	kvservice::CachedDataAccess dataAccess(":memory:");
 
-	const kvalobs::kvDataFactory factory(1023, "2010-09-15 06:00:00", 302);
+	const kvalobs::kvDataFactory factory(1023, pt("2010-09-15 06:00:00"), 302);
 	CompleteCheckDecider::DataList data;
 	data.push_back(factory.getData(0, RA));
 	data.push_back(factory.getData(0, RR_1));
 
 	kvservice::KvDataList dbData;
-	for ( miutil::miTime obsTime = "2010-09-14 18:00:00"; obsTime <= "2010-09-15 06:00:00"; obsTime.addHour(1) )
+	for ( boost::posix_time::ptime obsTime = pt("2010-09-14 18:00:00"); obsTime <= pt("2010-09-15 06:00:00"); obsTime += boost::posix_time::hours(1) )
 	{
 		dbData.push_back(factory.getData(0, RR_1, obsTime));
 		kvalobs::reject(dbData.back());
@@ -202,13 +206,13 @@ TEST(RaOverridesRr1Check, oneMissingButCorrectedRr1Data)
 {
 	kvservice::CachedDataAccess dataAccess(":memory:");
 
-	const kvalobs::kvDataFactory factory(1023, "2010-09-15 06:00:00", 302);
+	const kvalobs::kvDataFactory factory(1023, pt("2010-09-15 06:00:00"), 302);
 	CompleteCheckDecider::DataList data;
 	data.push_back(factory.getData(0, RA));
 	data.push_back(factory.getData(0, RR_1));
 
 	kvservice::KvDataList dbData;
-	for ( miutil::miTime obsTime = "2010-09-14 18:00:00"; obsTime <= "2010-09-15 06:00:00"; obsTime.addHour(1) )
+	for ( boost::posix_time::ptime obsTime = pt("2010-09-14 18:00:00"); obsTime <= pt("2010-09-15 06:00:00"); obsTime += boost::posix_time::hours(1) )
 		dbData.push_back(factory.getData(0, RR_1, obsTime));
 
 	kvservice::KvDataList::iterator it = dbData.begin();

@@ -32,26 +32,26 @@
 #define __agregator__times_h__
 
 namespace aggregator {
-  static const miutil::miClock hours[24] = {
-    miutil::miClock( 0,0,0),  miutil::miClock(12,0,0),
-    miutil::miClock( 1,0,0),  miutil::miClock(13,0,0),
-    miutil::miClock( 2,0,0),  miutil::miClock(14,0,0),
-    miutil::miClock( 3,0,0),  miutil::miClock(15,0,0),
-    miutil::miClock( 4,0,0),  miutil::miClock(16,0,0),
-    miutil::miClock( 5,0,0),  miutil::miClock(17,0,0),
-    miutil::miClock( 6,0,0),  miutil::miClock(18,0,0),
-    miutil::miClock( 7,0,0),  miutil::miClock(19,0,0),
-    miutil::miClock( 8,0,0),  miutil::miClock(20,0,0),
-    miutil::miClock( 9,0,0),  miutil::miClock(21,0,0),
-    miutil::miClock(10,0,0),  miutil::miClock(22,0,0),
-    miutil::miClock(11,0,0),  miutil::miClock(23,0,0)
+  static const boost::posix_time::time_duration hours[24] = {
+    boost::posix_time::hours( 0),  boost::posix_time::hours(12),
+    boost::posix_time::hours( 1),  boost::posix_time::hours(13),
+    boost::posix_time::hours( 2),  boost::posix_time::hours(14),
+    boost::posix_time::hours( 3),  boost::posix_time::hours(15),
+    boost::posix_time::hours( 4),  boost::posix_time::hours(16),
+    boost::posix_time::hours( 5),  boost::posix_time::hours(17),
+    boost::posix_time::hours( 6),  boost::posix_time::hours(18),
+    boost::posix_time::hours( 7),  boost::posix_time::hours(19),
+    boost::posix_time::hours( 8),  boost::posix_time::hours(20),
+    boost::posix_time::hours( 9),  boost::posix_time::hours(21),
+    boost::posix_time::hours(10),  boost::posix_time::hours(22),
+    boost::posix_time::hours(11),  boost::posix_time::hours(23)
   };
-  const std::set<miutil::miClock> allHours( hours, &hours[24] );
-  const std::set<miutil::miClock> sixAmSixPm( &hours[12], &hours[14] );
-  const std::set<miutil::miClock> sixAm( &hours[12], &hours[13] );
+  const std::set<boost::posix_time::time_duration> allHours( hours, &hours[24] );
+  const std::set<boost::posix_time::time_duration> sixAmSixPm( &hours[12], &hours[14] );
+  const std::set<boost::posix_time::time_duration> sixAm( &hours[12], &hours[13] );
 
-  const std::set<miutil::miClock> elevenPm( &hours[23], &hours[24] );
-  const std::set<miutil::miClock> midnight( &hours[0], &hours[1] );
+  const std::set<boost::posix_time::time_duration> elevenPm( &hours[23], &hours[24] );
+  const std::set<boost::posix_time::time_duration> midnight( &hours[0], &hours[1] );
 }
 
 #endif // __agregator__times_h__

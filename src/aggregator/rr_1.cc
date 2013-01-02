@@ -34,7 +34,6 @@
 #include <milog/milog.h>
 #include <boost/thread/thread.hpp>
 
-using namespace miutil;
 using namespace kvalobs;
 
 

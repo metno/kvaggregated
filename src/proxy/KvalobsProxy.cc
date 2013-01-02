@@ -52,7 +52,6 @@
 
 using namespace std;
 using namespace kvalobs;
-using namespace miutil;
 using namespace milog;
 using namespace dnmi::db;
 using namespace dnmi::thread;
@@ -74,10 +73,10 @@ public:
 		boost::xtime time;
 		boost::xtime_get(&time, boost::TIME_UTC);
 
-		miutil::miClock startTime = miutil::miClock::oclock();
-		miutil::miClock cleanTime(2, 20, 0);
+		boost::posix_time::time_duration startTime = boost::posix_time::microsec_clock::universal_time().time_of_day();
+		boost::posix_time::time_duration cleanTime(2, 20, 0);
 
-		int timeLeft = miutil::miClock::secDiff(cleanTime, startTime);
+		int timeLeft = (cleanTime - startTime).seconds();
 		if (timeLeft <= 0)
 			timeLeft += 60 * 60 * 24;
 
@@ -121,7 +120,7 @@ private:
 
 KvalobsProxy::KvalobsProxy(const std::string & proxyDatabaseName,
 		bool repopulate) :
-	cache_(proxyDatabaseName), oldestInProxy(miTime::nowTime())
+	cache_(proxyDatabaseName), oldestInProxy(boost::posix_time::microsec_clock::universal_time())
 {
 	if (!KvApp::kvApp)
 	{
@@ -131,7 +130,7 @@ KvalobsProxy::KvalobsProxy(const std::string & proxyDatabaseName,
 	}
 
 	// Make reasonably sure the proxy is correct.
-	oldestInProxy.addHour(2);
+	oldestInProxy += boost::posix_time::hours(2);
 
 	LogContext context("KvalobsProxy::KvalobsProxy");
 
@@ -155,29 +154,27 @@ void KvalobsProxy::db_clear()
 {
 	{
 		ScopedWriteLock lock(timeMutex_);
-		oldestInProxy = miTime::nowTime();
-		oldestInProxy.addHour();
+		oldestInProxy = boost::posix_time::microsec_clock::universal_time() + boost::posix_time::hours(1);
 	}
 	cache_.clear();
 }
 
 void KvalobsProxy::db_populate(int hours)
 {
-	miTime to = miTime::nowTime();
-	miTime from = to;
-	from.addHour(-hours);
+	boost::posix_time::ptime to = boost::posix_time::microsec_clock::universal_time();
+	boost::posix_time::ptime from = to - boost::posix_time::hours(hours);
 
 	db_populate(from, to);
 }
 
-void KvalobsProxy::db_populate(const miutil::miTime & from, const miutil::miTime & to)
+void KvalobsProxy::db_populate(const boost::posix_time::ptime & from, const boost::posix_time::ptime & to)
 {
 	KvDataList data;
 	kvalobs_.getAllData(data, from, to);
 	cache_.sendData(data);
 
 	ScopedWriteLock lock(timeMutex_);
-	if (oldestInProxy.undef())
+	if (oldestInProxy.is_not_a_date_time())
 		oldestInProxy = from;
 	else
 		oldestInProxy = min(oldestInProxy, from);
@@ -189,12 +186,11 @@ void KvalobsProxy::db_populate(const miutil::miTime & from, const miutil::miTime
 void KvalobsProxy::db_cleanup()
 {
 	LOGINFO( "KvalobsProxy::db_cleanup" );
-	miTime t = miTime::nowTime();
-	t.addDay(-35);
+	boost::posix_time::ptime t = boost::posix_time::microsec_clock::universal_time() - boost::gregorian::days(35);
 
 	{
 		ScopedWriteLock lock(timeMutex_);
-		if (oldestInProxy.undef())
+		if (oldestInProxy.is_not_a_date_time())
 			oldestInProxy = t;
 		else
 			oldestInProxy = max(oldestInProxy, t);
@@ -285,26 +281,26 @@ CKvalObs::CDataSource::Result_var KvalobsProxy::sendData(const KvDataList &data)
 }
 
 void KvalobsProxy::getData(KvDataList &data, int station,
-		const miutil::miTime &from, const miutil::miTime &to, int paramid,
+		const boost::posix_time::ptime &from, const boost::posix_time::ptime &to, int paramid,
 		int type, int sensor, int lvl) const
 {
 	//LogContext context( "KvalobsProxy::getData" );
 
 	// Fetch data from kvalobs, if neccessary
 	ScopedReadLock lock(timeMutex_);
-	if (oldestInProxy.undef() or from <= oldestInProxy)
+	if (oldestInProxy.is_not_a_date_time() or from <= oldestInProxy)
 	{
-		miTime k_from = from;
-		miTime k_to = oldestInProxy.undef() ? to : min(to, oldestInProxy);
+		boost::posix_time::ptime k_from = from;
+		boost::posix_time::ptime k_to = oldestInProxy.is_not_a_date_time() ? to : min(to, oldestInProxy);
 		LOGDEBUG( "Fetching times " << from << " - " << k_to << " from kvalobs" );
 		kvalobs_.getData(data, station, k_from, k_to, paramid, type, sensor, lvl);
 		LOGDEBUG( "Data from kvalobs :\n" << decodeutility::kvdataformatter::createString( data ) );
 	}
 
 	// Fetch data from proxy, if neccessary
-	if (oldestInProxy.undef() or to > oldestInProxy)
+	if (oldestInProxy.is_not_a_date_time() or to > oldestInProxy)
 	{
-		miTime p_from = oldestInProxy.undef() ? from : max(from, oldestInProxy);
+		boost::posix_time::ptime p_from = oldestInProxy.is_not_a_date_time() ? from : max(from, oldestInProxy);
 		LOGDEBUG( "Fetching times " << p_from << " - " << to << " from proxy" );
 		KvDataList proxyData;
 		cache_.getData(proxyData, station, p_from, to, paramid, type, sensor, lvl);
@@ -334,7 +330,7 @@ void KvalobsProxy::cacheData(const KvDataList & data)
 		cache_.sendData(toSave);
 }
 
-void KvalobsProxy::setOldestInProxy(const miutil::miTime & newTime)
+void KvalobsProxy::setOldestInProxy(const boost::posix_time::ptime & newTime)
 {
 	ScopedWriteLock lock(timeMutex_);
 	oldestInProxy = newTime;

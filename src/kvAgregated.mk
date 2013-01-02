@@ -22,12 +22,19 @@ AM_CPPFLAGS = \
 
 kvAgregated_LDADD = \
 	$(kvcpp_LIBS) \
+	-lkvalobs_kvalobs \
+	-lkvalobs_milog \
+	-lkvalobs_dnmithread \
+	-lkvalobs_fileutil \
+	-lkvalobs_kvdb \
+	-lkvalobs_decodeutility \
 	$(BOOST_THREAD_LIB) \
 	$(BOOST_PROGRAM_OPTIONS_LIB) \
 	$(BOOST_FILESYSTEM_LIB) \
-	$(BOOST_SYSTEM_LIB)
+	$(BOOST_SYSTEM_LIB) \
+	$(BOOST_DATE_TIME_LIB)
 
-
+	
 kvAgregated_CPPFLAGS = -D_REENTRANT $(AM_CPPFLAGS)
 
 

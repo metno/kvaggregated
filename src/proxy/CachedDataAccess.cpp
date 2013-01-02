@@ -37,6 +37,29 @@ using namespace std;
 using namespace milog;
 using namespace dnmi::db;
 
+namespace
+{
+inline std::string to_kvalobs_string(const boost::gregorian::date & d)
+{
+	std::ostringstream s;
+	s << d.year() << '-'
+			<< std::setfill('0') << std::setw(2) << std::right << d.month().as_number() << '-'
+			<< std::setfill('0') << std::setw(2) << std::right << d.day();
+	return s.str();
+}
+inline std::string to_kvalobs_string(const boost::posix_time::time_duration & t)
+{
+	return to_simple_string(t);
+}
+inline std::string to_kvalobs_string(const boost::posix_time::ptime & t, char separator = ' ')
+{
+	std::ostringstream s;
+	s << to_kvalobs_string(t.date()) << separator << to_kvalobs_string(t.time_of_day());
+	return s.str();
+}
+}
+
+
 namespace kvservice
 {
 
@@ -50,7 +73,7 @@ CachedDataAccess::~CachedDataAccess()
 }
 
 void CachedDataAccess::getData(KvDataList &data, int station,
-		const miutil::miTime &from, const miutil::miTime &to, int paramid,
+		const boost::posix_time::ptime &from, const boost::posix_time::ptime &to, int paramid,
 		int type, int sensor, int lvl) const
 {
 	LogContext context("proxy_getData");
@@ -70,14 +93,14 @@ void CachedDataAccess::getData(KvDataList &data, int station,
 			<< " and (sensor=" << sensor << " or sensor=" << alt_sensor << ")"
 			<< " and level=" << lvl;
 	if (from < to)
-		query << " and (obstime>\'" << from << "\' and obstime<=\'" << to << "\')";
+		query << " and (obstime>\'" << to_kvalobs_string(from) << "\' and obstime<=\'" << to_kvalobs_string(to) << "\')";
 	else if (from == to)
-		query << " and obstime=\'" << from << "\'";
+		query << " and obstime=\'" << to_kvalobs_string(from) << "\'";
 	else
 		// This is really an error, but...
-		query << " and (obstime>\'" << to << "\' and obstime<=\'" << from << "\')";
+		query << " and (obstime>\'" << to_kvalobs_string(to) << "\' and obstime<=\'" << to_kvalobs_string(from) << "\')";
 
-	//LOGDEBUG( query.str() );
+	LOGDEBUG( query.str() );
 
 	try
 	{
@@ -107,6 +130,7 @@ CKvalObs::CDataSource::Result_var CachedDataAccess::sendData(
 		Mutex::scoped_lock lock(proxy_mutex);
 		try
 		{
+			LOGDEBUG(insertQuery);
 			connection_.get().exec(insertQuery);
 		} catch (exception &ex)
 		{ // Should have been: dnmi::db::SQLDuplicate &ex ) {
@@ -138,10 +162,10 @@ void CachedDataAccess::clear()
 	connection_.get().exec("delete from data");
 }
 
-void CachedDataAccess::deleteOldData(const miutil::miTime & olderThanThis)
+void CachedDataAccess::deleteOldData(const boost::posix_time::ptime & olderThanThis)
 {
 	ostringstream query;
-	query << "delete from data where obstime < \'" << olderThanThis << "\';";
+	query << "delete from data where obstime < \'" << to_kvalobs_string(olderThanThis) << "\';";
 
 	Mutex::scoped_lock lock(proxy_mutex);
 	connection_.get().exec(query.str());

@@ -63,8 +63,8 @@ struct same_obstime_as
 };
 struct has_obstime
 {
-	const miutil::miTime & obstime;
-	has_obstime(const miutil::miTime & t) : obstime(t) {}
+	const boost::posix_time::ptime & obstime;
+	has_obstime(const boost::posix_time::ptime & t) : obstime(t) {}
 	bool operator() (const kvalobs::kvData & d) const
 	{
 		return d.obstime() == obstime;
@@ -72,7 +72,7 @@ struct has_obstime
 };
 
 // returns NULL if not found
-const kvalobs::kvData * getData(int parameter, const miutil::miTime & obstime, const po::ParameterSortedDataList & observations)
+const kvalobs::kvData * getData(int parameter, const boost::posix_time::ptime & obstime, const po::ParameterSortedDataList & observations)
 {
 	po::ParameterSortedDataList::const_iterator collection = observations.find(parameter);
 	if ( collection == observations.end() )
@@ -191,8 +191,7 @@ po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDa
 
 const po::TimeSpan po::getTimeSpan(const kvalobs::kvData &data) const
 {
-	miutil::miTime start = data.obstime();
-	start.addSec(-1);
+	boost::posix_time::ptime start = data.obstime() - boost::posix_time::seconds(1);
 	return TimeSpan(start, data.obstime());
 }
 

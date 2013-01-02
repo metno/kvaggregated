@@ -57,7 +57,7 @@ float round(float f)
 }
 }
 AbstractAggregator::kvDataPtr AbstractAggregator::getDataObject(const kvalobs::kvData &trigger,
-		const miutil::miTime &obsTime, float original, float corrected, const std::list<kvalobs::kvData> & sourceData)
+		const boost::posix_time::ptime &obsTime, float original, float corrected, const std::list<kvalobs::kvData> & sourceData)
 {
 	int typeID = trigger.typeID();
 	if (typeID > 0)

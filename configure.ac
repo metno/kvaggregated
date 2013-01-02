@@ -17,11 +17,11 @@ AC_PROG_MAKE_SET
 AC_PROG_LN_S
 
 
-PKG_CHECK_MODULES(kvcpp, libkvcpp2)
+PKG_CHECK_MODULES(kvcpp, libkvcpp)
 PKG_CHECK_MODULES(sqlite3, sqlite3)
 
-#GTEST_CHECK
-#GMOCK_CHECK
+GTEST_CHECK
+GMOCK_CHECK
 
 AX_BOOST_BASE
 AX_BOOST_THREAD
@@ -32,6 +32,8 @@ AX_BOOST_FILESYSTEM
 if test -z $BOOST_FILESYSTEM_LIB; then AC_MSG_ERROR([Unable to find boost filesystem library]); fi
 AX_BOOST_PROGRAM_OPTIONS
 if test -z $BOOST_PROGRAM_OPTIONS_LIB; then AC_MSG_ERROR([Unable to find boost program_options library]); fi
+AX_BOOST_DATE_TIME
+if test -z $BOOST_DATE_TIME_LIB; then AC_MSG_ERROR([Unable to find boost date_time library]); fi
 AX_BOOST_SYSTEM
 
 DOCBOOK_TO_MAN 

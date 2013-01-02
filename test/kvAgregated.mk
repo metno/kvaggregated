@@ -29,9 +29,24 @@ kvAgregatedTest_CPPFLAGS = \
 	$(gtest_CFLAGS) \
 	$(gmock_CFLAGS)
 
+kvAgregatedTest_LDFLAGS = $(gtest_LDFLAGS)
+
 kvAgregatedTest_LDADD = \
 	$(kvAgregated_LDADD) \
 	$(gtest_LIBS) \
 	$(gmock_LIBS)
 
-CLEANFILES += kvAgregatedTest
+
+if HAVE_COMPILED_GTEST
+# nothing
+else
+check_LIBRARIES = libgtest_local.a
+nodist_libgtest_local_a_SOURCES = libgtest_local.c 
+
+gtest-all.o: $(gtest_BASE)/src/gtest/src/gtest-all.cc
+	$(CXX) -c -I$(gtest_BASE)/src/gtest $< -o $@
+libgtest_local.a: gtest-all.o
+	$(AR) crf $@ $<
+	
+kvAgregatedTest_LDADD += ./libgtest_local.a
+endif

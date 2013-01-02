@@ -38,7 +38,6 @@
 #include "ReadWriteLock.h"
 #include <boost/utility.hpp>
 #include <set>
-#include <puTools/miTime.h>
 #include <dnmithread/CommandQue.h>
 #include <decodeutility/kvDataFormatter.h>
 #include <boost/thread/recursive_mutex.hpp>
@@ -56,8 +55,8 @@ public:
 			bool repopulate = false);
 	virtual ~KvalobsProxy();
 
-	virtual void getData(KvDataList &data, int station, const miutil::miTime &from,
-			const miutil::miTime &to, int paramid, int type, int sensor,
+	virtual void getData(KvDataList &data, int station, const boost::posix_time::ptime &from,
+			const boost::posix_time::ptime &to, int paramid, int type, int sensor,
 			int lvl) const;
 
 	virtual CKvalObs::CDataSource::Result_var sendData(const KvDataList &data);
@@ -85,14 +84,14 @@ public:
 	void db_clear();
 	void db_cleanup();
 	void db_populate(int hours = 24);
-	void db_populate(const miutil::miTime & from, const miutil::miTime & to);
+	void db_populate(const boost::posix_time::ptime & from, const boost::posix_time::ptime & to);
 	void db_repopulate(int hours = 24)
 	{
 		db_clear();
 		db_populate(hours);
 	}
 
-	void setOldestInProxy(const miutil::miTime & newTime);
+	void setOldestInProxy(const boost::posix_time::ptime & newTime);
 
 	KvalobsDataAccess & directKvalobsAccess() { return kvalobs_; }
 	const KvalobsDataAccess & directKvalobsAccess() const { return kvalobs_; }
@@ -112,7 +111,7 @@ private:
 	 * Therefore we use an unfair lock, which causes starvation.
 	 */
 	mutable RWMutex timeMutex_;
-	miutil::miTime oldestInProxy;
+	boost::posix_time::ptime oldestInProxy;
 
 	CachedDataAccess cache_;
 	KvalobsDataAccess kvalobs_;
