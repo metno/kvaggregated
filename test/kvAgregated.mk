@@ -37,16 +37,6 @@ kvAgregatedTest_LDADD = \
 	$(gmock_LIBS)
 
 
-if HAVE_COMPILED_GTEST
-# nothing
-else
-check_LIBRARIES = libgtest_local.a
-nodist_libgtest_local_a_SOURCES = libgtest_local.c 
+kvAgregatedTest_LDADD += $(gtest_LIBS) -lgtest_main
 
-gtest-all.o: $(gtest_BASE)/src/gtest/src/gtest-all.cc
-	$(CXX) -c -I$(gtest_BASE)/src/gtest $< -o $@
-libgtest_local.a: gtest-all.o
-	$(AR) crf $@ $<
-	
-kvAgregatedTest_LDADD += ./libgtest_local.a
-endif
+include mk/gtest.mk

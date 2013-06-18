@@ -30,6 +30,7 @@
 #include <gtest/gtest.h>
 #include <checkDecision/CompleteCheckDecider.h>
 #include <proxy/CachedDataAccess.h>
+#include <proxy/KvalobsProxy.h>
 #include <paramID.h>
 #include <kvalobs/kvDataOperations.h>
 
@@ -86,6 +87,25 @@ TEST(RaOverridesRr1Check, stationWithRr1ButNotRa)
 	EXPECT_TRUE(filter.shouldRunChecksOn(data.front(), data, dummy));
 }
 
+TEST(RaOverridesRr1Check, stationWithRejectedRr1AndNotRa)
+{
+	kvservice::CachedDataAccess dataAccess(":memory:");
+
+	const kvalobs::kvDataFactory factory(1023, pt("2010-09-15 06:00:00"), 302);
+	CompleteCheckDecider::DataList data;
+	kvalobs::kvData dataElement = factory.getData(0, RR_1);
+	kvalobs::reject(dataElement);
+	data.push_back(dataElement);
+
+	dataAccess.sendData(data);
+
+	CompleteCheckDecider filter(& dataAccess);
+	std::string message;
+	bool shouldRunCheck = filter.shouldRunChecksOn(data.front(), data, message);
+	EXPECT_TRUE(shouldRunCheck) << message;
+}
+
+
 TEST(RaOverridesRr1Check, stationWithRaButNotRr1)
 {
 	const kvalobs::kvDataFactory factory(1023, pt("2010-09-15 06:00:00"), 302);
@@ -141,13 +161,14 @@ TEST(RaOverridesRr1Check, missingRr1Data)
 	kvservice::KvDataList dbData;
 	for ( boost::posix_time::ptime obsTime = pt("2010-09-14 18:00:00"); obsTime <= pt("2010-09-15 06:00:00"); obsTime += boost::posix_time::hours(1) )
 		dbData.push_back(factory.getMissing(RR_1, obsTime));
+	dbData.push_back(factory.getData(0, RA));
 
 	dataAccess.sendData(dbData);
 
 	CompleteCheckDecider filter(& dataAccess);
 
-	EXPECT_TRUE(filter.shouldRunChecksOn(data.front(), data, dummy));
-	EXPECT_FALSE(filter.shouldRunChecksOn(data.back(), data, dummy));
+	EXPECT_TRUE(filter.shouldRunChecksOn(data.front(), data, dummy)); // RA
+	EXPECT_FALSE(filter.shouldRunChecksOn(data.back(), data, dummy)); // RR_1
 }
 
 TEST(RaOverridesRr1Check, rejectedRr1Data)
@@ -165,6 +186,7 @@ TEST(RaOverridesRr1Check, rejectedRr1Data)
 		dbData.push_back(factory.getData(0, RR_1, obsTime));
 		kvalobs::reject(dbData.back());
 	}
+	dbData.push_back(factory.getData(0, RA));
 
 	dataAccess.sendData(dbData);
 
@@ -189,6 +211,7 @@ TEST(RaOverridesRr1Check, oneValidRr1Data)
 		dbData.push_back(factory.getData(0, RR_1, obsTime));
 		kvalobs::reject(dbData.back());
 	}
+	dbData.push_back(factory.getData(0, RA));
 
 	kvservice::KvDataList::iterator it = dbData.begin();
 	std::advance(it, 5);
@@ -214,6 +237,7 @@ TEST(RaOverridesRr1Check, oneMissingButCorrectedRr1Data)
 	kvservice::KvDataList dbData;
 	for ( boost::posix_time::ptime obsTime = pt("2010-09-14 18:00:00"); obsTime <= pt("2010-09-15 06:00:00"); obsTime += boost::posix_time::hours(1) )
 		dbData.push_back(factory.getData(0, RR_1, obsTime));
+	dbData.push_back(factory.getData(0, RA));
 
 	kvservice::KvDataList::iterator it = dbData.begin();
 	std::advance(it, 5);

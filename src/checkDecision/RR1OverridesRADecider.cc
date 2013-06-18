@@ -80,12 +80,17 @@ bool RR1OverridesRADecider::rr1ShouldOverrideRa(const kvalobs::kvData & sourceDa
 		if ( data.empty() )
 			return false;
 
-		for ( kvservice::KvDataList::const_iterator it = data.begin(); it != data.end(); ++ it )
-			if ( kvalobs::original_missing(* it) or ! kvalobs::valid(* it) )
-			{
-				msgOut = "Data contains both RA and RR_1, but some RR_1 values are invalid, so instead we aggregate from RA";
-				return false;
-			}
+		kvservice::KvDataList raData;
+		dataAccess_->getData(raData, sourceData.stationID(), from, to, RA, sourceData.typeID(), sourceData.sensor(), sourceData.level());
+		if ( not raData.empty() )
+		{
+			for ( kvservice::KvDataList::const_iterator it = data.begin(); it != data.end(); ++ it )
+				if ( kvalobs::original_missing(* it) or ! kvalobs::valid(* it) )
+				{
+					msgOut = "Data contains both RA and RR_1, but some RR_1 values are invalid, so instead we aggregate from RA";
+					return false;
+				}
+		}
 		return true;
 	}
 	return true;
