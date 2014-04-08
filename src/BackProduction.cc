@@ -98,7 +98,15 @@ void BackProduction::processData(const boost::posix_time::ptime & time)
 	}
 
 	LOGDEBUG("Got data. Processing...");
-	callbacks_.send(dataList);
+	try
+	{
+		callbacks_.send(dataList);
+	}
+	catch ( std::exception & e )
+	{
+		LOGERROR(e.what());
+		throw;
+	}
 
 	LOGDEBUG("Done");
 }
