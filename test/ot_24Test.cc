@@ -146,3 +146,21 @@ TEST(ot_24Test, failOnTooHighCorrected)
 	EXPECT_EQ(30*24, result->original());
 	EXPECT_EQ((30*23) +422, result->corrected());
 }
+
+TEST(ot_24Test, correctWorkingWithMinuteData)
+{
+	ot_24 aggregator;
+
+	kvalobs::kvDataFactory f(100, pt("2010-12-16 00:00:00"), 302);
+	ot_24::ParameterSortedDataList data;
+	ot_24::kvDataList & d = data[OT_1];
+	for ( boost::posix_time::ptime t = pt("2010-12-15 01:00:00"); t <= f.obstime(); t += boost::posix_time::minutes(1) )
+		d.push_back(f.getData(30, OT_1, t));
+
+	ot_24::kvDataPtr result = aggregator.process(d.back(), data);
+
+
+	ASSERT_TRUE(result);
+	EXPECT_EQ(30*24, result->original());
+	EXPECT_EQ(30*24, result->corrected());
+}

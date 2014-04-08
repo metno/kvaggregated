@@ -40,9 +40,18 @@ ot_24::ot_24() :
 {
 }
 
+bool ot_24::shouldProcess(const kvalobs::kvData &trigger, const kvDataList &observations) const
+{
+	kvDataList relevant;
+	extractUsefulData(relevant, observations, trigger);
+	return StandardAggregator::shouldProcess(trigger, relevant);
+}
+
 void ot_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData &) const
 {
-	out = dataIn;
+	for ( kvDataList::const_iterator it = dataIn.begin(); it != dataIn.end(); ++ it )
+		if ( it->obstime().time_of_day().minutes() == 0 and it->obstime().time_of_day().seconds() == 0 )
+			out.push_back(* it);
 }
 
 float ot_24::calculate(const ValueList & source, CalculationDataType, ExtraData) const

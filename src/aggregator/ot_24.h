@@ -42,6 +42,8 @@ public:
 	ot_24();
 
 protected:
+	virtual bool shouldProcess(const kvalobs::kvData &trigger, const kvDataList &observations) const;
+
 	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
 
 	virtual float calculate(const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const;
