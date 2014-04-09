@@ -65,9 +65,16 @@ void BackProduction::operator ()()
 
 	while (!mainLoop_.stopping() && f <= to_)
 	{
-		processData(f);
-		LOGINFO("Done processing data for time " << f);
-		f += boost::posix_time::hours(1);
+		try
+		{
+			processData(f);
+			LOGINFO("Done processing data for time " << f);
+			f += boost::posix_time::hours(1);
+		}
+		catch ( std::exception & e )
+		{
+			LOGERROR("Error when processing data: " << e.what());
+		}
 	}
 }
 
@@ -98,15 +105,7 @@ void BackProduction::processData(const boost::posix_time::ptime & time)
 	}
 
 	LOGDEBUG("Got data. Processing...");
-	try
-	{
-		callbacks_.send(dataList);
-	}
-	catch ( std::exception & e )
-	{
-		LOGERROR(e.what());
-		throw;
-	}
+	callbacks_.send(dataList);
 
 	LOGDEBUG("Done");
 }
