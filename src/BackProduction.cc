@@ -15,6 +15,20 @@ BackProduction::BackProduction(kvservice::proxy::CallbackCollection & callbacks,
 {
 }
 
+namespace {
+boost::posix_time::ptime parseTime(const std::string & s)
+{
+	try
+	{
+		return boost::posix_time::time_from_string(s);
+	}
+	catch ( std::exception & e)
+	{
+		throw new std::logic_error("Invalid time format: " + s);
+	}
+}
+}
+
 BackProduction::BackProduction(kvservice::proxy::CallbackCollection & callbacks,
 		const WorkLoop & mainLoop, const std::string & timeSpec) :
 	callbacks_(callbacks), mainLoop_(mainLoop)
@@ -22,7 +36,7 @@ BackProduction::BackProduction(kvservice::proxy::CallbackCollection & callbacks,
 	const string::size_type sep = timeSpec.find_first_of(',');
 	if (sep == string::npos)
 	{
-		from_ = boost::posix_time::time_from_string(timeSpec);
+		from_ = parseTime(timeSpec);
 		//if (from_.undef())
 		//	throw std::logic_error("Invalid specification: " + timeSpec);
 		to_ = from_;
@@ -31,7 +45,7 @@ BackProduction::BackProduction(kvservice::proxy::CallbackCollection & callbacks,
 	{
 		string from = timeSpec.substr(0, sep);
 
-		from_ = boost::posix_time::time_from_string(from);
+		from_ = parseTime(from);
 		//if (from_.undef())
 		//	throw std::logic_error("Invalid from specification: " + from);
 

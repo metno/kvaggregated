@@ -41,7 +41,7 @@ void AggregatorConfiguration::setup_()
 	options_description mode("Working mode");
 
 	mode.add_options()
-			("back-production,b", value<std::string>(), "Produce data according to the given specification. Format for specification is '2008-04-08T06:00:00,5', which means produce data valid for period 2008-04-08T06:00:00 - 2008-04-08T11:00:00. Daemon mode will not be entered if this option is given.")
+			("back-production,b", value<std::string>(), "Produce data according to the given specification. Format for specification is '2008-04-08 06:00:00,5', which means produce data valid for period 2008-04-08T06:00:00 - 2008-04-08T11:00:00. Daemon mode will not be entered if this option is given.")
 			("daemon-mode,d", "Enter daemon mode, even if overridden by the --back-production option.")
 			("stations,s", value<std::vector<std::string> >(), "Only process stations from the given comma-separated list.")
 			("parameter,p", value<std::vector<std::string> >(), "Only process parameters from the given comma-separated list.")
