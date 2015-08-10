@@ -10,8 +10,8 @@ using namespace std;
 
 BackProduction::BackProduction(kvservice::proxy::CallbackCollection & callbacks,
 		const WorkLoop & mainLoop, const boost::posix_time::ptime & from,
-		const boost::posix_time::ptime & to) :
-	callbacks_(callbacks), mainLoop_(mainLoop), from_(from), to_(to)
+		const boost::posix_time::ptime & to, const std::vector<int> & stations) :
+	callbacks_(callbacks), mainLoop_(mainLoop), from_(from), to_(to), stations_(stations)
 {
 }
 
@@ -30,8 +30,9 @@ boost::posix_time::ptime parseTime(const std::string & s)
 }
 
 BackProduction::BackProduction(kvservice::proxy::CallbackCollection & callbacks,
-		const WorkLoop & mainLoop, const std::string & timeSpec) :
-	callbacks_(callbacks), mainLoop_(mainLoop)
+		const WorkLoop & mainLoop, const std::string & timeSpec,
+		const std::vector<int> & stations) :
+	callbacks_(callbacks), mainLoop_(mainLoop), stations_(stations)
 {
 	const string::size_type sep = timeSpec.find_first_of(',');
 	if (sep == string::npos)
@@ -101,7 +102,11 @@ void BackProduction::processData(const boost::posix_time::ptime & time)
 
 	boost::posix_time::ptime to = time + boost::posix_time::seconds((60*60)-1);
 
-	wdh.addStation(0, time, to);
+	if ( stations_.empty() )
+		wdh.addStation(0, time, to);
+	else
+		for ( std::vector<int>::const_iterator it = stations_.begin(); it != stations_.end(); ++ it )
+			wdh.addStation(* it, time, to);
 
 	kvservice::KvDataList dataList;
 	kvservice::proxy::internal::KvDataReceiver dr(dataList);

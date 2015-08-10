@@ -19,7 +19,8 @@ public:
 	BackProduction(kvservice::proxy::CallbackCollection & callbacks,
 			const WorkLoop & mainLoop,
 			const boost::posix_time::ptime & from,
-			const boost::posix_time::ptime & to);
+			const boost::posix_time::ptime & to,
+			const std::vector<int> & stations = std::vector<int>());
 	
 	/**
 	 * @param timeSpec A string specification of what times to use. The 
@@ -31,7 +32,8 @@ public:
 	 * @throw std::logic_error if specification is invalid
 	 */
 	BackProduction(kvservice::proxy::CallbackCollection & callbacks,
-			const WorkLoop & mainLoop, const std::string & timeSpec);
+			const WorkLoop & mainLoop, const std::string & timeSpec,
+			const std::vector<int> & stations = std::vector<int>());
 	
 	~BackProduction();
 
@@ -45,6 +47,7 @@ private:
 	const WorkLoop & mainLoop_;
 	boost::posix_time::ptime from_;
 	boost::posix_time::ptime to_;
+	const std::vector<int> stations_;
 };
 
 

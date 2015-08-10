@@ -153,7 +153,7 @@ void runAgregator(const AggregatorConfiguration & conf,
 	AggregatorRunner runner(conf.stations(), dataAccess, callbacks);
 	if ( conf.backProduction() )
 	{
-		BackProduction back(callbacks, runner, conf.backProductionSpec());
+		BackProduction back(callbacks, runner, conf.backProductionSpec(), conf.stations());
 		if (!conf.daemonMode())
 			back(); // run outside a thread
 		else
