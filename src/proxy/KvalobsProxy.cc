@@ -71,7 +71,11 @@ public:
 	void operator ()()
 	{
 		boost::xtime time;
-		boost::xtime_get(&time, boost::TIME_UTC);
+#if BOOST_VERSION >= 105000
+         xtime_get(&time, boost::TIME_UTC_);
+#else
+         xtime_get(&time, boost::TIME_UTC);
+#endif
 
 		boost::posix_time::time_duration startTime = boost::posix_time::microsec_clock::universal_time().time_of_day();
 		boost::posix_time::time_duration cleanTime(2, 20, 0);
