@@ -1,12 +1,12 @@
 AC_PREREQ([2.61])
-AC_INIT([kvAgregated], [2.2.10], [kvoss@met.no])
+AC_INIT([kvAgregated], [2.2.12], [kvoss@met.no])
 
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_SRCDIR([src/main.cc])
 AC_CONFIG_HEADER([config.h])
 
-AM_PROG_AR
+#AM_PROG_AR
 AC_PROG_LIBTOOL
 
 # Checks for programs.
