@@ -1,3 +1,11 @@
+kvagregated (2.3.0~rckafka3-1) UNRELEASED; urgency=medium
+
+  * kafka version
+  * new version
+  * new version
+
+ -- Vegard Bones <vegard.bones@met.no>  Fri, 13 Nov 2015 14:18:01 +0100
+
 kvagregated (2.2.12-1) lucid; urgency=low
 
   * new version

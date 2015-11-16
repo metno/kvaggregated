@@ -105,7 +105,7 @@ TEST_F(poTest, createsNegativeTypeId)
 	toProcess[TA].push_back(ta);
 
 	po::kvDataPtr result = p.process(pr, toProcess);
-	ASSERT_TRUE(result);
+	ASSERT_TRUE((bool) result);
 	EXPECT_EQ(-1, result->typeID());
 }
 
@@ -120,7 +120,7 @@ TEST_F(poTest, createsNegativeTypeIdFromNegativeStart)
 	toProcess[TA].push_back(ta);
 
 	po::kvDataPtr result = p.process(pr, toProcess);
-	ASSERT_TRUE(result);
+	ASSERT_TRUE((bool) result);
 	EXPECT_EQ(-1, result->typeID());
 }
 
@@ -264,7 +264,7 @@ TEST_F(poTest, missingPr)
 
 	po::kvDataPtr result = p.process(pr, toProcess);
 
-	ASSERT_TRUE(result);
+	ASSERT_TRUE((bool) result);
 	EXPECT_TRUE(kvalobs::missing(* result));
 }
 
@@ -280,7 +280,7 @@ TEST_F(poTest, missingta)
 
 	po::kvDataPtr result = p.process(pr, toProcess);
 
-	ASSERT_TRUE(result);
+	ASSERT_TRUE((bool) result);
 	EXPECT_TRUE(kvalobs::missing(* result));
 }
 
@@ -354,7 +354,7 @@ TEST_F(poTest, testMajorCorrectionsAreWritten)
 	toProcess[PO].push_back(po);
 
 	po::kvDataPtr result = p.process(pr, toProcess);
-	ASSERT_TRUE(result);
+	ASSERT_TRUE((bool) result);
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 }
 
@@ -379,7 +379,7 @@ TEST_F(poTest, testMinorCorrectionsAreWrittenIfOldDataExists)
 	// normally, we would not expect a return, since almost the same data have
 	// been reported by the station. But since data have already been stored
 	// in database, we must send a correction.
-	ASSERT_TRUE(result);
+	ASSERT_TRUE((bool) result);
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 }
 
@@ -396,7 +396,7 @@ TEST_F(poTest, testOriginalDifferenceCauseAggregation)
 	toProcess[PO].push_back(po);
 
 	po::kvDataPtr result = p.process(pr, toProcess);
-	ASSERT_TRUE(result);
+	ASSERT_TRUE((bool) result);
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 }
 
@@ -414,6 +414,6 @@ TEST_F(poTest, testCorrectedDifferenceCauseAggregation)
 	toProcess[PO].push_back(po);
 
 	po::kvDataPtr result = p.process(pr, toProcess);
-	ASSERT_TRUE(result);
+	ASSERT_TRUE((bool) result);
 	EXPECT_NEAR(986.5, result->original(), 0.05);
 }

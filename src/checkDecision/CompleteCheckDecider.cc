@@ -30,7 +30,6 @@
 #include "CompleteCheckDecider.h"
 #include "StationRangeFilter.h"
 #include "RR1OverridesRADecider.h"
-#include <boost/assign/list_of.hpp>
 #include <vector>
 #include <limits>
 
@@ -47,10 +46,10 @@ CompleteCheckDecider::CompleteCheckDecider(kvservice::DataAccess * dataAccess) :
 		dataAccess_(dataAccess)
 {
 	// Todo: make this depend on a configuration file
-	deciders_ = boost::assign::list_of
-			(RunCheckDeciderPtr(new StationRangeFilter(100000, std::numeric_limits<int>::max(), foreignStationWhiteList, foreignStationWhiteList + foreignStationWhiteListCount)))
-			(RunCheckDeciderPtr(new RR1OverridesRADecider(dataAccess_)))
-		;
+	deciders_ = {
+			RunCheckDeciderPtr(new StationRangeFilter(100000, std::numeric_limits<int>::max(), foreignStationWhiteList, foreignStationWhiteList + foreignStationWhiteListCount)),
+			RunCheckDeciderPtr(new RR1OverridesRADecider(dataAccess_))
+	};
 }
 
 bool CompleteCheckDecider::shouldRunChecksOn(const kvalobs::kvData & sourceData,

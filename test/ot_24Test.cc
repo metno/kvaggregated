@@ -56,7 +56,7 @@ TEST(ot_24Test, sumsCorrectly)
 
 	ot_24::kvDataPtr result = aggregator.process(d.back(), data);
 
-	ASSERT_TRUE(result);
+	ASSERT_TRUE((bool) result);
 	EXPECT_EQ(30*24, result->original());
 	EXPECT_EQ(30*24, result->corrected());
 }
@@ -78,7 +78,7 @@ TEST(ot_24Test, failOnNegativeOriginal)
 
 	ot_24::kvDataPtr result = aggregator.process(d.back(), data);
 
-	ASSERT_TRUE(result);
+	ASSERT_TRUE((bool) result);
 	EXPECT_EQ((30*23) -1, result->original());
 	EXPECT_EQ(30*24, result->corrected());
 }
@@ -99,7 +99,7 @@ TEST(ot_24Test, failOnNegativeCorrected)
 
 	ot_24::kvDataPtr result = aggregator.process(d.back(), data);
 
-	ASSERT_TRUE(result);
+	ASSERT_TRUE((bool) result);
 	EXPECT_EQ(30*24, result->original());
 	EXPECT_EQ((30*23) -8, result->corrected());
 }
@@ -121,7 +121,7 @@ TEST(ot_24Test, failOnTooHighOriginal)
 
 	ot_24::kvDataPtr result = aggregator.process(d.back(), data);
 
-	ASSERT_TRUE(result);
+	ASSERT_TRUE((bool) result);
 	EXPECT_EQ((30*23) +61, result->original());
 	EXPECT_EQ(30*24, result->corrected());
 }
@@ -142,7 +142,7 @@ TEST(ot_24Test, failOnTooHighCorrected)
 
 	ot_24::kvDataPtr result = aggregator.process(d.back(), data);
 
-	ASSERT_TRUE(result);
+	ASSERT_TRUE((bool) result);
 	EXPECT_EQ(30*24, result->original());
 	EXPECT_EQ((30*23) +422, result->corrected());
 }
@@ -160,7 +160,7 @@ TEST(ot_24Test, correctWorkingWithMinuteData)
 	ot_24::kvDataPtr result = aggregator.process(d.back(), data);
 
 
-	ASSERT_TRUE(result);
+	ASSERT_TRUE((bool) result);
 	EXPECT_EQ(30*24, result->original());
 	EXPECT_EQ(30*24, result->corrected());
 }

@@ -27,7 +27,7 @@
  with KVALOBS; if not, write to the Free Software Foundation Inc.,
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-#include <kvcpp/corba/CorbaKvApp.h>
+#include <kvcpp/kafka/KafkaKvApp.h>
 #include "AggregatorRunner.h"
 #include "AggregatorHandler.h"
 #include "BackProduction.h"
@@ -68,7 +68,7 @@ using namespace miutil;
 using namespace milog;
 using namespace dnmi::db;
 
-typedef kvservice::corba::CorbaKvApp KvApp;
+typedef kvservice::kafka::KafkaKvApp KvApp;
 
 namespace
 {

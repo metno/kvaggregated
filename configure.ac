@@ -1,12 +1,12 @@
 AC_PREREQ([2.61])
-AC_INIT([kvAgregated], [2.2.12], [kvoss@met.no])
+AC_INIT([kvAgregated], [2.3.0~rckafka3], [kvoss@met.no])
 
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_SRCDIR([src/main.cc])
 AC_CONFIG_HEADER([config.h])
 
-#AM_PROG_AR
+AM_PROG_AR
 AC_PROG_LIBTOOL
 
 # Checks for programs.
@@ -17,6 +17,7 @@ AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_LN_S
 
+AX_CXX_COMPILE_STDCXX_11(noext)
 
 PKG_CHECK_MODULES(kvcpp, libkvcpp)
 PKG_CHECK_MODULES(sqlite3, sqlite3)

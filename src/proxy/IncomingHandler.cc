@@ -90,11 +90,10 @@ void IncomingHandler::HandlerThread::operator()()
 		try
 		{
 			handler.process(data);
-		} catch (...)
+		} catch (std::exception & e)
 		{
 			boost::mutex::scoped_lock lock(handler.mutex);
-			LOGERROR( "Error when processing data. "
-					"Putting data back in queue." );
+			LOGERROR( "Error when processing data. (Putting data back in queue): " << e.what() );
 			handler.queue.push_front(data);
 			handler.condition.notify_one();
 		}

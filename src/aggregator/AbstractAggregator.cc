@@ -33,6 +33,8 @@
 namespace aggregator
 {
 
+const float AbstractAggregator::invalidParam = -32768;
+
 AbstractAggregator::AbstractAggregator(int readParam, int writeParam) :
 		write_param(writeParam)
 {

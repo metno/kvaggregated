@@ -147,7 +147,7 @@ protected:
 	 * value. Each subclass must determine what to do if such a value
 	 * is encountered.
 	 */
-	static const float invalidParam = -32768;
+	static const float invalidParam;
 
 private:
 
