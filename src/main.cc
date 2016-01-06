@@ -27,7 +27,7 @@
  with KVALOBS; if not, write to the Free Software Foundation Inc.,
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-#include <kvcpp/kafka/KafkaKvApp.h>
+#include <kvcpp/KvApp.h>
 #include "AggregatorRunner.h"
 #include "AggregatorHandler.h"
 #include "BackProduction.h"
@@ -39,7 +39,6 @@
 #include <set>
 #include <fileutil/pidfileutil.h>
 #include <kvalobs/kvPath.h>
-#include <boost/scoped_ptr.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/program_options.hpp>
@@ -64,11 +63,12 @@
 
 using namespace std;
 using namespace aggregator;
-using namespace miutil;
+//using namespace miutil;
 using namespace milog;
 using namespace dnmi::db;
 
-typedef kvservice::kafka::KafkaKvApp KvApp;
+using kvservice::KvApp;
+
 
 namespace
 {
@@ -124,20 +124,6 @@ std::auto_ptr<FLogStream> createLog(const std::string & logFileName, milog::LogL
 	ret->loglevel(level);
 	LogManager::instance()->addStream(ret.get());
 	return ret;
-}
-
-miutil::conf::ConfSection * getConfSection()
-{
-	string myconf = "kvAgregated.conf";
-	miutil::conf::ConfSection * confSec = KvApp::readConf(myconf);
-	if (!confSec)
-	{
-		myconf = kvPath("sysconfdir") + "/kvalobs.conf";
-		confSec = KvApp::readConf(myconf);
-	}
-	if (!confSec)
-		throw std::runtime_error("Cant open conf file: " + myconf);
-	return confSec;
 }
 
 void runThreadWithBackProduction(BackProduction & back, AggregatorRunner & runner)
@@ -198,13 +184,12 @@ int main(int argc, char **argv)
 				setupPidFile(pidFile);
 
 			// KvApp
-			boost::scoped_ptr<miutil::conf::ConfSection> confSec(getConfSection());
-			KvApp app(argc, argv, confSec.get());
+			std::unique_ptr<kvservice::KvApp> app(kvservice::KvApp::create("kvaggregated", argc, argv));
 
 			// Proxy database
 			kvservice::proxy::CallbackCollection callbacks;
 
-			boost::scoped_ptr<kvservice::DataAccess> dataAccess;
+			std::unique_ptr<kvservice::DataAccess> dataAccess;
 			if ( conf.runInDaemonMode() )
 			{
 				LOGINFO("Using proxy database <" << conf.proxyDatabaseName() << ">");
