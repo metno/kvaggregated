@@ -33,21 +33,19 @@
 #include <boost/filesystem/operations.hpp>
 #include <stdexcept>
 
-namespace
-{
-// Holds all created connections
-dnmi::db::DriverManager driverManager;
-
+namespace {
 const std::string memoryDatabaseName = ":memory:";
-}
+}  // namespace
+
+namespace DriverManager = dnmi::db::DriverManager;
 
 ProxyDatabaseConnection::ProxyDatabaseConnection(const std::string & databaseProxyFile, bool createDatabase)
 {
 	const std::string dbDriverPath = kvPath("pkglibdir") + "/db/";
 
 	std::string proxyID;
-	if ( ! driverManager.loadDriver(dbDriverPath + "sqlite3driver.so", proxyID) )
-		throw std::runtime_error("Error when loading database driver: " + driverManager.getErr() );
+	if ( ! DriverManager::loadDriver(dbDriverPath + "sqlite3driver.so", proxyID) )
+		throw std::runtime_error("Error when loading database driver: " + DriverManager::getErr() );
 
 	if ( databaseProxyFile != memoryDatabaseName )
 	{
@@ -57,7 +55,7 @@ ProxyDatabaseConnection::ProxyDatabaseConnection(const std::string & databasePro
 			throw std::runtime_error(databaseProxyFile + " is a directory");
 	}
 
-	connection_ = driverManager.connect(proxyID, databaseProxyFile);
+	connection_ = DriverManager::connect(proxyID, databaseProxyFile);
 
 	if ( ! connection_ or not connection_->isConnected() )
 		throw std::runtime_error("Cant create a database connection to " + databaseProxyFile);
@@ -68,7 +66,7 @@ ProxyDatabaseConnection::ProxyDatabaseConnection(const std::string & databasePro
 
 ProxyDatabaseConnection::~ProxyDatabaseConnection()
 {
-	driverManager.releaseConnection(connection_);
+	DriverManager::releaseConnection(connection_);
 }
 
 void ProxyDatabaseConnection::createDatabase_()
