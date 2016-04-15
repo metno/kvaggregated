@@ -1,10 +1,14 @@
-kvagregated (2.3.0~rckafka3-1) UNRELEASED; urgency=medium
+kvagregated (2.4.0-1) UNRELEASED; urgency=medium
 
   * kafka version
   * new version
   * new version
+  * new version, compiled for kvalobs 2.8
+  * new version
+  * new version
+  * New version
 
- -- Vegard Bones <vegard.bones@met.no>  Fri, 13 Nov 2015 14:18:01 +0100
+ -- Vegard Bones <vegard.bones@met.no>  Fri, 15 Apr 2016 10:40:35 +0200
 
 kvagregated (2.2.12-1) lucid; urgency=low
 
