@@ -34,44 +34,54 @@ BackProduction::BackProduction(kvservice::proxy::CallbackCollection & callbacks,
 		const std::vector<int> & stations) :
 	callbacks_(callbacks), mainLoop_(mainLoop), stations_(stations)
 {
-	const string::size_type sep = timeSpec.find_first_of(',');
-	if (sep == string::npos)
-	{
-		from_ = parseTime(timeSpec);
-		//if (from_.undef())
-		//	throw std::logic_error("Invalid specification: " + timeSpec);
-		to_ = from_;
-	}
-	else
-	{
-		string from = timeSpec.substr(0, sep);
-
-		from_ = parseTime(from);
-		//if (from_.undef())
-		//	throw std::logic_error("Invalid from specification: " + from);
-
-		const string::size_type nextWord = sep + 1;
-		if (nextWord == timeSpec.size())
-			throw std::logic_error("Invalid specification: " + timeSpec);
-
-		const std::string to = timeSpec.substr(nextWord);
-		try
-		{
-			unsigned duration = boost::lexical_cast<unsigned>(to);
-			to_ = from_ + boost::posix_time::hours(duration);
-		}
-		catch (boost::bad_lexical_cast &)
-		{
-			to_ = boost::posix_time::time_from_string(to);
-		}
-
-		//if (to_.undef())
-		//	throw std::logic_error("Invalid to specification: " + to);
-	}
+  std::pair<boost::posix_time::ptime, boost::posix_time::ptime> spec = parse(timeSpec);
+  from_ = spec.first;
+  to_ = spec.second;
 }
 
 BackProduction::~BackProduction()
 {
+}
+
+std::pair<boost::posix_time::ptime, boost::posix_time::ptime> BackProduction::parse(const std::string & timeSpec)
+{
+  std::pair<boost::posix_time::ptime, boost::posix_time::ptime> ret;
+  const string::size_type sep = timeSpec.find_first_of(',');
+  if (sep == string::npos)
+  {
+    ret.first = parseTime(timeSpec);
+    //if (ret.first.undef())
+    //  throw std::logic_error("Invalid specification: " + timeSpec);
+    ret.second = ret.first;
+  }
+  else
+  {
+    string from = timeSpec.substr(0, sep);
+
+    ret.first = parseTime(from);
+    //if (ret.first.undef())
+    //  throw std::logic_error("Invalid from specification: " + from);
+
+    const string::size_type nextWord = sep + 1;
+    if (nextWord == timeSpec.size())
+      throw std::logic_error("Invalid specification: " + timeSpec);
+
+    const std::string to = timeSpec.substr(nextWord);
+    try
+    {
+      unsigned duration = boost::lexical_cast<unsigned>(to);
+      ret.second = ret.first + boost::posix_time::hours(duration);
+    }
+    catch (boost::bad_lexical_cast &)
+    {
+      ret.second = boost::posix_time::time_from_string(to);
+    }
+
+    //if (ret.second.undef())
+    //  throw std::logic_error("Invalid to specification: " + to);
+
+    return ret;
+  }
 }
 
 void BackProduction::operator ()()

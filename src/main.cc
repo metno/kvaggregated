@@ -201,6 +201,11 @@ int main(int argc, char **argv)
 			{
 				LOGINFO("Using no proxy database");
 				dataAccess.reset(new kvservice::KvalobsDataAccess);
+				kvservice::proxy::KvalobsProxy * proxy =
+				    new kvservice::proxy::KvalobsProxy(conf.proxyDatabaseName(), conf.repopulateDatabase());
+				dataAccess.reset(proxy);
+				const std::pair<boost::posix_time::ptime, boost::posix_time::ptime> & timeSpec = BackProduction::parse(conf.backProductionSpec());
+				proxy->db_populate(timeSpec.first, timeSpec.second);
 			}
 
 			AggregatorHandler handler(callbacks, * dataAccess);
