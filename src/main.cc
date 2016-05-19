@@ -199,7 +199,6 @@ int main(int argc, char **argv)
 			}
 			else
 			{
-				LOGINFO("Using no proxy database");
 				dataAccess.reset(new kvservice::KvalobsDataAccess);
 				kvservice::proxy::KvalobsProxy * proxy =
 				    new kvservice::proxy::KvalobsProxy(conf.proxyDatabaseName(), conf.repopulateDatabase());
