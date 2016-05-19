@@ -204,7 +204,7 @@ int main(int argc, char **argv)
 				    new kvservice::proxy::KvalobsProxy(conf.proxyDatabaseName(), conf.repopulateDatabase());
 				dataAccess.reset(proxy);
 				const std::pair<boost::posix_time::ptime, boost::posix_time::ptime> & timeSpec = BackProduction::parse(conf.backProductionSpec());
-				proxy->db_populate(timeSpec.first, timeSpec.second);
+				proxy->db_populate(timeSpec.first - boost::posix_time::hours(24), timeSpec.second);
 			}
 
 			AggregatorHandler handler(callbacks, * dataAccess);
