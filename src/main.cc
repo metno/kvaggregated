@@ -204,19 +204,8 @@ int main(int argc, char **argv)
 			// Proxy database
 			kvservice::proxy::CallbackCollection callbacks;
 
-			boost::scoped_ptr<kvservice::DataAccess> dataAccess;
-			if ( conf.runInDaemonMode() )
-			{
-				LOGINFO("Using proxy database <" << conf.proxyDatabaseName() << ">");
-				dataAccess.reset(
-						new kvservice::proxy::KvalobsProxy(conf.proxyDatabaseName(), conf.repopulateDatabase())
-				);
-			}
-			else
-			{
-				LOGINFO("Using no proxy database");
-				dataAccess.reset(new kvservice::KvalobsDataAccess);
-			}
+			LOGINFO("Using proxy database <" << conf.proxyDatabaseName() << ">");
+			boost::scoped_ptr<kvservice::DataAccess> dataAccess(new kvservice::proxy::KvalobsProxy(conf.proxyDatabaseName(), conf.repopulateDatabase()));
 
 			AggregatorHandler handler(callbacks, * dataAccess);
 			handler.setParameterFilter(conf.parameters());
