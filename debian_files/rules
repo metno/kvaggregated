@@ -29,7 +29,6 @@ endif
 	--prefix=/usr \
 	--localstatedir=/var \
 	--mandir=\$${prefix}/share/man \
-	--with-boost-libdir=/usr/lib/x86_64-linux-gnu/ \
 	LDFLAGS="-Wl,-z,defs"
 
 
