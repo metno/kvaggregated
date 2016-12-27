@@ -1,3 +1,17 @@
+kvagregated (2.4.2-1) UNRELEASED; urgency=medium
+
+  * rebuild against kvalobs 4.
+
+ -- Vegard Bones <vegard.bones@met.no>  Tue, 27 Dec 2016 08:19:43 +0100
+
+
+kvagregated (2.4.1-1) UNRELEASED; urgency=medium
+
+  * rebuild
+
+ -- Vegard Bones <vegard.bones@met.no>  Mon, 19 Dec 2016 17:30:31 +0100
+
+
 kvagregated (2.4.0-1) UNRELEASED; urgency=medium
 
   * kafka version
