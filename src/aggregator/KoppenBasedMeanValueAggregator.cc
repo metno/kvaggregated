@@ -131,7 +131,7 @@ KoppenBasedMeanValueAggregator::ExtraData KoppenBasedMeanValueAggregator::getExt
 	return ret;
 }
 
-float KoppenBasedMeanValueAggregator::calculate(const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const
+float KoppenBasedMeanValueAggregator::calculate(Metrics &m,const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const
 {
 	if ( source.size() == 3 )
 	{
@@ -139,8 +139,8 @@ float KoppenBasedMeanValueAggregator::calculate(const ValueList & source, Calcul
 
 		std::ostringstream metadataParameterName;
 		metadataParameterName << "koppen_" << std::setfill('0') << std::setw(2) << trigger.obstime().date().month();
-		float factor = getStationMetadata(metadataParameterName.str(), trigger);
-		return calculateWithKoppensFormula(source, factor, calcDataType, extraData);
+		float factor = getStationMetadata(m, metadataParameterName.str(), trigger);
+		return calculateWithKoppensFormula(m, source, factor, calcDataType, extraData);
 	}
 	return MeanValueAggregator::calculate(source, calcDataType, extraData);
 }

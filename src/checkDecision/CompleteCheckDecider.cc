@@ -52,11 +52,11 @@ CompleteCheckDecider::CompleteCheckDecider(kvservice::DataAccess * dataAccess) :
 	};
 }
 
-bool CompleteCheckDecider::shouldRunChecksOn(const kvalobs::kvData & sourceData,
+bool CompleteCheckDecider::shouldRunChecksOn(Metrics &m, const kvalobs::kvData & sourceData,
 		const DataList & completeObservation, std::string & msgOut)
 {
 	for ( DeciderList::iterator it = deciders_.begin(); it != deciders_.end(); ++ it )
-		if ( not (*it)->shouldRunChecksOn(sourceData, completeObservation, msgOut) )
+		if ( not (*it)->shouldRunChecksOn(m, sourceData, completeObservation, msgOut) )
 			return false;
 	return true;
 }

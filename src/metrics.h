@@ -1,7 +1,9 @@
 /*
   Kvalobs - Free Quality Control Software for Meteorological Observations 
 
-  Copyright (C) 2010 met.no
+  $Id: paramID.h,v 1.1.2.5 2007/09/27 09:02:16 paule Exp $                                                       
+
+  Copyright (C) 2007 met.no
 
   Contact information:
   Norwegian Meteorological Institute
@@ -26,39 +28,33 @@
   with KVALOBS; if not, write to the Free Software Foundation Inc., 
   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+#ifndef __agregator_Metrics_h__
+#define __agregator_Metrics_h__
 
+#include <chrono>
 
-#ifndef RUNCHECKDECIDER_H_
-#define RUNCHECKDECIDER_H_
+class Metric {
+  public:
+    Metric();
 
-#include <list>
-#include <string>
-#include "metrics.h"
-
-namespace kvalobs
-{
-class kvData;
-}
-
-namespace aggregator
-{
-
-/**
- * Base class for rundecisions.
- *
- * To interface these, see CompleteCheckDecider
- */
-class RunCheckDecider
-{
-public:
-	virtual ~RunCheckDecider() {}
-
-	typedef std::list<kvalobs::kvData> DataList;
-
-	virtual bool shouldRunChecksOn(Metrics &m, const kvalobs::kvData & sourceData,
-			const DataList & completeObservation, std::string & msgOut) =0;
+    void start();
+    //Return the duration
+    std::chrono::duration<int,std::milli> stop(bool accmulate=true);
+    std::chrono::duration<int,std::milli> acc() const { return acc_;}
+  private:
+    std::chrono::time_point<std::chrono::high_resolution_clock> timer_;
+    std::chrono::duration<int,std::milli> acc_;
 };
 
-}
 
-#endif /* RUNCHECKDECIDER_H_ */
+
+class Metrics {
+  public:
+    Metrics();
+
+    Metric db;
+    Metric kvDb;
+};
+
+
+#endif

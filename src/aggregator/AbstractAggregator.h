@@ -34,13 +34,15 @@
 #include <boost/shared_ptr.hpp>
 #include <list>
 #include <vector>
-
+#include "metrics.h"
 namespace aggregator
 {
 
 class AbstractAggregator
 {
+
 public:
+
 	AbstractAggregator(int readParam, int writeParam);
 	virtual ~AbstractAggregator();
 
@@ -58,7 +60,7 @@ public:
 	 * Perform an agregation, based on the incoming data, using the list
 	 * observations as base data.
 	 */
-	virtual kvDataPtr process(const kvalobs::kvData & data,
+	virtual kvDataPtr process(Metrics &m, const kvalobs::kvData & data,
 			const ParameterSortedDataList & observations) =0;
 
 

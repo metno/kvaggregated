@@ -86,21 +86,21 @@ const kvalobs::kvData * getData(int parameter, const boost::posix_time::ptime & 
 }
 }
 
-po::kvDataPtr po::process(const kvalobs::kvData & data,
+po::kvDataPtr po::process(Metrics &m,const kvalobs::kvData & data,
 		const ParameterSortedDataList & observations)
 {
 	kvservice::KvDataList dataList;
-	dataAccess_.getData(dataList, data.stationID(), data.obstime(), data.obstime(), PO, - std::abs(data.typeID()), data.sensor(), data.level());
+	dataAccess_.getData(m, dataList, data.stationID(), data.obstime(), data.obstime(), PO, - std::abs(data.typeID()), data.sensor(), data.level());
 	AbstractAggregator::ParameterSortedDataList alreadyAggregated;
 	for ( kvservice::KvDataList::const_iterator it = dataList.begin(); it != dataList.end(); ++ it )
 		alreadyAggregated[it->paramID()].push_back(* it);
 
-	return process(data, observations, alreadyAggregated);
+	return process(m, data, observations, alreadyAggregated);
 }
 
-po::kvDataPtr po::process(const kvalobs::kvData & data, const ParameterSortedDataList & observations, const ParameterSortedDataList & previouslyAggregatedData)
+po::kvDataPtr po::process(Metrics &m,const kvalobs::kvData & data, const ParameterSortedDataList & observations, const ParameterSortedDataList & previouslyAggregatedData)
 {
-	po::kvDataPtr ret = process_(data, observations, 1);
+	po::kvDataPtr ret = process_(m, data, observations, 1);
 
 	if ( ! ret )
 		return ret;
@@ -128,12 +128,12 @@ po::kvDataPtr po::process(const kvalobs::kvData & data, const ParameterSortedDat
 	return ret;
 }
 
-po::kvDataPtr po::processMethod2(const kvalobs::kvData & data, const ParameterSortedDataList & observations)
+po::kvDataPtr po::processMethod2(Metrics &m,const kvalobs::kvData & data, const ParameterSortedDataList & observations)
 {
-	return process_(data, observations, 2);
+	return process_(m, data, observations, 2);
 }
 
-po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDataList & observations, int method)
+po::kvDataPtr po::process_(Metrics &m,const kvalobs::kvData & data, const ParameterSortedDataList & observations, int method)
 {
 	milog::LogContext context("PO aggregation");
 
@@ -145,9 +145,9 @@ po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDa
 		if ( pr and ta )
 		{
 			kvalobs::kvDataFactory factory(data);
-			float um = getStationMetadata("VS", factory.getMissing(UM_VS));
-			float tm = getStationMetadata("VS", factory.getMissing(TM_VS));
-			float hp = getStationMetadata("hp", data);
+			float um = getStationMetadata(m, "VS", factory.getMissing(UM_VS));
+			float tm = getStationMetadata(m, "VS", factory.getMissing(TM_VS));
+			float hp = getStationMetadata(m, "hp", data);
 
 			float original = invalidParam;
 			float corrected = invalidParam;
@@ -217,9 +217,9 @@ float po::computePoWithInversionCorrection(float pr, float ta, float um, float t
 }
 
 
-float po::getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const
+float po::getStationMetadata(Metrics &m,const std::string & metadataName, const kvalobs::kvData & validFor) const
 {
-	return dataAccess_.getStationMetadata(metadataName, validFor);
+	return dataAccess_.getStationMetadata(m, metadataName, validFor);
 }
 
 }

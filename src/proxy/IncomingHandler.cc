@@ -42,6 +42,7 @@
 
 using namespace std;
 using namespace milog;
+using namespace kvservice::proxy;
 
 namespace kvservice
 {
@@ -60,7 +61,7 @@ void IncomingHandler::HandlerThread::operator()()
 
 	while (1)
 	{
-		KvObsDataListPtr data;
+		DataEventPtr data;
 		{
 			boost::mutex::scoped_lock lock(handler.mutex);
 
@@ -123,7 +124,7 @@ IncomingHandler::~IncomingHandler()
 void IncomingHandler::onKvDataEvent(KvObsDataListPtr data)
 {
 	boost::mutex::scoped_lock lock(mutex);
-	queue.push_back(data);
+	queue.push_back(DataEventPtr(new DataEvent(data)));
 	condition.notify_one();
 	//process( data );
 }
@@ -162,7 +163,7 @@ bool IncomingHandler::isStopping() const
 	return threadsStopping;
 }
 
-void IncomingHandler::process(KvObsDataListPtr & data)
+void IncomingHandler::process(DataEventPtr  data)
 {
 	if (not data->empty())
 	{
@@ -175,7 +176,7 @@ void IncomingHandler::process(KvObsDataListPtr & data)
 		LOGDEBUG( ss.str() );
 
 		for (IKvObsDataList it = data->begin(); it != data->end(); ++it)
-			dataAccess.cacheData(*it);
+			dataAccess.cacheData(data->metrics, *it);
 
 		callbacks_.send(*data);
 

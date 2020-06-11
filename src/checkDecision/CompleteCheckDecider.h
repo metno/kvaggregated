@@ -33,6 +33,7 @@
 #include "RunCheckDecider.h"
 #include <boost/shared_ptr.hpp>
 #include <vector>
+#include "metrics.h"
 
 namespace kvservice
 {
@@ -53,7 +54,7 @@ class CompleteCheckDecider: public RunCheckDecider
 public:
 	explicit CompleteCheckDecider(kvservice::DataAccess * dataAccess = 0);
 
-	virtual bool shouldRunChecksOn(const kvalobs::kvData & sourceData,
+	virtual bool shouldRunChecksOn(Metrics &m, const kvalobs::kvData & sourceData,
 			const DataList & completeObservation, std::string & msgOut);
 
 private:

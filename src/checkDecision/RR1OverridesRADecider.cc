@@ -42,7 +42,7 @@ RR1OverridesRADecider::RR1OverridesRADecider(kvservice::DataAccess * dataAccess)
 {
 }
 
-bool RR1OverridesRADecider::shouldRunChecksOn(const kvalobs::kvData & sourceData,
+bool RR1OverridesRADecider::shouldRunChecksOn(Metrics &m,const kvalobs::kvData & sourceData,
 		const DataList & completeObservation, std::string & msgOut)
 {
 	if ( sourceData.paramID() == RA )
@@ -53,7 +53,7 @@ bool RR1OverridesRADecider::shouldRunChecksOn(const kvalobs::kvData & sourceData
 
 		if ( completeObservation.end() != find )
 		{
-			if ( rr1ShouldOverrideRa(sourceData, msgOut) )
+			if ( rr1ShouldOverrideRa(m, sourceData, msgOut) )
 			{
 				msgOut = "Data contains both RA and RR_1, so we do not aggregate from RA";
 				return false;
@@ -62,12 +62,12 @@ bool RR1OverridesRADecider::shouldRunChecksOn(const kvalobs::kvData & sourceData
 		}
 	}
 	else if ( sourceData.paramID() == RR_1 )
-		return rr1ShouldOverrideRa(sourceData, msgOut);
+		return rr1ShouldOverrideRa(m, sourceData, msgOut);
 
 	return true;
 }
 
-bool RR1OverridesRADecider::rr1ShouldOverrideRa(const kvalobs::kvData & sourceData, std::string & msgOut)
+bool RR1OverridesRADecider::rr1ShouldOverrideRa(Metrics &m, const kvalobs::kvData & sourceData, std::string & msgOut)
 {
 	if ( dataAccess_ )
 	{
@@ -75,13 +75,13 @@ bool RR1OverridesRADecider::rr1ShouldOverrideRa(const kvalobs::kvData & sourceDa
 
 		boost::posix_time::ptime from = sourceData.obstime() - boost::posix_time::hours(11);
 		boost::posix_time::ptime to = sourceData.obstime();
-		dataAccess_->getData(data, sourceData.stationID(), from, to, RR_1, sourceData.typeID(), sourceData.sensor(), sourceData.level());
+		dataAccess_->getData(m, data, sourceData.stationID(), from, to, RR_1, sourceData.typeID(), sourceData.sensor(), sourceData.level());
 
 		if ( data.empty() )
 			return false;
 
 		kvservice::KvDataList raData;
-		dataAccess_->getData(raData, sourceData.stationID(), from, to, RA, sourceData.typeID(), sourceData.sensor(), sourceData.level());
+		dataAccess_->getData(m, raData, sourceData.stationID(), from, to, RA, sourceData.typeID(), sourceData.sensor(), sourceData.level());
 		if ( not raData.empty() )
 		{
 			for ( kvservice::KvDataList::const_iterator it = data.begin(); it != data.end(); ++ it )

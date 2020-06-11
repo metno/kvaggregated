@@ -53,7 +53,7 @@ void CallbackCollection::remove( Callback *callback )
   callbacks.erase( callback );
 }
 
-void CallbackCollection::send( KvObsDataList &data )
+void CallbackCollection::send( DataEvent &data )
 {
   for ( CallbackSet::const_iterator it = callbacks.begin(); it != callbacks.end(); it++ )
     ( *it )->newData( data );
@@ -61,8 +61,9 @@ void CallbackCollection::send( KvObsDataList &data )
 
 void CallbackCollection::send( KvDataList &data )
 {
+  Metrics metrics;
   for ( CallbackSet::const_iterator it = callbacks.begin(); it != callbacks.end(); it++ )
-    ( *it )->newData( data );
+    ( *it )->newData( data, metrics );
 }
 
 

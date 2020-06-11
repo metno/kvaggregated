@@ -39,6 +39,7 @@
 #include <kvcpp/KvGetDataReceiver.h>
 #include <boost/thread/condition.hpp>
 #include <boost/thread/mutex.hpp>
+#include "DataEvent.h"
 
 
 namespace kvservice
@@ -76,7 +77,7 @@ private:
 	boost::condition condition;
 	boost::mutex mutex;
 
-	std::list<KvObsDataListPtr> queue;
+	std::list<DataEventPtr> queue;
 
 	class HandlerThread
 	{
@@ -90,7 +91,8 @@ private:
 	/**
 	 * Used in context of the handler threads.
 	 */
-	void process(KvObsDataListPtr & data);
+	             
+	void process(kvservice::proxy::DataEventPtr data);
 
 	std::list<boost::thread *> threads;
 };

@@ -11,6 +11,8 @@ kvAgregated_SOURCES = \
 	src/BackProduction.cc \
 	src/paramID.h \
 	src/times.h \
+	src/metrics.h \
+	src/metrics.cc \
 	src/main.cc
 
 AM_CPPFLAGS = \

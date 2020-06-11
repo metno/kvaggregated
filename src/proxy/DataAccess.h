@@ -35,6 +35,7 @@
 #include <kvskel/datasource.hh>
 #include <boost/noncopyable.hpp>
 #include <stdexcept>
+#include "metrics.h"
 
 namespace kvservice
 {
@@ -49,16 +50,16 @@ public:
     /**
      * Get kvalobs data. The source is either the database, or the proxy database
      */
-    virtual void getData( KvDataList &data, int station,
+    virtual void getData( Metrics &m,KvDataList &data, int station,
                   const boost::posix_time::ptime &from, const boost::posix_time::ptime &to,
-                  int paramid, int type, int sensor, int lvl ) const = 0;
+                  int paramid, int type, int sensor, int lvl) const = 0;
 
     /**
      * Send data to kvalobs. Data will also be stored in proxy database
      */
-    virtual CKvalObs::CDataSource::Result_var sendData( const KvDataList &data ) =0;
+    virtual CKvalObs::CDataSource::Result_var sendData( Metrics &m, const KvDataList &data ) =0;
 
-    virtual float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const
+    virtual float getStationMetadata(Metrics &m, const std::string & metadataName, const kvalobs::kvData & validFor) const
     {
     	throw std::runtime_error("Unable to get station meta data");
     }
@@ -70,7 +71,7 @@ public:
      *
      * @param param A parameter we are interested in.
      */
-    virtual void addInteresting(int param) {}
+    virtual void addInteresting(Metrics &m, int param) {}
 
     /**
      * Tell subclass to cache data for faster retrieval, if the subclass has
@@ -78,7 +79,7 @@ public:
      *
      * @param data The data to be cached
      */
-    virtual void cacheData(const KvDataList &data) {}
+    virtual void cacheData(Metrics &m, const KvDataList &data) {}
 };
 
 }

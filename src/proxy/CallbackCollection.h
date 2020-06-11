@@ -32,6 +32,7 @@
 
 #include <kvcpp/kvservicetypes.h>
 #include <set>
+#include "DataEvent.h"
 
 namespace kvservice
 {
@@ -49,7 +50,7 @@ public:
     void add( Callback *callback );
     void remove( Callback *callback );
 
-    void send( KvObsDataList &data );
+    void send( DataEvent &data );
     void send( KvDataList &data );
 
 private:

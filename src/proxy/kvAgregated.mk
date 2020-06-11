@@ -15,4 +15,7 @@ kvAgregated_SOURCES += \
 	src/proxy/CallbackCollection.cpp \
 	src/proxy/ProxyDatabaseConnection.h \
 	src/proxy/ProxyDatabaseConnection.cpp \
-	src/proxy/ReadWriteLock.h
+	src/proxy/ReadWriteLock.h \
+	src/proxy/DataEvent.h \
+	src/proxy/DataEvent.cc
+

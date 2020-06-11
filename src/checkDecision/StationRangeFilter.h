@@ -46,7 +46,7 @@ public:
 		whiteList_(whiteListStart, whiteListStop)
 	{}
 
-	virtual bool shouldRunChecksOn(const kvalobs::kvData & sourceData,
+	virtual bool shouldRunChecksOn(Metrics &m, const kvalobs::kvData & sourceData,
 			const DataList & completeObservation, std::string & msgOut);
 
 private:

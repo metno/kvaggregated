@@ -45,11 +45,11 @@ class RR1OverridesRADecider: public RunCheckDecider
 public:
 	explicit RR1OverridesRADecider(kvservice::DataAccess * dataAccess);
 
-	virtual bool shouldRunChecksOn(const kvalobs::kvData & sourceData,
+	virtual bool shouldRunChecksOn(Metrics &m, const kvalobs::kvData & sourceData,
 			const DataList & completeObservation, std::string & msgOut);
 
 private:
-	bool rr1ShouldOverrideRa(const kvalobs::kvData & sourceData, std::string & msgOut);
+	bool rr1ShouldOverrideRa(Metrics &m, const kvalobs::kvData & sourceData, std::string & msgOut);
 
 	kvservice::DataAccess * dataAccess_;
 };

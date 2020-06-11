@@ -1,7 +1,7 @@
 /*
  Kvalobs - Free Quality Control Software for Meteorological Observations
 
- $Id: Callback.h,v 1.1.2.4 2007/09/27 09:02:16 paule Exp $
+ $Id: IncomingHandler.h,v 1.1.2.4 2007/09/27 09:02:16 paule Exp $
 
  Copyright (C) 2007 met.no
 
@@ -28,42 +28,18 @@
  with KVALOBS; if not, write to the Free Software Foundation Inc.,
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-#ifndef __kvservice__proxy__Callback__
-#define __kvservice__proxy__Callback__
 
-#include "CallbackCollection.h"
-#include <kvcpp/kvservicetypes.h>
+#include "DataEvent.h"
 
-namespace kvservice
+using std::chrono::high_resolution_clock;
+
+namespace kvservice {
+namespace proxy {
+
+DataEvent::DataEvent(KvObsDataListPtr theData)
+  : theData_(theData)
 {
-namespace proxy
-{
-
-class Callback
-{
-public:
-	Callback(CallbackCollection & owner)
-	{
-		owner.add(this);
-	}
-
-	virtual ~Callback()
-	{
-	}
-
-	virtual void newData(KvDataList &data, Metrics & ) =0;
-
-	virtual void newData(DataEvent &data)
-	{
-		typedef KvObsDataList::reverse_iterator RIKvObsDataList;
-		for (RIKvObsDataList odl = data.rbegin(); odl != data.rend(); odl++)
-		{
-			KvDataList &dl = odl->dataList();
-			newData(dl, data.metrics);
-		}
-	}
-};
+  start_ = high_resolution_clock::now();
 }
 }
-
-#endif // __kvservice__proxy__Callback__
+}

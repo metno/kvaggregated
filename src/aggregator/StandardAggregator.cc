@@ -118,9 +118,11 @@ bool StandardAggregator::isInterestedIn(const kvalobs::kvData &data) const
 }
 
 AbstractAggregator::kvDataPtr StandardAggregator::process(
+	  Metrics &m,
 		const kvalobs::kvData & data,
 		const ParameterSortedDataList & p_observations)
 {
+	
 	LogContext context(name + " Station=" + lexical_cast<string> (
 			data.stationID()));
 
@@ -173,10 +175,10 @@ AbstractAggregator::kvDataPtr StandardAggregator::process(
 	}
 }
 
-float StandardAggregator::getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const
+float StandardAggregator::getStationMetadata(Metrics &m, const std::string & metadataName, const kvalobs::kvData & validFor) const
 {
 	kvservice::KvalobsDataAccess dataAccess;
-	return dataAccess.getStationMetadata(metadataName, validFor);
+	return dataAccess.getStationMetadata(m, metadataName, validFor);
 }
 
 

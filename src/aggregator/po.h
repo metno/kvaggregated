@@ -30,6 +30,7 @@
 #ifndef PO_H_
 #define PO_H_
 
+#include "metrics.h"
 #include "AbstractAggregator.h"
 
 namespace kvservice
@@ -46,20 +47,20 @@ public:
 	explicit po(const kvservice::DataAccess & dataAccess);
 	virtual ~po();
 
-	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations);
-	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations, const ParameterSortedDataList & alreadyAggregated);
+	virtual kvDataPtr process(Metrics &m, const kvalobs::kvData & data, const ParameterSortedDataList & observations);
+	virtual kvDataPtr process(Metrics &m,const kvalobs::kvData & data, const ParameterSortedDataList & observations, const ParameterSortedDataList & alreadyAggregated);
 
 	// Unused, awaiting a system for identifying inversion correcting stations:
-	kvDataPtr processMethod2(const kvalobs::kvData & data, const ParameterSortedDataList & observations);
+	kvDataPtr processMethod2(Metrics &m,const kvalobs::kvData & data, const ParameterSortedDataList & observations);
 
 	virtual const TimeSpan getTimeSpan(const kvalobs::kvData &data) const;
 
 protected:
 	// protected to be overrideable by tests
-	virtual float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const;
+	virtual float getStationMetadata(Metrics &m, const std::string & metadataName, const kvalobs::kvData & validFor) const;
 
 private:
-	kvDataPtr process_(const kvalobs::kvData & data, const ParameterSortedDataList & observations, int method);
+	kvDataPtr process_(Metrics &m,const kvalobs::kvData & data, const ParameterSortedDataList & observations, int method);
 
 	/**
 	 * \param pr air pressure reduced to sea level

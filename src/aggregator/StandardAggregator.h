@@ -40,7 +40,7 @@
 #include <set>
 #include <map>
 #include <utility>
-
+#include "metrics.h"
 namespace aggregator
 {
 
@@ -96,7 +96,7 @@ public:
 	virtual bool isInterestedIn(const kvalobs::kvData &data) const;
 
 
-	virtual kvDataPtr process(const kvalobs::kvData & data,
+	virtual kvDataPtr process(Metrics &m, const kvalobs::kvData & data,
 			const ParameterSortedDataList & observations);
 
 	/**
@@ -133,7 +133,7 @@ public:
 	virtual const TimeSpan getTimeSpan(const kvalobs::kvData &data) const;
 
 protected:
-
+	
 	/**
 	 * \brief Determine if enough data has been received in order to
 	 * create an agregate.
@@ -208,7 +208,7 @@ protected:
 	 *
 	 * \return The value of the given metadata
 	 */
-	virtual float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const;
+	virtual float getStationMetadata(Metrics &m, const std::string & metadataName, const kvalobs::kvData & validFor) const;
 
 	/**
 	 * \brief A generated name for this object. This will be printed

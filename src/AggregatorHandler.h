@@ -34,6 +34,7 @@
 #include "aggregator/AbstractAggregator.h"
 #include "proxy/Callback.h"
 #include "proxy/DataAccess.h"
+#include "metrics.h"
 #include <map>
 
 
@@ -45,13 +46,14 @@ class AggregatorHandler: public kvservice::proxy::Callback
 {
 	static AggregatorHandler *agHandler;
 	friend class aggregator::GenerateZero;
-
+protected: 
+	Metrics *metrics;
 public:
-
+	
 	AggregatorHandler(kvservice::proxy::CallbackCollection & callbacks, kvservice::DataAccess &dataAccess);
 	virtual ~AggregatorHandler();
 
-	virtual void newData(kvservice::KvDataList &data);
+	virtual void newData(kvservice::KvDataList &data, Metrics &metrics);
 
 	void process(kvservice::KvDataList & out, const kvalobs::kvData & data);
 

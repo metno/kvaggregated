@@ -48,11 +48,11 @@ ta_24::~ta_24()
 {
 }
 
-float ta_24::calculateWithKoppensFormula(const ValueList & source, float koppenFactor, CalculationDataType calcDataType, ExtraData extraData) const
+float ta_24::calculateWithKoppensFormula(Metrics &m,const ValueList & source, float koppenFactor, CalculationDataType calcDataType, ExtraData extraData) const
 {
 	ExtraCalculationData * d = static_cast<ExtraCalculationData *>(extraData);
 
-	float minTemperature = d->minimumTemperature(dataAccess_, calcDataType);
+	float minTemperature = d->minimumTemperature(m, dataAccess_, calcDataType);
 
 	if ( minTemperature == d->missing_ )
 		return invalidParam;
@@ -75,11 +75,11 @@ ta_24::ExtraCalculationData::ExtraCalculationData(const kvalobs::kvData & trigge
 {
 }
 
-float ta_24::ExtraCalculationData::minimumTemperature(const kvservice::DataAccess * dataAccess, CalculationDataType calcDataType)
+float ta_24::ExtraCalculationData::minimumTemperature(Metrics &m, const kvservice::DataAccess * dataAccess, CalculationDataType calcDataType)
 {
 	if ( not gotData_ )
 	{
-		populate(dataAccess);
+		populate(m, dataAccess);
 		gotData_ = true;
 	}
 
@@ -89,13 +89,13 @@ float ta_24::ExtraCalculationData::minimumTemperature(const kvservice::DataAcces
 		return correctedTan24;
 }
 
-void ta_24::ExtraCalculationData::populate(const kvservice::DataAccess * dataAccess)
+void ta_24::ExtraCalculationData::populate(Metrics &m, const kvservice::DataAccess * dataAccess)
 {
 	if ( ! dataAccess )
 		throw std::runtime_error("TA_24 calculation missing access to data - unable to process");
 
 	kvservice::KvDataList data;
-	dataAccess->getData(data, trigger.stationID(),
+	dataAccess->getData(m, data, trigger.stationID(),
 			boost::posix_time::ptime(trigger.obstime().date(), boost::posix_time::time_duration(5,59,59)),
 			boost::posix_time::ptime(trigger.obstime().date(), boost::posix_time::hours(18)),
 			TAN_12, trigger.typeID(), trigger.sensor(), trigger.level());

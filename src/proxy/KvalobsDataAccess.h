@@ -30,6 +30,7 @@
 #ifndef KVALOBSDATAACCESS_H_
 #define KVALOBSDATAACCESS_H_
 
+#include "metrics.h"
 #include "DataAccess.h"
 
 namespace kvservice
@@ -48,14 +49,14 @@ public:
 	KvalobsDataAccess();
 	virtual ~KvalobsDataAccess();
 
-    virtual void getData( KvDataList &data, int station,
+    virtual void getData(Metrics &m, KvDataList &data, int station,
                   const boost::posix_time::ptime &from, const boost::posix_time::ptime &to,
                   int paramid, int type, int sensor, int lvl ) const;
 
     /// station==0 means all stations
-    void getAllData(KvDataList & data, const boost::posix_time::ptime &from, const boost::posix_time::ptime &to, int station = 0) const;
+    void getAllData(Metrics &m, KvDataList & data, const boost::posix_time::ptime &from, const boost::posix_time::ptime &to, int station = 0) const;
 
-    virtual CKvalObs::CDataSource::Result_var sendData( const KvDataList & data );
+    virtual CKvalObs::CDataSource::Result_var sendData(Metrics &m, const KvDataList & data );
 
 	/**
 	 * Get station metadata from kvalobs. This i a service function to
@@ -71,7 +72,7 @@ public:
 	 *
 	 * \return The value of the given metadata
 	 */
-	virtual float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const;
+	virtual float getStationMetadata(Metrics &m, const std::string & metadataName, const kvalobs::kvData & validFor) const;
 
 };
 

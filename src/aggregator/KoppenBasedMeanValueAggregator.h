@@ -55,9 +55,9 @@ protected:
 
 	virtual ExtraData getExtraData(const kvalobs::kvData & data);
 
-	virtual float calculate(const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const;
+	virtual float calculate(Metrics &m, const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const;
 
-    virtual float calculateWithKoppensFormula(const ValueList & source, float koppenFactor, CalculationDataType calcDataType, ExtraData extraData) const = 0;
+    virtual float calculateWithKoppensFormula(Metrics &m, const ValueList & source, float koppenFactor, CalculationDataType calcDataType, ExtraData extraData) const = 0;
 
     struct KoppenExtraData : public ExtraAggregationData
     {

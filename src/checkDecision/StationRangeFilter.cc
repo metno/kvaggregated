@@ -42,7 +42,7 @@ const std::set<int> precipitationParameters = boost::assign::list_of(104)(105)(1
 }
 
 
-bool StationRangeFilter::shouldRunChecksOn(const kvalobs::kvData & sourceData,
+bool StationRangeFilter::shouldRunChecksOn(Metrics &m, const kvalobs::kvData & sourceData,
 		const DataList &, std::string & msgOut )
 {
 	if ( sourceData.stationID() >= minStationId_ and

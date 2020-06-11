@@ -67,27 +67,31 @@ void AggregatorHandler::addHandler(AbstractAggregator * handler)
 			<< handler->writeParam());
 	for ( AbstractAggregator::ParameterList::const_iterator it = handler->readParam().begin(); it !=  handler->readParam().end(); ++ it )
 	{
-		dataAccess_.addInteresting(* it);
+		dataAccess_.addInteresting(*metrics, * it);
 		handlers.insert(std::make_pair(* it, handler));
 	}
-	dataAccess_.addInteresting(handler->writeParam());
+	dataAccess_.addInteresting(*metrics, handler->writeParam());
 }
-void AggregatorHandler::newData(KvDataList &data)
+void AggregatorHandler::newData(KvDataList &data, Metrics &m)
 {
+	metrics = &m;
 	CompleteCheckDecider checkDecider(& dataAccess_);
 
 	kvservice::KvDataList toSave;
 	for (CIKvDataList dl = data.begin(); dl != data.end(); ++dl)
 	{
 		std::string skipParameterMessage;
-		if ( checkDecider.shouldRunChecksOn(* dl, data, skipParameterMessage) )
+		if ( checkDecider.shouldRunChecksOn(m, * dl, data, skipParameterMessage) )
 			process(toSave, *dl);
 		else
 			LOGDEBUG(skipParameterMessage);
 	}
 
-	if ( KvApp::kvApp and not KvApp::kvApp->shutdown())
+	if ( KvApp::kvApp and not KvApp::kvApp->shutdown()) {
+		metrics->db.start();
 		save(toSave);
+		metrics->db.stop();
+	}
 }
 
 namespace
@@ -142,7 +146,7 @@ void AggregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvDa
 					dataForParameter.push_back(data);
 
 				AbstractAggregator::kvDataPtr d =
-						aggregator->process(data, baseDataToAggregateFrom);
+						aggregator->process(*metrics, data, baseDataToAggregateFrom);
 
 				if ( d.get() )
 				{
@@ -168,7 +172,7 @@ void AggregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvDa
 
 void AggregatorHandler::save( const kvservice::KvDataList & dl )
 {
-	CKvalObs::CDataSource::Result_var res = dataAccess_.sendData( dl );
+	CKvalObs::CDataSource::Result_var res = dataAccess_.sendData(*metrics, dl );
 
 	if ( res->res != CKvalObs::CDataSource::OK )
 	{
@@ -211,7 +215,7 @@ AggregatorHandler::getRelevantObsList(
 	{
 		AbstractAggregator::kvDataList & dataForParameter = out[* it];
 
-		dataAccess_.getData( dataForParameter, data.stationID(), obsTimes.first, obsTimes.second,
+		dataAccess_.getData(*metrics, dataForParameter, data.stationID(), obsTimes.first, obsTimes.second,
 				* it, data.typeID(), data.sensor(), data.level() );
 
 		std::for_each(dataForParameter.begin(), dataForParameter.end(), assertObsTimeMatches(obsTimes));

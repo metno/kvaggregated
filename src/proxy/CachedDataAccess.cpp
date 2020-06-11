@@ -72,7 +72,7 @@ CachedDataAccess::~CachedDataAccess()
 {
 }
 
-void CachedDataAccess::getData(KvDataList &data, int station,
+void CachedDataAccess::getData(Metrics &m,KvDataList &data, int station,
 		const boost::posix_time::ptime &from, const boost::posix_time::ptime &to, int paramid,
 		int type, int sensor, int lvl) const
 {
@@ -104,6 +104,7 @@ void CachedDataAccess::getData(KvDataList &data, int station,
 
 	try
 	{
+		m.db.start();
 		auto_ptr<Result> res;
 		{
 			Mutex::scoped_lock lock(proxy_mutex);
@@ -118,9 +119,10 @@ void CachedDataAccess::getData(KvDataList &data, int station,
 	{
 		LOGERROR("Unknown error during database lookup");
 	}
+	m.db.stop(true);
 }
 
-CKvalObs::CDataSource::Result_var CachedDataAccess::sendData(
+CKvalObs::CDataSource::Result_var CachedDataAccess::sendData(Metrics &m,
 		const KvDataList & data)
 {
 	for (CIKvDataList d = data.begin(); d != data.end(); d++)
@@ -128,16 +130,20 @@ CKvalObs::CDataSource::Result_var CachedDataAccess::sendData(
 		string insertQuery = "insert into data values " + d->toSend();
 
 		Mutex::scoped_lock lock(proxy_mutex);
+		m.db.start();
 		try
 		{
 			LOGDEBUG(insertQuery);
+			
 			connection_.get().exec(insertQuery);
+			m.db.stop(true);
 		} catch (exception &ex)
 		{ // Should have been: dnmi::db::SQLDuplicate &ex ) {
 			try
 			{
 				connection_.get().exec("delete from data " + d->uniqueKey());
 				connection_.get().exec(insertQuery);
+				m.db.stop();
 			} catch (exception &ex)
 			{
 				// proxy.connection_.get().rollBack();

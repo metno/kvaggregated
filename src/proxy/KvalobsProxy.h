@@ -43,6 +43,7 @@
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/shared_ptr.hpp>
 #include <vector>
+#include "metrics.h"
 
 namespace kvservice
 {
@@ -55,40 +56,40 @@ public:
 			bool repopulate = false);
 	virtual ~KvalobsProxy();
 
-	virtual void getData(KvDataList &data, int station, const boost::posix_time::ptime &from,
+	virtual void getData(Metrics &m, KvDataList &data, int station, const boost::posix_time::ptime &from,
 			const boost::posix_time::ptime &to, int paramid, int type, int sensor,
 			int lvl) const;
 
-	virtual CKvalObs::CDataSource::Result_var sendData(const KvDataList &data);
+	virtual CKvalObs::CDataSource::Result_var sendData(Metrics &m,const KvDataList &data);
 
-	virtual void cacheData(const KvDataList &data);
+	virtual void cacheData(Metrics &m, const KvDataList &data);
 
 	/**
 	 * Add parameter to store in cache database.
 	 *
 	 * @warning Not thread-safe!
 	 */
-	virtual void addInteresting(int param)
+	virtual void addInteresting(Metrics &m, int param)
 	{
-		cache_.addInteresting(param);
-		kvalobs_.addInteresting(param);
+		cache_.addInteresting(m ,param);
+		kvalobs_.addInteresting(m, param);
 		interestingParameters_.insert(param);
 	}
 
-	virtual float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const
+	virtual float getStationMetadata(Metrics &m,const std::string & metadataName, const kvalobs::kvData & validFor) const
 	{
-		return kvalobs_.getStationMetadata(metadataName, validFor);
+		return kvalobs_.getStationMetadata(m, metadataName, validFor);
 	}
 
 	// Operations on proxy:
 	void db_clear();
 	void db_cleanup();
-	void db_populate(int hours = 24);
-	void db_populate(const boost::posix_time::ptime & from, const boost::posix_time::ptime & to);
-	void db_repopulate(int hours = 24)
+	void db_populate(Metrics &m, int hours = 24);
+	void db_populate(Metrics &m,const boost::posix_time::ptime & from, const boost::posix_time::ptime & to);
+	void db_repopulate(Metrics &m,int hours = 24)
 	{
 		db_clear();
-		db_populate(hours);
+		db_populate(m, hours);
 	}
 
 	void setOldestInProxy(const boost::posix_time::ptime & newTime);
@@ -98,7 +99,7 @@ public:
 
 private:
 	/// True if the given data's values (original or corrected) are different from kvalobs'
-	bool updatesKvalobs_(const kvalobs::kvData & data) const;
+	bool updatesKvalobs_(Metrics &m,const kvalobs::kvData & data) const;
 
 	std::set<int> interestingParameters_;
 

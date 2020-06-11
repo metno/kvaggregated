@@ -126,6 +126,7 @@ KvalobsProxy::KvalobsProxy(const std::string & proxyDatabaseName,
 		bool repopulate) :
 	cache_(proxyDatabaseName), oldestInProxy(boost::posix_time::microsec_clock::universal_time())
 {
+	Metrics dummyMetrics;
 	if (!KvApp::kvApp)
 	{
 		const char * msg = "Cannot find an instance of KvApp!";
@@ -139,7 +140,7 @@ KvalobsProxy::KvalobsProxy(const std::string & proxyDatabaseName,
 	LogContext context("KvalobsProxy::KvalobsProxy");
 
 	if (repopulate)
-		db_repopulate();
+		db_repopulate(dummyMetrics);
 
 	// yes, this works:
 	cleaner_ = new Cleaner(*this);
@@ -163,19 +164,19 @@ void KvalobsProxy::db_clear()
 	cache_.clear();
 }
 
-void KvalobsProxy::db_populate(int hours)
+void KvalobsProxy::db_populate(Metrics &m,int hours)
 {
 	boost::posix_time::ptime to = boost::posix_time::microsec_clock::universal_time();
 	boost::posix_time::ptime from = to - boost::posix_time::hours(hours);
 
-	db_populate(from, to);
+	db_populate(m, from, to);
 }
 
-void KvalobsProxy::db_populate(const boost::posix_time::ptime & from, const boost::posix_time::ptime & to)
+void KvalobsProxy::db_populate(Metrics &m,const boost::posix_time::ptime & from, const boost::posix_time::ptime & to)
 {
 	KvDataList data;
-	kvalobs_.getAllData(data, from, to);
-	cache_.sendData(data);
+	kvalobs_.getAllData(m, data, from, to);
+	cache_.sendData(m, data);
 
 	ScopedWriteLock lock(timeMutex_);
 	if (oldestInProxy.is_not_a_date_time())
@@ -248,7 +249,7 @@ bool different_(const kvData & a, const kvData & b)
 }
 }
 
-CKvalObs::CDataSource::Result_var KvalobsProxy::sendData(const KvDataList &data)
+CKvalObs::CDataSource::Result_var KvalobsProxy::sendData(Metrics &m,const KvDataList &data)
 {
 	LogContext context("KvalobsProxy::sendData");
 	KvDataList l;
@@ -261,7 +262,7 @@ CKvalObs::CDataSource::Result_var KvalobsProxy::sendData(const KvDataList &data)
 			continue;
 
 		//			adaptDataToKvalobs_(l, * it);
-		if (updatesKvalobs_(*it))
+		if (updatesKvalobs_(m, *it))
 			l.push_back(*it);
 	}
 	if (l.empty())
@@ -274,17 +275,17 @@ CKvalObs::CDataSource::Result_var KvalobsProxy::sendData(const KvDataList &data)
 		return res;
 	}
 
-	CKvalObs::CDataSource::Result_var res = kvalobs_.sendData(l);
+	CKvalObs::CDataSource::Result_var res = kvalobs_.sendData(m, l);
 
 	if (res->res == CKvalObs::CDataSource::OK)
-		cacheData(l);
+		cacheData(m, l);
 	else
 	LOGERROR("Error when sending data to kvalobs: " << res->message);
 
 	return res;
 }
 
-void KvalobsProxy::getData(KvDataList &data, int station,
+void KvalobsProxy::getData(Metrics &m,KvDataList &data, int station,
 		const boost::posix_time::ptime &from, const boost::posix_time::ptime &to, int paramid,
 		int type, int sensor, int lvl) const
 {
@@ -297,7 +298,7 @@ void KvalobsProxy::getData(KvDataList &data, int station,
 		boost::posix_time::ptime k_from = from;
 		boost::posix_time::ptime k_to = oldestInProxy.is_not_a_date_time() ? to : min(to, oldestInProxy);
 		LOGDEBUG( "Fetching times " << from << " - " << k_to << " from kvalobs" );
-		kvalobs_.getData(data, station, k_from, k_to, paramid, type, sensor, lvl);
+		kvalobs_.getData(m, data, station, k_from, k_to, paramid, type, sensor, lvl);
 		LOGDEBUG( "Data from kvalobs :\n" << decodeutility::kvdataformatter::createString( data ) );
 	}
 
@@ -307,7 +308,7 @@ void KvalobsProxy::getData(KvDataList &data, int station,
 		boost::posix_time::ptime p_from = oldestInProxy.is_not_a_date_time() ? from : max(from, oldestInProxy);
 		LOGDEBUG( "Fetching times " << p_from << " - " << to << " from proxy" );
 		KvDataList proxyData;
-		cache_.getData(proxyData, station, p_from, to, paramid, type, sensor, lvl);
+		cache_.getData(m, proxyData, station, p_from, to, paramid, type, sensor, lvl);
 		for (KvDataList::const_iterator it = proxyData.begin(); it != proxyData.end(); ++it)
 		{
 			KvDataList::const_iterator find = find_if(data.begin(), data.end(),	bind1st(kvalobs::compare::same_kvData(), *it));
@@ -318,10 +319,10 @@ void KvalobsProxy::getData(KvDataList &data, int station,
 	}
 }
 
-void KvalobsProxy::cacheData(const KvDataList & data)
+void KvalobsProxy::cacheData(Metrics &m,const KvDataList & data)
 {
-	cache_.cacheData(data);
-	kvalobs_.cacheData(data);
+	cache_.cacheData(m, data);
+	kvalobs_.cacheData(m, data);
 
 	// TODO: see if this is movable to cache_:
 	KvDataList toSave;
@@ -331,7 +332,7 @@ void KvalobsProxy::cacheData(const KvDataList & data)
 			toSave.push_back(*it);
 
 	if (not toSave.empty())
-		cache_.sendData(toSave);
+		cache_.sendData(m, toSave);
 }
 
 void KvalobsProxy::setOldestInProxy(const boost::posix_time::ptime & newTime)
@@ -340,10 +341,10 @@ void KvalobsProxy::setOldestInProxy(const boost::posix_time::ptime & newTime)
 	oldestInProxy = newTime;
 }
 
-bool KvalobsProxy::updatesKvalobs_(const kvalobs::kvData & data) const
+bool KvalobsProxy::updatesKvalobs_(Metrics &m, const kvalobs::kvData & data) const
 {
 	KvDataList dl;
-	getData(dl, data.stationID(), data.obstime(), data.obstime(),
+	getData(m, dl, data.stationID(), data.obstime(), data.obstime(),
 			data.paramID(), data.typeID(), data.sensor(), data.level());
 
 	if (dl.empty())

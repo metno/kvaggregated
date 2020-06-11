@@ -67,18 +67,18 @@ namespace
 }
 
 
-void KvalobsDataAccess::getData(KvDataList &data, int station, const boost::posix_time::ptime &from,
+void KvalobsDataAccess::getData(Metrics &m,KvDataList &data, int station, const boost::posix_time::ptime &from,
 		const boost::posix_time::ptime &to, int paramid, int type, int sensor, int lvl) const
 {
 	KvDataList tmpData;
-
-	getAllData(tmpData, from, to, station);
-
-    tmpData.remove_if( invalid( paramid, type, sensor, lvl ) );
-    data.insert(data.end(), tmpData.begin(), tmpData.end());
+	m.kvDb.start();
+	getAllData(m, tmpData, from, to, station);
+	m.kvDb.stop(true);
+  tmpData.remove_if( invalid( paramid, type, sensor, lvl ) );
+  data.insert(data.end(), tmpData.begin(), tmpData.end());
 }
 
-void KvalobsDataAccess::getAllData(KvDataList & data, const boost::posix_time::ptime &from, const boost::posix_time::ptime &to, int station) const
+void KvalobsDataAccess::getAllData(Metrics &m, KvDataList & data, const boost::posix_time::ptime &from, const boost::posix_time::ptime &to, int station) const
 {
     WhichDataHelper wdh( CKvalObs::CService::All );
     boost::posix_time::ptime newFrom = from;
@@ -99,7 +99,7 @@ void KvalobsDataAccess::getAllData(KvDataList & data, const boost::posix_time::p
 }
 
 
-CKvalObs::CDataSource::Result_var KvalobsDataAccess::sendData(const KvDataList & data)
+CKvalObs::CDataSource::Result_var KvalobsDataAccess::sendData(Metrics &m, const KvDataList & data)
 {
 	if ( ! KvApp::kvApp )
 		throw std::runtime_error("No kvalobs connection");
@@ -165,11 +165,12 @@ const kvalobs::kvStationMetadata * mostSpecific(const kvalobs::kvStationMetadata
 }
 }
 
-float KvalobsDataAccess::getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const
+float KvalobsDataAccess::getStationMetadata(Metrics &m,const std::string & metadataName, const kvalobs::kvData & validFor) const
 {
 	if ( ! KvApp::kvApp )
 		throw std::runtime_error("No kvalobs connection have been established");
 
+	m.kvDb.start();
 	std::list<kvalobs::kvStationMetadata> metadata;
 
 	if ( ! KvApp::kvApp->getKvStationMetaData(metadata, validFor.stationID(), validFor.obstime(), metadataName) )
@@ -186,7 +187,7 @@ float KvalobsDataAccess::getStationMetadata(const std::string & metadataName, co
 		msg << "Unable to find metadata: " << metadataName << " for data " << validFor;
 		throw std::runtime_error(msg.str());
 	}
-
+	m.kvDb.stop();
 	return ret->metadata();
 }
 
