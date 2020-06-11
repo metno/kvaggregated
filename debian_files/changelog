@@ -1,3 +1,14 @@
+kvagregated (2.4.3-1) UNRELEASED; urgency=medium
+  * New release.
+
+ -- Vegard Bones <vegard.bones@met.no>  Tue, 4 Feb 2020 10:00:00 +0100
+
+kvagregated (2.4.3~rc1-1) UNRELEASED; urgency=medium
+  * rebuild against kvalobs 5.
+
+ -- Vegard Bones <vegard.bones@met.no>  Wed, 22 Jan 2021 13:45:00 +0100
+
+
 kvagregated (2.4.2-1) UNRELEASED; urgency=medium
 
   * rebuild against kvalobs 4.
