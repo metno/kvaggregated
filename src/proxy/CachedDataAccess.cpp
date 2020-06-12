@@ -29,6 +29,7 @@
 
 #include "CachedDataAccess.h"
 #include "ProxyDatabaseConnection.h"
+#include "metrics.h"
 #include <milog/milog.h>
 #include <sstream>
 #include <memory>
@@ -76,6 +77,8 @@ void CachedDataAccess::getData(KvDataList &data, int station,
 		const boost::posix_time::ptime &from, const boost::posix_time::ptime &to, int paramid,
 		int type, int sensor, int lvl) const
 {
+	auto metrics = getMetrics();
+	metrics->cacheDb.start();
 	LogContext context("proxy_getData");
 	//LOGDEBUG( "KvalobsProxy::proxy_getData" );
 
@@ -118,11 +121,15 @@ void CachedDataAccess::getData(KvDataList &data, int station,
 	{
 		LOGERROR("Unknown error during database lookup");
 	}
+
+	metrics->cacheDb.stop(true);
 }
 
 CKvalObs::CDataSource::Result_var CachedDataAccess::sendData(
 		const KvDataList & data)
 {
+	auto metrics = getMetrics();
+	metrics->cacheDb.start();
 	for (CIKvDataList d = data.begin(); d != data.end(); d++)
 	{
 		string insertQuery = "insert into data values " + d->toSend();
@@ -152,6 +159,7 @@ CKvalObs::CDataSource::Result_var CachedDataAccess::sendData(
 			LOGERROR("Error: Unknown reason. Could (probably) not insert data.");
 		}
 	}
+	metrics->cacheDb.stop(true);
 	return new CKvalObs::CDataSource::Result;
 }
 

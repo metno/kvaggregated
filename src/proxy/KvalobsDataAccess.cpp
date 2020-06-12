@@ -29,6 +29,7 @@
 
 #include "KvalobsDataAccess.h"
 #include "KvDataReceiver.h"
+#include "metrics.h"
 #include <decodeutility/kvalobsdataserializer.h>
 #include <kvcpp/KvApp.h>
 #include <milog/milog.h>
@@ -80,6 +81,9 @@ void KvalobsDataAccess::getData(KvDataList &data, int station, const boost::posi
 
 void KvalobsDataAccess::getAllData(KvDataList & data, const boost::posix_time::ptime &from, const boost::posix_time::ptime &to, int station) const
 {
+		auto metrics = getMetrics();
+		metrics->kvDb.start();
+
     WhichDataHelper wdh( CKvalObs::CService::All );
     boost::posix_time::ptime newFrom = from;
     if ( from != to )
@@ -88,14 +92,18 @@ void KvalobsDataAccess::getAllData(KvDataList & data, const boost::posix_time::p
     wdh.addStation( station, newFrom, to );
 
     proxy::internal::KvDataReceiver dr( data );
-
-    if ( ! KvApp::kvApp )
+    if ( ! KvApp::kvApp ) {
+			metrics->cacheDb.stop(true);
     	throw std::runtime_error("kvApp not initialized");
+}
 
     bool result = KvApp::kvApp->getKvData( dr, wdh );
 
-    if ( ! result )
+    if ( ! result ) {
       LOGERROR( "Unable to retrieve data from kvalobs." );
+		}
+
+		metrics->kvDb.stop(true);
 }
 
 
@@ -104,6 +112,8 @@ CKvalObs::CDataSource::Result_var KvalobsDataAccess::sendData(const KvDataList &
 	if ( ! KvApp::kvApp )
 		throw std::runtime_error("No kvalobs connection");
 
+	auto metrics=getMetrics();
+	metrics->kvDb.start();
 	kvalobs::serialize::KvalobsData toSend;
 	toSend.insert(data.begin(), data.end());
 	toSend.overwrite(true);
@@ -112,8 +122,9 @@ CKvalObs::CDataSource::Result_var KvalobsDataAccess::sendData(const KvDataList &
 
 //	miutil::miString msg = decodeutility::kvdataformatter::createString(data);
 	LOGINFO( "Sending data to kvalobs:\n" << msg );
-
-	return KvApp::kvApp->sendDataToKv(msg.c_str(), "kv2kvDecoder");
+	auto res = KvApp::kvApp->sendDataToKv(msg.c_str(), "kv2kvDecoder");
+	metrics->kvDb.stop(true);
+	return res;
 }
 
 namespace // helper functions for getStationMetadata
@@ -170,10 +181,14 @@ float KvalobsDataAccess::getStationMetadata(const std::string & metadataName, co
 	if ( ! KvApp::kvApp )
 		throw std::runtime_error("No kvalobs connection have been established");
 
+	auto metrics = getMetrics();
+	metrics->kvDb.start();
 	std::list<kvalobs::kvStationMetadata> metadata;
 
-	if ( ! KvApp::kvApp->getKvStationMetaData(metadata, validFor.stationID(), validFor.obstime(), metadataName) )
+	if ( ! KvApp::kvApp->getKvStationMetaData(metadata, validFor.stationID(), validFor.obstime(), metadataName) ) {
+		metrics->kvDb.stop(true);
 		throw std::runtime_error("Unable to contact kvalobs");
+	}
 
 	const kvalobs::kvStationMetadata * ret = 0;
 	for ( std::list<kvalobs::kvStationMetadata>::const_iterator it = metadata.begin(); it != metadata.end(); ++ it )
@@ -184,9 +199,11 @@ float KvalobsDataAccess::getStationMetadata(const std::string & metadataName, co
 	{
 		std::ostringstream msg;
 		msg << "Unable to find metadata: " << metadataName << " for data " << validFor;
+		metrics->kvDb.stop(true);
 		throw std::runtime_error(msg.str());
 	}
 
+	metrics->kvDb.stop(true);
 	return ret->metadata();
 }
 
