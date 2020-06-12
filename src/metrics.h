@@ -58,13 +58,15 @@ class Metrics {
   public:
     Metrics();
 
-
-
     Metric cacheDb;
     Metric kvDb;
 
+    int sendtToKvalobs(int isSendt) { sendtToKvalobs_=isSendt;}
+    bool sendtToKvalobs()const{ return sendtToKvalobs_;}
+
     Metric::MilliDuration timeToCompletion() const;
   private: 
+    int sendtToKvalobs_;
     Metric::TimeType startTime_;
 };
 

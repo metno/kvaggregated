@@ -77,9 +77,19 @@ bool setMetricsLogfile( const std::string &logfile, const std::string &dir ) {
 void logMetrics(std::shared_ptr<Metrics> metrics, const boost::posix_time::ptime &obstime, int stationid, int typeId) {
   if( logAppender.isOk() ) {
     std::ostringstream o;
+    std::string status=metrics->sendtToKvalobs()>0?"true":"false";
+
+    //This check for empty messages sendt to kvalobs.
+    //This is seen sometimes.
+    if(metrics->sendtToKvalobs()<0) {
+      status ="empty";
+    } 
+    
     o << " (" << stationid << "/" << typeId << "/" << boost::posix_time::to_kvalobs_string(obstime) <<")"
-      << " cachedb: " << metrics->cacheDb.acc().count() << " ms kvdb: " << metrics->kvDb.acc().count() << " ms duration: "
-    << metrics->timeToCompletion().count() << " ms\n";
+      << " sendtToKv: " << status  
+      << " cachedb: " << metrics->cacheDb.acc().count() << " ms kvdb: " 
+      << metrics->kvDb.acc().count() << " ms duration: "
+    << metrics->timeToCompletion().count() << " ms";
     logAppender.log( o.str());
   }
 }
@@ -116,5 +126,5 @@ Metrics::timeToCompletion() const
 }
 
 Metrics::Metrics()
-  : startTime_(high_resolution_clock::now())
+  : sendtToKvalobs_(0), startTime_(high_resolution_clock::now())
 {}

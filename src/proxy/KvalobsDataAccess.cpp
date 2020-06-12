@@ -113,6 +113,14 @@ CKvalObs::CDataSource::Result_var KvalobsDataAccess::sendData(const KvDataList &
 		throw std::runtime_error("No kvalobs connection");
 
 	auto metrics=getMetrics();
+	
+	if( data.begin() != data.end() ) {
+		metrics->sendtToKvalobs(1);
+	} else {
+		LOGWARN("Sending data to kvalobs: (no data to send)");
+		metrics->sendtToKvalobs(-1);
+	}
+	
 	metrics->kvDb.start();
 	kvalobs::serialize::KvalobsData toSend;
 	toSend.insert(data.begin(), data.end());

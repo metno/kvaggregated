@@ -29,6 +29,7 @@
  */
 #include <kvcpp/KvApp.h>
 #include <kvalobs/kvPath.h>
+#include <decodeutility/kvalobsdataserializer.h>
 #include "AggregatorRunner.h"
 #include "AggregatorHandler.h"
 #include "BackProduction.h"
@@ -164,14 +165,12 @@ void runAgregator(const AggregatorConfiguration & conf,
 
 int main(int argc, char **argv)
 {
+	kvalobs::serialize::KvalobsDataSerializer::defaultProducer="kvAgregated";
 	AggregatorConfiguration conf;
 	AggregatorConfiguration::ParseResult result = conf.parse(argc, argv);
 
-
 	if (result != AggregatorConfiguration::No_Action)
 		return result;
-
-
 
 	try
 	{
