@@ -28,6 +28,8 @@
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 #include <kvcpp/KvApp.h>
+#include <kvalobs/kvPath.h>
+#include <decodeutility/kvalobsdataserializer.h>
 #include "AggregatorRunner.h"
 #include "AggregatorHandler.h"
 #include "BackProduction.h"
@@ -60,6 +62,7 @@
 #include "aggregator/po.h"
 #include "aggregator/ot_24.h"
 #include <memory>
+#include "metrics.h"
 
 using namespace std;
 using namespace aggregator;
@@ -162,12 +165,12 @@ void runAgregator(const AggregatorConfiguration & conf,
 
 int main(int argc, char **argv)
 {
+	kvalobs::serialize::KvalobsDataSerializer::defaultProducer="kvAgregated";
 	AggregatorConfiguration conf;
 	AggregatorConfiguration::ParseResult result = conf.parse(argc, argv);
 
 	if (result != AggregatorConfiguration::No_Action)
 		return result;
-
 
 	try
 	{
@@ -180,8 +183,10 @@ int main(int argc, char **argv)
 		{
 			// PidFile
 			dnmi::file::PidFileHelper pidFile;
-			if (conf.runInDaemonMode())
+			if (conf.runInDaemonMode()) {
 				setupPidFile(pidFile);
+				setMetricsLogfile("kvAgregated_metrics.log", kvalobs::kvPath(kvalobs::logdir));
+			}
 
 			// KvApp
 			std::unique_ptr<kvservice::KvApp> app(kvservice::KvApp::create("kvaggregated", argc, argv));

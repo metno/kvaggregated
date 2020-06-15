@@ -1,3 +1,14 @@
+kvagregated (2.4.4-1) UNRELEASED; urgency=medium
+  * Add metrics.
+
+ -- Vegard Bones <vegard.bones@met.no>  Mon, 15 Jun 2020 8:30:00 +0200
+
+kvagregated (2.4.4~rc1-1) UNRELEASED; urgency=medium
+  * Add metrics for database access.
+  * Add metric for total duration.
+
+ -- Vegard Bones <vegard.bones@met.no>  Fri, 12 Jun 2020 10:00:00 +0200
+
 kvagregated (2.4.3-1) UNRELEASED; urgency=medium
   * New release.
 
