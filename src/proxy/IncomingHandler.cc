@@ -164,27 +164,32 @@ IncomingHandler::isStopping() const
 void
 IncomingHandler::process(KvObsDataListPtr& data)
 {
-	
+
   if (not data->empty()) {
-		auto metrics =std::shared_ptr<Metrics>(new Metrics());
-		setMetrics(metrics);
     ostringstream ss;
+    
     ss << "Data in:" << endl;
-    for (IKvObsDataList i1 = data->begin(); i1 != data->end(); ++i1)
+    for (IKvObsDataList i1 = data->begin(); i1 != data->end(); ++i1) {
       for (CIKvDataList i2 = i1->dataList().begin(); i2 != i1->dataList().end();
-           ++i2)
+           ++i2) {
         ss << decodeutility::kvdataformatter::createString(*i2) << endl;
+      }
+    }
+
     LOGDEBUG(ss.str());
 
-    for (IKvObsDataList it = data->begin(); it != data->end(); ++it)
+    auto metrics =std::shared_ptr<Metrics>(new Metrics());
+		setMetrics(metrics);
+
+    for (IKvObsDataList it = data->begin(); it != data->end(); ++it) {
       dataAccess.cacheData(*it);
+    }
 
     callbacks_.send(*data);
-		auto d = data->front().dataList().front();
-		logMetrics(metrics, d.obstime(), d.stationID(), d.typeID());
+    auto d = data->front().dataList().front();
+    logMetrics(metrics, d.obstime(), d.stationID(), d.typeID());
 
-    LOGDEBUG("Station " << d.stationID()
-                        << " done");
+    LOGDEBUG("Station " << d.stationID() << " done");
   }
 }
 }
