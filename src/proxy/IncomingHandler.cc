@@ -167,7 +167,7 @@ IncomingHandler::process(KvObsDataListPtr& data)
 
   if (not data->empty()) {
     ostringstream ss;
-    
+
     ss << "Data in:" << endl;
     for (IKvObsDataList i1 = data->begin(); i1 != data->end(); ++i1) {
       for (CIKvDataList i2 = i1->dataList().begin(); i2 != i1->dataList().end();
@@ -178,8 +178,8 @@ IncomingHandler::process(KvObsDataListPtr& data)
 
     LOGDEBUG(ss.str());
 
-    auto metrics =std::shared_ptr<Metrics>(new Metrics());
-		setMetrics(metrics);
+    auto metrics = std::shared_ptr<Metrics>(new Metrics());
+    setMetrics(metrics);
 
     for (IKvObsDataList it = data->begin(); it != data->end(); ++it) {
       dataAccess.cacheData(*it);

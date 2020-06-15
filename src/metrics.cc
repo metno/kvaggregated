@@ -77,7 +77,7 @@ bool setMetricsLogfile( const std::string &logfile, const std::string &dir ) {
 void logMetrics(std::shared_ptr<Metrics> metrics, const boost::posix_time::ptime &obstime, int stationid, int typeId) {
   if( logAppender.isOk() ) {
     std::ostringstream o;
-    std::string status=metrics->sendtToKvalobs()>0?"true":"false";
+    std::string status=metrics->sendtToKvalobs()?"true":"false";
 
     //This check for empty messages sendt to kvalobs.
     //This is seen sometimes.
@@ -126,5 +126,5 @@ Metrics::timeToCompletion() const
 }
 
 Metrics::Metrics()
-  : sendtToKvalobs_(0), startTime_(high_resolution_clock::now())
+  : sendtToKvalobs_(false), startTime_(high_resolution_clock::now())
 {}

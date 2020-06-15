@@ -93,7 +93,7 @@ void KvalobsDataAccess::getAllData(KvDataList & data, const boost::posix_time::p
 
     proxy::internal::KvDataReceiver dr( data );
     if ( ! KvApp::kvApp ) {
-			metrics->cacheDb.stop(true);
+			metrics->kvDb.stop(true);
     	throw std::runtime_error("kvApp not initialized");
 }
 

@@ -58,15 +58,26 @@ class Metrics {
   public:
     Metrics();
 
+    //Measure the total performance of the sqlite3 access. 
+    //One observation 
     Metric cacheDb;
+
+    //Measure the total performance for comunication with kvalobs.
+    //One observation.
     Metric kvDb;
 
-    int sendtToKvalobs(int isSendt) { sendtToKvalobs_=isSendt;}
+
+    //For the observation. Did it trigger an generation of a 
+    //aggregated value to be sendt to kvalobs.
+    void sendtToKvalobs(bool isSendt) { sendtToKvalobs_=isSendt;}
     bool sendtToKvalobs()const{ return sendtToKvalobs_;}
 
+    //The total duration used from the start of computation to the
+    //compution is finished. This include the metrics for cacheDb and
+    //kvDb. The computation is triggered by the receipt of an observation.
     Metric::MilliDuration timeToCompletion() const;
   private: 
-    int sendtToKvalobs_;
+    bool sendtToKvalobs_;
     Metric::TimeType startTime_;
 };
 
