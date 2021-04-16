@@ -176,8 +176,11 @@ int main(int argc, char **argv)
 	{
 		// Logging
 		milog::Logger::logger().logLevel( milog::INFO );
-		std::auto_ptr<FLogStream> fine = createLog("kvAgregated.log", INFO, 1024 * 1024);
-		std::auto_ptr<FLogStream> error = createLog("kvAgregated.warn.log", WARN, 100 * 1024);
+		if ( not conf.logToStdOut() ) 
+		{
+			std::auto_ptr<FLogStream> fine = createLog("kvAgregated.log", INFO, 1024 * 1024);
+			std::auto_ptr<FLogStream> error = createLog("kvAgregated.warn.log", WARN, 100 * 1024);
+		}
 
 		try
 		{

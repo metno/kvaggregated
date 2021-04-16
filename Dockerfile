@@ -13,3 +13,8 @@ COPY doc/ doc/
 COPY configure.ac Makefile.am kvAgregateDbInit.sh ./
 
 RUN autoreconf -i && ./configure && make all check install
+
+VOLUME /cache/
+RUN ./kvAgregateDbInit.sh /cache/database.sqlite
+
+CMD kvAgregated --proxy-database-name /cache/database.sqlite --log-to-stdout

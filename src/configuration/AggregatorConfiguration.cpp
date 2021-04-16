@@ -59,6 +59,7 @@ void AggregatorConfiguration::setup_()
 
 	options_description general("General");
 	general.add_options()
+			("log-to-stdout", "Do not create log files. Send all log output to stdout.")
 			("help", "Get help message")
 			("version",	"Display version information")
 	;
@@ -135,6 +136,8 @@ AggregatorConfiguration::ParseResult AggregatorConfiguration::parse(int & argc, 
 		getOptionList(std::back_inserter(stations_), "stations", givenOptions_);
 		getOptionList(std::back_inserter(parameters_), "parameter", givenOptions_);
 		getOptionList(std::back_inserter(types_), "type", givenOptions_);
+
+		logToStdOut_ = bool(givenOptions_.count("log-to-stdout"));
 
 		return No_Action;
 	}
