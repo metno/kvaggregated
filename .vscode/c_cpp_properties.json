@@ -6,7 +6,9 @@
                 "${workspaceFolder}/**",
                 "/usr/include/kvalobs/**"
             ],
-            "defines": [],
+            "defines": [
+                "VERSION=\"testing\""
+            ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",
