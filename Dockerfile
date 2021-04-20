@@ -1,4 +1,7 @@
-FROM focal-kvbuild:latest
+ARG REGISTRY
+ARG BASE_IMAGE_TAG=latest
+
+FROM ${REGISTRY}focal-kvcpp-dev:${BASE_IMAGE_TAG}
 
 RUN apt-get update && \
     apt-get install -y xmlto libgmock-dev
@@ -14,7 +17,16 @@ COPY configure.ac Makefile.am kvAgregateDbInit.sh ./
 
 RUN autoreconf -i && ./configure && make all check install
 
-RUN mkdir -p /cache && chmod 775 kvAgregateDbInit.sh && ./kvAgregateDbInit.sh /cache/database.sqlite
+
+FROM ${REGISTRY}focal-kvcpp-runtime:${BASE_IMAGE_TAG}
+
+RUN apt-get update && apt-get install -y sqlite3
+
+COPY --from=0 /usr/local/bin/kvAgregated /usr/local/bin/
+COPY --from=0 /usr/local/bin/kvAgregateDbInit /usr/local/bin/
+
+RUN mkdir -p /cache && kvAgregateDbInit /cache/database.sqlite
 VOLUME /cache
 
 CMD kvAgregated --proxy-database-name /cache/database.sqlite --log-to-stdout
+
