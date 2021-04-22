@@ -28,5 +28,6 @@ COPY --from=0 /usr/local/bin/kvAgregateDbInit /usr/local/bin/
 RUN mkdir -p /cache && kvAgregateDbInit /cache/database.sqlite
 VOLUME /cache
 
-CMD kvAgregated --proxy-database-name /cache/database.sqlite --log-to-stdout
+ENTRYPOINT ["kvAgregated"]
+CMD ["--proxy-database-name", "/cache/database.sqlite", "--log-to-stdout"]
 
