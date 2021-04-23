@@ -25,9 +25,8 @@ RUN apt-get update && apt-get install -y sqlite3
 COPY --from=0 /usr/local/bin/kvAgregated /usr/local/bin/
 COPY --from=0 /usr/local/bin/kvAgregateDbInit /usr/local/bin/
 
-RUN mkdir -p /cache && kvAgregateDbInit /cache/database.sqlite
+RUN mkdir -p /cache && kvAgregateDbInit /cache/database.sqlite && chmod 666 /cache/database.sqlite
 VOLUME /cache
 
 ENTRYPOINT ["kvAgregated"]
 CMD ["--proxy-database-name", "/cache/database.sqlite", "--log-to-stdout"]
-
