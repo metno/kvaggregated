@@ -28,6 +28,7 @@
  */
 
 #include "WorkLoop.h"
+#include <milog/milog.h>
 #include <boost/thread/thread.hpp>
 
 WorkLoop::WorkLoop() :
@@ -64,6 +65,7 @@ struct startit
 	}
 	void operator()()
 	{
+		milog::Logger::logger().logLevel( milog::INFO );
 		l_.start();
 	}
 };
