@@ -1,7 +1,7 @@
 ARG REGISTRY
 ARG BASE_IMAGE_TAG=latest
 
-FROM ${REGISTRY}focal-kvcpp-dev:${BASE_IMAGE_TAG}
+FROM ${REGISTRY}kvcpp-dev:${BASE_IMAGE_TAG}
 
 RUN apt-get update && \
     apt-get install -y xmlto libgmock-dev
@@ -18,7 +18,7 @@ COPY configure.ac Makefile.am kvAgregateDbInit.sh ./
 RUN autoreconf -i && ./configure && make all check install
 
 
-FROM ${REGISTRY}focal-kvcpp-runtime:${BASE_IMAGE_TAG}
+FROM ${REGISTRY}kvcpp-runtime:${BASE_IMAGE_TAG}
 
 RUN apt-get update && apt-get install -y sqlite3
 
