@@ -28,6 +28,7 @@ RUN mkdir -p -m777 /cache/db && kvAgregateDbInit /cache/db/database.sqlite && ch
 
 VOLUME /cache
 VOLUME /var/log/kvalobs
+VOLUME /var/lib/kvalobs
 
 ENTRYPOINT ["kvAgregated"]
 #CMD ["--proxy-database-name", "/cache/db/database.sqlite", "--log-to-stdout"]
