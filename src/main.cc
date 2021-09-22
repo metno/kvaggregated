@@ -168,6 +168,8 @@ int main(int argc, char **argv)
 	kvalobs::serialize::KvalobsDataSerializer::defaultProducer="kvAgregated";
 	AggregatorConfiguration conf;
 	AggregatorConfiguration::ParseResult result = conf.parse(argc, argv);
+	std::auto_ptr<FLogStream> fine;
+	std::auto_ptr<FLogStream> error;
 
 	if (result != AggregatorConfiguration::No_Action)
 		return result;
@@ -178,8 +180,8 @@ int main(int argc, char **argv)
 		milog::Logger::logger().logLevel( milog::INFO );
 		if ( not conf.logToStdOut() ) 
 		{
-			std::auto_ptr<FLogStream> fine = createLog("kvAgregated.log", INFO, 1024 * 1024);
-			std::auto_ptr<FLogStream> error = createLog("kvAgregated.warn.log", WARN, 100 * 1024);
+			fine = createLog("kvAgregated.log", INFO, 1024 * 1024);
+			error = createLog("kvAgregated.warn.log", WARN, 100 * 1024);
 		}
 
 		try
