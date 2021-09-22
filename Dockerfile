@@ -6,7 +6,10 @@ FROM ${REGISTRY}kvcpp-dev:${BASE_IMAGE_TAG}
 RUN apt-get update && \
     apt-get install -y xmlto libgmock-dev
 
-WORKDIR /src/
+
+VOLUME /src
+VOLUME /build
+WORKDIR /src
 
 COPY src/ src/ 
 COPY test/ test/ 
@@ -15,13 +18,16 @@ COPY m4/ m4/
 COPY doc/ doc/
 COPY configure.ac Makefile.am kvAgregateDbInit.sh ./
 
-RUN autoreconf -i && ./configure && make all check install
+WORKDIR /build
+
+RUN --mount=type=cache,target=/build cd /src/ && autoreconf -if && cd /build && \
+    /src/configure CFLAGS=-g && make all && make check && make install
 
 FROM ${REGISTRY}kvcpp-runtime:${BASE_IMAGE_TAG}
 ARG kvuser=kvalobs
 ARG kvuserid=5010
 
-RUN apt-get update && apt-get install -y sqlite3
+RUN apt-get update && apt-get install -y sqlite3 gdb
 
 #Create a runtime user for kvalobs
 RUN addgroup --gid $kvuserid $kvuser && \
@@ -34,7 +40,12 @@ RUN mkdir -p /var/lib/kvalobs/run && chown ${kvuser}:${kvuser} /var/lib/kvalobs/
 COPY --from=0 /usr/local/bin/kvAgregated /usr/local/bin/
 COPY --from=0 /usr/local/bin/kvAgregateDbInit /usr/local/bin/
 
+
+RUN mkdir /cores && chmod 777 /cores
+VOLUME /cores
+
 RUN mkdir -p -m777 /cache/db && kvAgregateDbInit /cache/db/database.sqlite && chmod 666 /cache/db/database.sqlite
+
 
 VOLUME /cache
 VOLUME /var/log/kvalobs
