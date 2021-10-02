@@ -30,6 +30,9 @@
 #include <kvcpp/KvApp.h>
 #include <kvalobs/kvPath.h>
 #include <decodeutility/kvalobsdataserializer.h>
+#include <decodeutility/kvalobsdata.h>
+#include <kvsubscribe/DataSubscriber.h>
+#include <miutil/getprogname.h>
 #include "AggregatorRunner.h"
 #include "AggregatorHandler.h"
 #include "BackProduction.h"
@@ -48,7 +51,7 @@
 //#include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>   // includes path.hpp
 #include <boost/filesystem/convenience.hpp>
-
+//#include <decodeutility.h>
 #include "aggregator/minmax.h"
 #include "aggregator/rr.h"
 #include "aggregator/rr_1.h"
@@ -75,6 +78,10 @@ using kvservice::KvApp;
 
 namespace
 {
+void myDebug(const std::string &message, const kvalobs::serialize::KvalobsData &d ){
+	LOGDEBUG("DataSubscribe incomming : [\n" << message << "]");
+}
+
 void setupPidFile(dnmi::file::PidFileHelper & pidFile)
 {
 	//PID-file
@@ -110,9 +117,9 @@ void runDaemon(AggregatorRunner & runner)
 	KvApp::kvApp->run();
 }
 
-std::auto_ptr<FLogStream> createLog(const std::string & logFileName, milog::LogLevel level, int maxSize)
+void createLog(const std::string & logFileName, milog::LogLevel level, int maxSize)
 {
-	std::auto_ptr<FLogStream> ret(new FLogStream(9, maxSize));
+	std::unique_ptr<FLogStream> ret(new FLogStream(9, maxSize));
 
 	boost::filesystem::path logDir = kvPath("logdir");
 	boost::filesystem::path logFile = logDir/logFileName;
@@ -125,8 +132,7 @@ std::auto_ptr<FLogStream> createLog(const std::string & logFileName, milog::LogL
 
 	ret->open(logFile.string());
 	ret->loglevel(level);
-	LogManager::instance()->addStream(ret.get());
-	return ret;
+	LogManager::instance()->addStream(ret.release());
 }
 
 void runThreadWithBackProduction(BackProduction & back, AggregatorRunner & runner)
@@ -168,8 +174,8 @@ int main(int argc, char **argv)
 	kvalobs::serialize::KvalobsDataSerializer::defaultProducer="kvAgregated";
 	AggregatorConfiguration conf;
 	AggregatorConfiguration::ParseResult result = conf.parse(argc, argv);
-	std::auto_ptr<FLogStream> fine;
-	std::auto_ptr<FLogStream> error;
+
+	kvalobs::subscribe::DataSubscriber::setDebugWriter(myDebug);
 
 	if (result != AggregatorConfiguration::No_Action)
 		return result;
@@ -178,10 +184,11 @@ int main(int argc, char **argv)
 	{
 		// Logging
 		milog::Logger::logger().logLevel( milog::INFO );
+		//milog::Logger::logger().logLevel( milog::DEBUG );
 		if ( not conf.logToStdOut() ) 
 		{
-			fine = createLog("kvAgregated.log", INFO, 1024 * 1024);
-			error = createLog("kvAgregated.warn.log", WARN, 100 * 1024);
+			createLog("kvAgregated.log", DEBUG, 1024 * 1024);
+			createLog("kvAgregated.warn.log", DEBUG, 100 * 1024);
 		}
 
 		try
@@ -194,7 +201,8 @@ int main(int argc, char **argv)
 			}
 
 			// KvApp
-			std::unique_ptr<kvservice::KvApp> app(kvservice::KvApp::create("kvaggregated", argc, argv));
+			LOGINFO("Programname used in configuration lookup: '" << miutil::getProgramName()<<"'");
+			std::unique_ptr<kvservice::KvApp> app(kvservice::KvApp::create(miutil::getProgramName(), argc, argv));
 
 			// Proxy database
 			kvservice::proxy::CallbackCollection callbacks;

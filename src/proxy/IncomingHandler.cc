@@ -60,8 +60,8 @@ IncomingHandler::HandlerThread::operator()()
     {
       boost::mutex::scoped_lock lock(handler.mutex);
 
-      //            LOGDEBUG( "Top of loop: " << handler.queue.size()
-      //                      << " elements in queue." << endl );
+      // LOGDEBUG( "Top of loop: " << handler.queue.size()
+      //                       << " elements in queue." << endl );
 
       if (not handler.isStopping() and handler.queue.empty()) {
         // LOGDEBUG( "Thread sleeping" );
@@ -91,7 +91,7 @@ IncomingHandler::HandlerThread::operator()()
       handler.condition.notify_one();
     }
   }
-  // LOGDEBUG( "Thread terminating" );
+  //LOGDEBUG( "Thread terminating" );
 }
 
 IncomingHandler::IncomingHandler(DataAccess& dataAccess_,

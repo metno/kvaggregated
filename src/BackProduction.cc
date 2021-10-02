@@ -76,7 +76,7 @@ BackProduction::~BackProduction()
 
 void BackProduction::operator ()()
 {
-	milog::Logger::logger().logLevel( milog::INFO );
+	//milog::Logger::logger().logLevel( milog::INFO );
 
 	boost::posix_time::ptime f(from_);
 

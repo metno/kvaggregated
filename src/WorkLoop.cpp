@@ -65,7 +65,7 @@ struct startit
 	}
 	void operator()()
 	{
-		milog::Logger::logger().logLevel( milog::INFO );
+		//milog::Logger::logger().logLevel( milog::INFO );
 		l_.start();
 	}
 };

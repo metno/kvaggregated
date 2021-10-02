@@ -43,9 +43,11 @@ AggregatorRunner::AggregatorRunner(const std::vector<int> & stations, kvservice:
     LOGINFO( "Subscribing to data from source" );
 
     kvservice::KvDataSubscribeInfoHelper sih;
-    for ( std::vector<int>::const_iterator it = stations.begin(); it != stations.end(); ++ it )
-    	sih.addStationId( * it );
-    kvservice::KvApp::kvApp->subscribeData( sih, queue );
+    for ( std::vector<int>::const_iterator it = stations.begin(); it != stations.end(); ++ it ){
+			sih.addStationId( * it );
+		}
+		
+		kvservice::KvApp::kvApp->subscribeData( sih, queue );
 }
 
 AggregatorRunner::~AggregatorRunner()
@@ -82,6 +84,7 @@ void AggregatorRunner::onStop()
 void AggregatorRunner::processData()
 {
 	boost::scoped_ptr<dnmi::thread::CommandBase> base(queue.get(1));
+
 	if ( ! base )
 		return;
 	kvservice::DataEvent *data =
@@ -92,6 +95,6 @@ void AggregatorRunner::processData()
 		LOGERROR( "Could not understand data received from kvalobs" );
 		return;
 	}
-
+	
 	data->dispatchEvent(incomingHandler);
 }
