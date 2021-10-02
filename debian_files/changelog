@@ -1,3 +1,8 @@
+kvagregated (2.4.5-1) UNRELEASED; urgency=medium
+  * Implement use of kafka consumer group id.
+
+ -- Borge Moe <borgem@met.no>  Sat, 2 Oct 2021 13:00:00 +0200
+
 kvagregated (2.4.4-1) UNRELEASED; urgency=medium
   * Add metrics.
 
