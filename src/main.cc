@@ -187,8 +187,10 @@ int main(int argc, char **argv)
 		//milog::Logger::logger().logLevel( milog::DEBUG );
 		if ( not conf.logToStdOut() ) 
 		{
-			createLog("kvAgregated.log", DEBUG, 1024 * 1024);
-			createLog("kvAgregated.warn.log", DEBUG, 100 * 1024);
+			// createLog("kvAgregated.log", DEBUG, 1024 * 1024);
+			// createLog("kvAgregated.warn.log", DEBUG, 100 * 1024);
+			createLog("kvAgregated.log", ERROR, 1024 * 1024);
+			createLog("kvAgregated.warn.log", ERROR, 100 * 1024);
 		}
 
 		try
