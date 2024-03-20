@@ -9,6 +9,8 @@ tag=latest
 tag_and_latest=false
 kvcpp_tag=latest
 os=focal
+build="true"
+push="true"
 #os=bionic
 registry="registry.met.no/met/obsklim/bakkeobservasjoner/data-og-kvalitet/kvalobs/kvbuild"
 nocache=
@@ -40,6 +42,9 @@ Options:
   --test        only build, default
   --kvcpp-tag tag  Use this kvcpp-runtime/kvcpp-dev as base image. Default: $kvcpp_tag
   --no-cache    Do not use the docker build cache.
+  --only-build  Stop after building.
+  --only-push   Only push a previous build to registry. Must use the same flags as when builing.
+
 "
 echo -e "$usage\n\n"
 
@@ -65,6 +70,8 @@ while test $# -ne 0; do
         shift 
         ;;
     --no-cache) nocache="--no-cache";;
+    --only-build) push="false";;
+    --only-push) build="false";;
     -*) use
       echo "Invalid option $1"
       exit 1;;  
@@ -88,21 +95,20 @@ fi
 
 echo "registry: $registry"
 
-docker build $nocache --build-arg BASE_IMAGE_TAG="${kvcpp_tag}" --build-arg REGISTRY=${registry} \
-  --build-arg "kvuser=$kvuser" --build-arg "kvuserid=$kvuserid" \
-  -f Dockerfile --tag "${target}:${tag}" .
+if [ "$build" = "true" ]; then
+  docker build $nocache --build-arg BASE_IMAGE_TAG="${kvcpp_tag}" --build-arg REGISTRY=${registry} \
+    --build-arg "kvuser=$kvuser" --build-arg "kvuserid=$kvuserid" \
+    -f Dockerfile --tag "${registry}${target}:${tag}" .
 
-if [ ${tag} != "latest" ]; then
-  docker tag "${target}:$tag" "${target}:latest"
-fi
-
-if [ "$mode" != "test" ]; then 
-  docker tag "${target}:${tag}" "${registry}${target}:${tag}"
-  docker push "${registry}${target}:${tag}"
-  if [ "$tag_and_latest" = "true" ] &&  [ "${tag}" != "latest" ]; then
-    docker tag "${registry}${target}:${tag}" "${registry}${target}:latest"
-    docker push "${registry}${target}:latest"
+  if [ ${tag} != "latest" ]; then
+    docker tag "${registry}${target}:$tag" "${registry}${target}:latest"
   fi
 fi
 
+if [ "$mode" != "test" ] && [ "$push" = "true" ]; then 
+  docker push "${registry}${target}:${tag}"
+  if [ "$tag_and_latest" = "true" ] &&  [ "${tag}" != "latest" ]; then
+    docker push "${registry}${target}:latest"
+  fi
+fi
 
