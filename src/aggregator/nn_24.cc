@@ -42,18 +42,29 @@ nn_24::~nn_24()
 {
 }
 
+namespace 
+{
+	std::set<boost::posix_time::ptime> getWantedTimes(const kvalobs::kvData &trigger) {
+		std::set<boost::posix_time::ptime> t;
+		t.insert(boost::posix_time::ptime(trigger.obstime().date(), boost::posix_time::time_duration(6,0,0)));
+		t.insert(boost::posix_time::ptime(trigger.obstime().date(), boost::posix_time::time_duration(12,0,0)));
+		t.insert(boost::posix_time::ptime(trigger.obstime().date(), boost::posix_time::time_duration(18,0,0)));
+		return t;
+	}
+}
+
 bool nn_24::shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const
 {
+	std::set<boost::posix_time::ptime> times = getWantedTimes(trigger);
+	if (times.find(trigger.obstime()) == times.end())
+		return false;
+
 	return observations.size() >= 3;
 }
 
 void nn_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const
 {
-	std::set<boost::posix_time::ptime> wantedTimes;
-	wantedTimes.insert(boost::posix_time::ptime(trigger.obstime().date(), boost::posix_time::time_duration(6,0,0)));
-	wantedTimes.insert(boost::posix_time::ptime(trigger.obstime().date(), boost::posix_time::time_duration(12,0,0)));
-	wantedTimes.insert(boost::posix_time::ptime(trigger.obstime().date(), boost::posix_time::time_duration(18,0,0)));
-
+	std::set<boost::posix_time::ptime> wantedTimes = getWantedTimes(trigger);
 	for ( kvDataList::const_iterator it = dataIn.begin(); it != dataIn.end(); ++ it )
 		if ( wantedTimes.find(it->obstime()) != wantedTimes.end() )
 			out.push_back(* it);
