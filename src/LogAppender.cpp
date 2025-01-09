@@ -28,6 +28,7 @@
  with KVALOBS; if not, write to the Free Software Foundation Inc.,
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -49,9 +50,9 @@ namespace {
 int openFile(const std::string &file, std::string *err) {
   int fd = open(file.c_str(), O_WRONLY|O_APPEND|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
   if (fd < 0) {
-    const int BUF_SIZE = 512;
+    const int BUF_SIZE = 1024;
     char msg[BUF_SIZE];
-    strerror_r(errno, msg, BUF_SIZE);
+    auto ignored_return_value=strerror_r(errno, msg, BUF_SIZE);
     msg[BUF_SIZE-1]='\0';
     std::ostringstream o;
     o << "Faile to creat or open log file '" << file << "'. " << msg;
@@ -133,7 +134,7 @@ bool LogAppender::log(const std::string &message)  {
 
   auto m = o.str(); 
 
-  write(fd, m.c_str(), m.size());
+  auto ignored_return_value=write(fd, m.c_str(), m.size());
   close(fd);
   return true;
 }

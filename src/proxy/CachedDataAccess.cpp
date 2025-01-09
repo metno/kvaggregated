@@ -107,7 +107,7 @@ void CachedDataAccess::getData(KvDataList &data, int station,
 
 	try
 	{
-		auto_ptr<Result> res;
+		unique_ptr<Result> res;
 		{
 			Mutex::scoped_lock lock(proxy_mutex);
 			res.reset(connection_.get().execQuery(query.str()));
