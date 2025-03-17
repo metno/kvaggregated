@@ -138,7 +138,7 @@ AbstractAggregator::kvDataPtr StandardAggregator::process(
 		return kvDataPtr();
 	}
 
-	LOGINFO( "Agregating " << decodeutility::kvdataformatter::createString(data) );
+	LOGDEBUG( "Agregating " << decodeutility::kvdataformatter::createString(data) );
 
 	// Call abstract method to get agregate value:
 	try
@@ -163,12 +163,12 @@ AbstractAggregator::kvDataPtr StandardAggregator::process(
 	{
 		if (err.what()[0] != '\0')
 		{
-			LOGERROR( err.what() );
+			LOGWARN( err.what() );
 		}
 		return kvDataPtr();
 	} catch (...)
 	{
-		LOGERROR( "Unrecognized error" );
+		LOGWARN( "Unrecognized error" );
 		return kvDataPtr();
 	}
 }

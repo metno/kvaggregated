@@ -184,7 +184,7 @@ po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDa
 	}
 	catch ( std::exception & e )
 	{
-		LOGERROR(e.what());
+		LOGWARN(e.what());
 	}
 	return po::kvDataPtr();
 }

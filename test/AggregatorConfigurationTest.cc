@@ -59,25 +59,6 @@ TEST_F(AggregatorConfigurationTest, helpString)
 	EXPECT_TRUE(err.str().empty());
 }
 
-TEST_F(AggregatorConfigurationTest, daemonModeLongOption)
-{
-	int argc = 2;
-	const char * argv[] = {"test", "--daemon-mode"};
-
-	EXPECT_EQ(AggregatorConfiguration::No_Action, parse(argc, argv));
-
-	ASSERT_TRUE(config.daemonMode());
-}
-
-TEST_F(AggregatorConfigurationTest, daemonModeShortOption)
-{
-	int argc = 2;
-	const char * argv[] = {"test", "-d"};
-
-	EXPECT_EQ(AggregatorConfiguration::No_Action, parse(argc, argv));
-
-	ASSERT_TRUE(config.daemonMode());
-}
 
 TEST_F(AggregatorConfigurationTest, stationListSingle)
 {

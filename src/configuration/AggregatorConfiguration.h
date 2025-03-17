@@ -36,6 +36,7 @@
 #include <boost/program_options/variables_map.hpp>
 #include <vector>
 #include <iosfwd>
+#include <boost/date_time/posix_time/ptime.hpp>
 
 class AggregatorConfiguration
 {
@@ -56,9 +57,6 @@ public:
 
 	bool backProduction() const;
 	std::string backProductionSpec() const;
-
-	bool daemonMode() const;
-	bool runInDaemonMode() const { return not backProduction() or daemonMode(); }
 
 	const std::vector<int> & stations() const { return stations_; }
 	const std::vector<int> & parameters() const { return parameters_; }

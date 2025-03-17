@@ -145,28 +145,24 @@ void runThreadWithBackProduction(BackProduction & back, AggregatorRunner & runne
 void runAgregator(const AggregatorConfiguration & conf,
 		kvservice::DataAccess & dataAccess, kvservice::proxy::CallbackCollection & callbacks)
 {
-	AggregatorRunner runner(conf.stations(), dataAccess, callbacks);
 	if ( conf.backProduction() )
 	{
-		BackProduction back(callbacks, runner, conf.backProductionSpec(), conf.stations());
-		if (!conf.daemonMode())
-			back(); // run outside a thread
-		else
-			runThreadWithBackProduction(back, runner);
+		BackProduction back(callbacks, nullptr, conf.backProductionSpec(), conf.stations());
+		back(); // run outside a thread
+		return;
 	}
-	else
-	{
-		// even if no backproduction was set, we want to generate data for 3
-		// hours back in time
-		boost::posix_time::ptime now = boost::posix_time::second_clock::universal_time();
-		boost::posix_time::ptime to(now.date(), boost::posix_time::hours(now.time_of_day().hours()));
-		boost::posix_time::ptime from = to - boost::posix_time::hours(3);
 
-		BackProduction back(callbacks, runner, from, to);
-		runThreadWithBackProduction(back, runner);
-	}
+	// even if no backproduction was set, we want to generate data for 3
+	// hours back in time
+	boost::posix_time::ptime now = boost::posix_time::second_clock::universal_time();
+	boost::posix_time::ptime to(now.date(), boost::posix_time::hours(now.time_of_day().hours()));
+	boost::posix_time::ptime from = to - boost::posix_time::hours(3);
+
+	AggregatorRunner runner(conf.stations(), dataAccess, callbacks);
+	BackProduction back(callbacks, &runner, from, to);
+	runThreadWithBackProduction(back, runner);
+	// runDaemon(runner);
 }
-
 }
 
 int main(int argc, char **argv)
@@ -180,8 +176,7 @@ int main(int argc, char **argv)
 	if (result != AggregatorConfiguration::No_Action)
 		return result;
 
-	try
-	{
+	try {
 		// Logging
 		milog::Logger::logger().logLevel( milog::INFO );
 		//milog::Logger::logger().logLevel( milog::DEBUG );
@@ -190,96 +185,92 @@ int main(int argc, char **argv)
 			// createLog("kvAgregated.log", DEBUG, 1024 * 1024);
 			// createLog("kvAgregated.warn.log", DEBUG, 100 * 1024);
 			createLog("kvAgregated.log", ERROR, 1024 * 1024);
-			createLog("kvAgregated.warn.log", ERROR, 100 * 1024);
+			createLog("kvAgregated.warn.log", WARN, 100 * 1024);
 		}
 
-		try
+		// PidFile
+		dnmi::file::PidFileHelper pidFile;
+		if ( !conf.backProduction() ) {
+			setupPidFile(pidFile);
+			setMetricsLogfile("kvAgregated_metrics.log", kvalobs::kvPath(kvalobs::logdir));
+		}
+
+		// KvApp
+		LOGINFO("Programname used in configuration lookup: '" << miutil::getProgramName()<<"'");
+		std::unique_ptr<kvservice::KvApp> app(kvservice::KvApp::create(miutil::getProgramName(), argc, argv));
+
+		// Proxy database
+		kvservice::proxy::CallbackCollection callbacks;
+
+		// std::unique_ptr<kvservice::DataAccess> dataAccess(new kvservice::KvalobsDataAccess);
+
+		std::unique_ptr<kvservice::DataAccess> dataAccess;
+		if ( conf.proxyDatabaseName() != "" )
 		{
-			// PidFile
-			dnmi::file::PidFileHelper pidFile;
-			if (conf.runInDaemonMode()) {
-				setupPidFile(pidFile);
-				setMetricsLogfile("kvAgregated_metrics.log", kvalobs::kvPath(kvalobs::logdir));
-			}
-
-			// KvApp
-			LOGINFO("Programname used in configuration lookup: '" << miutil::getProgramName()<<"'");
-			std::unique_ptr<kvservice::KvApp> app(kvservice::KvApp::create(miutil::getProgramName(), argc, argv));
-
-			// Proxy database
-			kvservice::proxy::CallbackCollection callbacks;
-
-			std::unique_ptr<kvservice::DataAccess> dataAccess;
-			if ( conf.runInDaemonMode() )
+			if ( conf.backProduction() )
 			{
-				LOGINFO("Using proxy database <" << conf.proxyDatabaseName() << ">");
-				dataAccess.reset(
-						new kvservice::proxy::KvalobsProxy(conf.proxyDatabaseName(), conf.repopulateDatabase())
-				);
-			}
-			else
-			{
-				LOGINFO("Using no proxy database");
-				dataAccess.reset(new kvservice::KvalobsDataAccess);
-			}
-
-			AggregatorHandler handler(callbacks, * dataAccess);
-			handler.setParameterFilter(conf.parameters());
-			handler.setStationFilter(conf.stations());
-			handler.setTypeFilter(conf.types());
-
-			// Standard times
-			set<boost::posix_time::time_duration> six;
-			six.insert(boost::posix_time::hours(6));
-			six.insert(boost::posix_time::hours(18));
-
-			// Add handlers
-			MinMax tan12 = min(TAN, TAN_12, 12, six);
-			handler.addHandler(&tan12);
-			MinMax tax12 = max(TAX, TAX_12, 12, six);
-			handler.addHandler(&tax12);
-			MinMax tgn12 = min(TGN, TGN_12, 12, six);
-			handler.addHandler(&tgn12);
-			rr_1 rr1;
-			handler.addHandler(&rr1);
-			rr_12 rr12;
-			handler.addHandler(&rr12);
-			rr_24 rr24;
-			handler.addHandler(&rr24);
-			ra2rr_12_backward ra2rr_b;
-			handler.addHandler(&ra2rr_b);
-			ra2rr_12_forward ra2rr_f;
-			handler.addHandler(&ra2rr_f);
-			ta_24 ta24(& * dataAccess);
-			handler.addHandler(& ta24);
-			uu_24 uu24;
-			handler.addHandler(& uu24);
-			nn_24 nn24;
-			handler.addHandler(& nn24);
-			po p(* dataAccess);
-			handler.addHandler(& p);
-			ot_24 ot24;
-			handler.addHandler(& ot24);
-
-			try
-			{
-				runAgregator(conf, * dataAccess, callbacks);
-			}
-			catch (std::exception & e)
-			{
-				LOGFATAL(e.what());
+				LOGFATAL("Cannot use proxy database in backproduction mode");
 				return 1;
 			}
+			LOGINFO("Using proxy database <" << conf.proxyDatabaseName() << ">");
+			dataAccess.reset(
+					new kvservice::proxy::KvalobsProxy(conf.proxyDatabaseName(), conf.repopulateDatabase())
+			);
 		}
-		catch ( std::exception & e )
+		else
 		{
-			LOGFATAL(e.what());
-			return 1;
+			LOGINFO("Using no proxy database");
+			dataAccess.reset(new kvservice::KvalobsDataAccess);
 		}
+
+		AggregatorHandler handler(callbacks, * dataAccess);
+		handler.setParameterFilter(conf.parameters());
+		handler.setStationFilter(conf.stations());
+		handler.setTypeFilter(conf.types());
+
+		// Standard times
+		set<boost::posix_time::time_duration> six;
+		six.insert(boost::posix_time::hours(6));
+		six.insert(boost::posix_time::hours(18));
+
+		// Add handlers
+		MinMax tan12 = min(TAN, TAN_12, 12, six);
+		handler.addHandler(&tan12);
+		MinMax tax12 = max(TAX, TAX_12, 12, six);
+		handler.addHandler(&tax12);
+		MinMax tgn12 = min(TGN, TGN_12, 12, six);
+		handler.addHandler(&tgn12);
+		rr_1 rr1;
+		handler.addHandler(&rr1);
+		rr_12 rr12;
+		handler.addHandler(&rr12);
+		rr_24 rr24;
+		handler.addHandler(&rr24);
+
+		ra2rr_12_backward ra2rr_b;
+		handler.addHandler(&ra2rr_b);
+		ra2rr_12_forward ra2rr_f;
+		handler.addHandler(&ra2rr_f);
+
+		ta_24 ta24(& * dataAccess);
+		handler.addHandler(& ta24);
+		uu_24 uu24;
+		handler.addHandler(& uu24);
+
+		nn_24 nn24;
+		handler.addHandler(& nn24);
+
+		po p(* dataAccess);
+		handler.addHandler(& p);
+
+		ot_24 ot24;
+		handler.addHandler(& ot24);
+
+		runAgregator(conf, * dataAccess, callbacks);
 	}
-	catch ( std::exception & e )
+	catch ( std::exception & e ) 
 	{
-		std::cout << e.what() << std::endl;
+		LOGFATAL(e.what());
 		return 1;
 	}
 }

@@ -121,7 +121,7 @@ void AggregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvDa
 
 		try
 		{
-			LOGDEBUG("Processing:\n" << decodeutility::kvdataformatter::createString(data));
+			LOGINFO("Processing:\n" << decodeutility::kvdataformatter::createString(data));
 
 			//it->second->process( data );
 			AbstractAggregator * aggregator = it->second;

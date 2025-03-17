@@ -9,7 +9,7 @@
 using namespace std;
 
 BackProduction::BackProduction(kvservice::proxy::CallbackCollection & callbacks,
-		const WorkLoop & mainLoop, const boost::posix_time::ptime & from,
+		const WorkLoop * mainLoop, const boost::posix_time::ptime & from,
 		const boost::posix_time::ptime & to, const std::vector<int> & stations) :
 	callbacks_(callbacks), mainLoop_(mainLoop), from_(from), to_(to), stations_(stations)
 {
@@ -30,7 +30,7 @@ boost::posix_time::ptime parseTime(const std::string & s)
 }
 
 BackProduction::BackProduction(kvservice::proxy::CallbackCollection & callbacks,
-		const WorkLoop & mainLoop, const std::string & timeSpec,
+		const WorkLoop * mainLoop, const std::string & timeSpec,
 		const std::vector<int> & stations) :
 	callbacks_(callbacks), mainLoop_(mainLoop), stations_(stations)
 {
@@ -74,13 +74,22 @@ BackProduction::~BackProduction()
 {
 }
 
+namespace {
+	bool mainLoopRunning(const WorkLoop * mainLoop)
+	{
+		if (!mainLoop)
+			return true;
+		return !mainLoop->stopping();
+	}
+}
+
 void BackProduction::operator ()()
 {
 	//milog::Logger::logger().logLevel( milog::INFO );
 
 	boost::posix_time::ptime f(from_);
 
-	while (!mainLoop_.stopping() && f <= to_)
+	while (f <= to_ && mainLoopRunning(mainLoop_) )
 	{
 		try
 		{
@@ -90,7 +99,7 @@ void BackProduction::operator ()()
 		}
 		catch ( std::exception & e )
 		{
-			LOGERROR("Error when processing data: " << e.what());
+			LOGDEBUG("Error when processing data: " << e.what());
 		}
 	}
 }
@@ -116,7 +125,7 @@ void BackProduction::processData(const boost::posix_time::ptime & time)
 	if (!result)
 	{
 		const char * err_msg = "Unable to retrieve data from kvalobs.";
-		LOGERROR(err_msg);
+		LOGWARN(err_msg);
 		return;
 	}
 	if ( dataList.empty() )
