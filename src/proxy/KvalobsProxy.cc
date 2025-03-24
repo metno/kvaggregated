@@ -310,7 +310,7 @@ void KvalobsProxy::getData(KvDataList &data, int station,
 		cache_.getData(proxyData, station, p_from, to, paramid, type, sensor, lvl);
 		for (KvDataList::const_iterator it = proxyData.begin(); it != proxyData.end(); ++it)
 		{
-			KvDataList::const_iterator find = find_if(data.begin(), data.end(),	bind(kvalobs::compare::same_kvData(), std::placeholders::_1, *it));
+			KvDataList::const_iterator find = find_if(data.begin(), data.end(),	bind(kvalobs::compare::same_kvData(), *it, std::placeholders::_1));
 			if (find == data.end())
 				data.push_back(*it);
 		}
