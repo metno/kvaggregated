@@ -1,5 +1,5 @@
 AC_PREREQ([2.71])
-AC_INIT([kvAgregated],[2.4.6],[kvoss@met.no])
+AC_INIT([kvAgregated],[2.4.7-rc1],[kvoss@met.no])
 
 AC_CONFIG_MACRO_DIR([m4])
 

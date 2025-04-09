@@ -4,7 +4,7 @@ ARG BASE_IMAGE_TAG=latest
 FROM ${REGISTRY}kvcpp-dev:${BASE_IMAGE_TAG}
 
 RUN apt-get update && \
-    apt-get install -y xmlto libgmock-dev
+  apt-get install -y xmlto libgmock-dev
 
 
 VOLUME /src
@@ -25,7 +25,7 @@ WORKDIR /build
 #    /src/configure CFLAGS=-g && make all && make check && make install
 
 RUN --mount=type=cache,target=/build cd /src/ && autoreconf -if && cd /build && \
-    /src/configure CFLAGS=-g && make all && make install
+  /src/configure CFLAGS=-g && make all && make install
 
 
 FROM ${REGISTRY}kvcpp-runtime:${BASE_IMAGE_TAG}
@@ -58,5 +58,4 @@ VOLUME /var/log/kvalobs
 USER ${kvuser}:${kvuser}
 
 ENTRYPOINT ["kvAgregated"]
-#CMD ["--proxy-database-name", "/cache/db/database.sqlite", "--log-to-stdout"]
-CMD ["--proxy-database-name", "/cache/db/database.sqlite"]
+#CMD ["--proxy-database-name", "/cache/db/database.sqlite"]
