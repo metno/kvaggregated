@@ -52,6 +52,8 @@ Options:
   --no-cache    Do not use the docker build cache.
   --only-build  Stop after building.
   --only-push   Only push a previous build to registry. Must use the same flags as when builing.
+  --print-version-tag
+                Print the version and build date on the form version-YYYYMMDD.
 
 "
 echo -e "$usage\n\n"
@@ -84,6 +86,9 @@ while test $# -ne 0; do
     --no-cache) nocache="--no-cache";;
     --only-build) push="false";;
     --only-push) build="false";;
+    --print-version-tag)
+        echo "$VERSION-$BUILDDATE"
+        exit 0;;
     -*) use
       echo "Invalid option $1"
       exit 1;;  
