@@ -7,7 +7,7 @@ Usage: version [-h] [-d]
 
 This script get the version from configute.ac.
 
-If the -d option is given it will print the version and the date on
+If the -d option is given it will print the version and the today date on
 the form version-YYYYMMDD.
 
 -h display this help and exit.
@@ -33,9 +33,5 @@ while getopts "hd" opt; do
       ;;
   esac
 done
-
-if [ -n "$KV_BUILD_DATE" ]; then 
-        today="$KV_BUILD_DATE"
-fi
 
 echo "$version$today"
