@@ -137,7 +137,7 @@ void AggregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvDa
 
 				AbstractAggregator::kvDataList & dataForParameter = baseDataToAggregateFrom[data.paramID()];
 				AbstractAggregator::kvDataList::iterator find =
-						std::find_if(dataForParameter.begin(), dataForParameter.end(), std::bind1st(kvalobs::compare::same_kvData(), data));
+						std::find_if(dataForParameter.begin(), dataForParameter.end(), std::bind(kvalobs::compare::same_kvData(), data, std::placeholders::_1));
 				if ( find == dataForParameter.end() )
 					dataForParameter.push_back(data);
 

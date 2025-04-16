@@ -1,13 +1,13 @@
-AC_PREREQ([2.61])
-AC_INIT([kvAgregated], [2.4.6], [kvoss@met.no])
+AC_PREREQ([2.71])
+AC_INIT([kvAgregated],[2.4.6],[kvoss@met.no])
 
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_SRCDIR([src/main.cc])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 AM_PROG_AR
-AC_PROG_LIBTOOL
+LT_INIT
 
 # Checks for programs.
 AC_PROG_CXX
@@ -17,10 +17,11 @@ AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_LN_S
 
-AX_CXX_COMPILE_STDCXX_11(noext)
+#AX_CXX_COMPILE_STDCXX_11(noext)
+AX_CXX_COMPILE_STDCXX([20],[noext],[mandatory])
 
 PKG_CHECK_MODULES(kvcpp, libkvcpp)
-PKG_CHECK_MODULES(sqlite3, sqlite3)
+#PKG_CHECK_MODULES(sqlite3, sqlite3)
 
 GMOCK_DIST_CHECK(.)
 

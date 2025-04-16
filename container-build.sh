@@ -8,7 +8,8 @@ target=kvaggregated
 tag=latest
 tag_and_latest=false
 kvcpp_tag=latest
-os=focal
+default_os=focal
+os=noble
 build="true"
 push="true"
 #os=bionic
@@ -43,6 +44,7 @@ Options:
                 tag with version and build date on the form version-YYYYMMDD 
                 and set latest. If the enviroment variable KV_BUILD_DATE is set use
                 this as the build date. Format KV_BUILD_DATE YYYYMMDD.
+  --tag-version Use version from configure.ac as tag. Also tag latest.
   --staging     build and push to staging.
   --prod        build and push to prod.
   --test        only build, default
@@ -50,7 +52,8 @@ Options:
   --no-cache    Do not use the docker build cache.
   --only-build  Stop after building.
   --only-push   Only push a previous build to registry. Must use the same flags as when builing.
-
+  --print-version-tag
+                Print the version and build date on the form version-YYYYMMDD.
 "
 echo -e "$usage\n\n"
 
@@ -68,6 +71,10 @@ while test $# -ne 0; do
     --staging) mode="staging";;
     --prod) mode="prod";;
     --test) mode="test";;
+    --tag-version) 
+        tag="$VERSION"
+        tag_and_latest=true
+        ;;
     --tag-with-build-date)
         tag="$VERSION-$BUILDDATE"
         tag_and_latest=true;;
@@ -78,6 +85,9 @@ while test $# -ne 0; do
     --no-cache) nocache="--no-cache";;
     --only-build) push="false";;
     --only-push) build="false";;
+    --print-version-tag)
+        echo "$VERSION-$BUILDDATE"
+        exit 0;;
     -*) use
       echo "Invalid option $1"
       exit 1;;  
@@ -86,17 +96,24 @@ while test $# -ne 0; do
   shift
 done
 
-
-echo "tag: $tag"
+echo "VERSION: $VERSION"
 echo "mode: $mode"
 echo "os: $os"
-echo "kvcpp_tag: $kvcpp_tag"
 echo "Build mode: $mode"
+echo "targets: $targets"
+echo "build: $build"
+echo "push: $push"
+echo "tag: $tag"
+echo "kvcpp_tag: $kvcpp_tag"
 
-if [ $mode = test ]; then 
-  registry=""
-else 
+
+if [ "$mode" = test ]; then 
+  registry="$os/"
+  kvuserid=$(id -u)
+elif [ "$os" = "$default_os" ]; then
   registry="$registry/$mode/"
+else
+  registry="$registry/$mode-$os/"
 fi
 
 echo "registry: $registry"
