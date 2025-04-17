@@ -18,6 +18,7 @@ BUILDDATE=$(date +'%Y%m%d')
 VERSION="$(./version.sh)"
 KV_BUILD_DATE=${KV_BUILD_DATE:-}
 tags=""
+tag_counter=0
 
 if [ -n "${KV_BUILD_DATE}" ]; then
   BUILDDATE=$KV_BUILD_DATE
