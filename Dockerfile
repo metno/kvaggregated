@@ -19,12 +19,11 @@ COPY doc/ doc/
 COPY configure.ac Makefile.am kvAgregateDbInit.sh ./
 
 WORKDIR /build
-#../configure --prefix=/usr --localstatedir=/var --mandir=/usr/share/man --with-boost-libdir=/usr/lib/x86_64-linux-gnu/ LDFLAGS=-Wl,-z,defs
 
-#RUN --mount=type=cache,target=/build cd /src/ && autoreconf -if && cd /build && \
-#    /src/configure CFLAGS=-g && make all && make check && make install
+# RUN --mount=type=cache,target=/build cd /src/ && autoreconf -if && cd /build && \
+#   /src/configure CFLAGS=-g && make all && make install
 
-RUN --mount=type=cache,target=/build cd /src/ && autoreconf -if && cd /build && \
+RUN cd /src/ && autoreconf -if && cd /build && \
   /src/configure CFLAGS=-g && make all && make install
 
 
