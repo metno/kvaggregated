@@ -64,6 +64,41 @@ float ta_24::calculateWithKoppensFormula(const ValueList & source, float koppenF
 	return ret;
 }
 
+namespace
+{
+	bool hasFullHour(const kvalobs::kvData & d)
+	{
+		const auto& t = d.obstime().time_of_day();
+		return t.minutes() == 0 && t.seconds() == 0;
+	}
+
+	/**
+	 * Filter observations to only those with full hour timestamps
+	 */
+	ta_24::kvDataList filterByFullHour(const ta_24::kvDataList &observations)
+	{
+		ta_24::kvDataList ret;
+		for (const auto& obs : observations) {
+			if(hasFullHour(obs))
+				ret.push_back(obs);
+		}
+		return ret;
+	}
+}
+
+bool ta_24::shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const 
+{
+	kvDataList filtered = filterByFullHour(observations);
+	return KoppenBasedMeanValueAggregator::shouldProcess(trigger, filtered);
+}
+
+void ta_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn,
+			const kvalobs::kvData & trigger) const
+{
+	auto partiallyFiltered = filterByFullHour(dataIn);
+	KoppenBasedMeanValueAggregator::extractUsefulData(out, partiallyFiltered, trigger);
+}
+
 ta_24::ExtraData ta_24::getExtraData(const kvalobs::kvData & trigger)
 {
 	ExtraCalculationData * ret = new ExtraCalculationData(trigger);
