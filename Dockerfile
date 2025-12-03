@@ -4,7 +4,7 @@ ARG BASE_IMAGE_TAG=latest
 FROM ${REGISTRY}kvcpp-dev:${BASE_IMAGE_TAG}
 
 RUN apt-get update && \
-    apt-get install -y xmlto libgmock-dev
+  apt-get install -y xmlto libgmock-dev
 
 
 VOLUME /src
@@ -21,11 +21,12 @@ COPY configure.ac Makefile.am kvAgregateDbInit.sh ./
 WORKDIR /build
 #../configure --prefix=/usr --localstatedir=/var --mandir=/usr/share/man --with-boost-libdir=/usr/lib/x86_64-linux-gnu/ LDFLAGS=-Wl,-z,defs
 
-#RUN --mount=type=cache,target=/build cd /src/ && autoreconf -if && cd /build && \
-#    /src/configure CFLAGS=-g && make all && make check && make install
+# RUN --mount=type=cache,target=/build cd /src/ && autoreconf -if && cd /build && \
+#     /src/configure CFLAGS=-g && make all && make install
 
-RUN --mount=type=cache,target=/build cd /src/ && autoreconf -if && cd /build && \
-    /src/configure CFLAGS=-g && make all && make install
+
+RUN cd /src/ && autoreconf -if && cd /build && \
+  /src/configure CFLAGS=-g && make all && make install
 
 
 FROM ${REGISTRY}kvcpp-runtime:${BASE_IMAGE_TAG}
