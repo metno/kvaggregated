@@ -324,3 +324,137 @@ TEST_F(ta_24Test, inclomplete24HourObservationPossiblyInterpretedAs3hourObsTrigg
 
 	ASSERT_FALSE( result.get() );
 }
+
+TEST_F(ta_24Test, irregularObstimes_1)
+{
+	// This tests that irregular obstimes are handled correctly
+	// If there are exactly 24 incoming observations, but with obstimes
+	// not exactly one hour apart, no aggregation should be done.
+
+	AbstractAggregator::ParameterSortedDataList data;
+	StandardAggregator::kvDataList & dl = data[aggregator.readParam().front()];
+
+	std::map<boost::posix_time::ptime, float> values;
+	values[pt("2025-12-01 00:00:00")] = 9;
+	values[pt("2025-11-12 01:00:00")] = 6.8;
+	values[pt("2025-11-12 02:00:00")] = 8.3;
+	values[pt("2025-11-12 02:30:00")] =   8;
+	values[pt("2025-11-12 02:40:00")] = 7.8;
+	values[pt("2025-11-12 02:50:00")] = 7.5;
+	values[pt("2025-11-12 03:00:00")] = 7.3;
+	values[pt("2025-11-12 03:30:00")] = 7.2;
+	values[pt("2025-11-12 03:40:00")] = 7.6;
+	values[pt("2025-11-12 03:50:00")] = 8.4;
+	values[pt("2025-11-12 04:00:00")] = 9.1;
+	values[pt("2025-11-12 04:30:00")] = 8.6;
+	values[pt("2025-11-12 04:40:00")] = 8.4;
+	values[pt("2025-11-12 04:50:00")] = 8.1;
+	values[pt("2025-11-12 05:00:00")] =   8;
+	values[pt("2025-11-12 05:20:00")] = 8.5;
+	values[pt("2025-11-12 05:30:00")] = 8.5;
+	values[pt("2025-11-12 05:40:00")] = 8.4;
+	values[pt("2025-11-12 05:50:00")] = 8.6;
+	values[pt("2025-11-12 06:00:00")] = 8.6;
+	values[pt("2025-11-12 06:40:00")] = 7.9;
+	values[pt("2025-11-12 06:50:00")] =   8;
+	values[pt("2025-11-12 07:00:00")] = 7.8;
+	values[pt("2025-11-12 08:00:00")] = 7.7;
+
+	for (auto v : values)
+		dl.push_back(factory.getData(v.second, aggregator.readParam().front(), v.first));
+
+	ta_24::kvDataPtr result = aggregator.process(dl.back(), data);
+	ASSERT_FALSE( result.get() );
+}
+
+TEST_F(ta_24Test, irregularObstimes_2)
+{
+	// This tests that irregular obstimes are handled correctly
+	// All obstimes that are not exactly one hour apart should be ignored
+
+	std::map<boost::posix_time::ptime, float> values;
+	values[pt("2025-12-01 00:00:00")] = 9;
+	values[pt("2025-11-12 01:00:00")] = 6.8;
+	values[pt("2025-11-12 02:00:00")] = 8.3;
+	values[pt("2025-11-12 02:30:00")] =   8;
+	values[pt("2025-11-12 02:40:00")] = 7.8;
+	values[pt("2025-11-12 02:50:00")] = 7.5;
+	values[pt("2025-11-12 03:00:00")] = 7.3;
+	values[pt("2025-11-12 03:30:00")] = 7.2;
+	values[pt("2025-11-12 03:40:00")] = 7.6;
+	values[pt("2025-11-12 03:50:00")] = 8.4;
+	values[pt("2025-11-12 04:00:00")] = 9.1;
+	values[pt("2025-11-12 04:30:00")] = 8.6;
+	values[pt("2025-11-12 04:40:00")] = 8.4;
+	values[pt("2025-11-12 04:50:00")] = 8.1;
+	values[pt("2025-11-12 05:00:00")] =   8;
+	values[pt("2025-11-12 05:20:00")] = 8.5;
+	values[pt("2025-11-12 05:30:00")] = 8.5;
+	values[pt("2025-11-12 05:40:00")] = 8.4;
+	values[pt("2025-11-12 05:50:00")] = 8.6;
+	values[pt("2025-11-12 06:00:00")] = 8.6;
+	values[pt("2025-11-12 06:40:00")] = 7.9;
+	values[pt("2025-11-12 06:50:00")] =   8;
+	values[pt("2025-11-12 07:00:00")] = 7.8;
+	values[pt("2025-11-12 08:00:00")] = 7.7;
+	values[pt("2025-11-12 09:00:00")] = 7.7;
+	values[pt("2025-11-12 10:00:00")] = 7.5;
+	values[pt("2025-11-12 11:00:00")] = 7.3;
+	values[pt("2025-11-12 12:00:00")] = 7.7;
+	values[pt("2025-11-12 13:00:00")] = 7.6;
+	values[pt("2025-11-12 13:30:00")] = 6.7;
+	values[pt("2025-11-12 13:40:00")] = 6.5;
+	values[pt("2025-11-12 13:50:00")] = 6.2;
+	values[pt("2025-11-12 14:00:00")] = 6.2;
+	values[pt("2025-11-12 14:30:00")] = 5.9;
+	values[pt("2025-11-12 14:40:00")] = 5.8;
+	values[pt("2025-11-12 14:50:00")] = 5.7;
+	values[pt("2025-11-12 15:00:00")] = 5.3;
+	values[pt("2025-11-12 15:30:00")] = 5.4;
+	values[pt("2025-11-12 15:40:00")] = 5.2;
+	values[pt("2025-11-12 15:50:00")] = 5.2;
+	values[pt("2025-11-12 16:00:00")] = 5.2;
+	values[pt("2025-11-12 16:30:00")] =   5;
+	values[pt("2025-11-12 16:40:00")] =   5;
+	values[pt("2025-11-12 16:50:00")] = 5.1;
+	values[pt("2025-11-12 17:00:00")] = 5.2;
+	values[pt("2025-11-12 17:30:00")] =   5;
+	values[pt("2025-11-12 17:40:00")] = 4.8;
+	values[pt("2025-11-12 17:50:00")] = 5.1;
+	values[pt("2025-11-12 18:00:00")] =   5;
+	values[pt("2025-11-12 18:30:00")] = 5.2;
+	values[pt("2025-11-12 18:40:00")] = 5.1;
+	values[pt("2025-11-12 18:50:00")] =   5;
+	values[pt("2025-11-12 19:00:00")] =   5;
+	values[pt("2025-11-12 19:30:00")] =   5;
+	values[pt("2025-11-12 19:40:00")] = 4.7;
+	values[pt("2025-11-12 19:50:00")] =   5;
+	values[pt("2025-11-12 20:00:00")] =   5;
+	values[pt("2025-11-12 20:30:00")] = 5.1;
+	values[pt("2025-11-12 20:40:00")] = 5.7;
+	values[pt("2025-11-12 20:50:00")] =   5;
+	values[pt("2025-11-12 21:00:00")] = 4.8;
+	values[pt("2025-11-12 21:40:00")] = 4.4;
+	values[pt("2025-11-12 21:50:00")] = 4.5;
+	values[pt("2025-11-12 22:00:00")] = 4.7;
+	values[pt("2025-11-12 22:10:00")] = 5.2;
+	values[pt("2025-11-12 22:20:00")] =   5;
+	values[pt("2025-11-12 22:30:00")] = 5.1;
+	values[pt("2025-11-12 22:40:00")] = 5.5;
+	values[pt("2025-11-12 22:50:00")] = 5.4;
+	values[pt("2025-11-12 23:00:00")] = 5.5;
+
+	AbstractAggregator::ParameterSortedDataList data;
+	int param = aggregator.readParam().front();
+	StandardAggregator::kvDataList & dl = data[param];
+
+	for (auto v : values)
+		dl.push_back(factory.getData(v.second, param, v.first));
+
+	ta_24::kvDataPtr result = aggregator.process(dl.back(), data);
+
+	ASSERT_TRUE( result.get() );
+
+	EXPECT_FLOAT_EQ(6.8, result->original());
+	EXPECT_FLOAT_EQ(6.8, result->corrected());
+}

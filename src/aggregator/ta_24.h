@@ -52,6 +52,10 @@ public:
 
 	class ExtraCalculationData;
 
+protected:
+    virtual bool shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const;
+	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
+
 private:
 	const kvservice::DataAccess * dataAccess_;
 };
