@@ -120,7 +120,7 @@ echo "build: $build"
 echo "push: $push"
 echo "tag: $tag"
 echo "kvcpp_tag: $kvcpp_tag"
-
+echo "docker ... --tag ${registry}${target}:${tag}"
 
 if [ "$mode" = test ]; then 
   registry="$os/"
