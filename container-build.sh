@@ -119,6 +119,7 @@ echo "targets: $targets"
 echo "build: $build"
 echo "push: $push"
 echo "tag: $tag"
+echo "tags: $tags"
 echo "kvcpp_tag: $kvcpp_tag"
 echo "docker ... --tag ${registry}${target}:${tag}"
 
