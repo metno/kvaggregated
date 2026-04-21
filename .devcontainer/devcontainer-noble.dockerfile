@@ -1,5 +1,5 @@
 #ARG REGISTRY=registry.met.no/obs/kvalobs/kvbuild/staging/
-ARG REGISTRY="registry.met.no/met/obsklim/bakkeobservasjoner/data-og-kvalitet/kvalobs/kvbuild/staging-noble/"
+ARG REGISTRY="registry.met.no/met/obsklim/bakkeobservasjoner/data-og-kvalitet/kvalobs/kvbuild/staging/"
 ARG BASE_IMAGE_TAG=latest
 
 

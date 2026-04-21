@@ -50,12 +50,12 @@ namespace
 float round(float f)
 {
 	if ( f < 0 )
-		f -= 0.05;
+		f -= 0.05f;
 	else
-		f += 0.05;
+		f += 0.05f;
 	f *= 10;
 	f = int(f);
-	return f / 10.0;
+	return f / 10.0f;
 }
 }
 AbstractAggregator::kvDataPtr AbstractAggregator::getDataObject(const kvalobs::kvData &trigger,
