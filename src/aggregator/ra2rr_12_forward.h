@@ -1,5 +1,5 @@
 /*
-  Kvalobs - Free Quality Control Software for Meteorological Observations 
+  Kvalobs - Free Quality Control Software for Meteorological Observations
 
   Copyright (C) 2010 met.no
 
@@ -13,28 +13,26 @@
   This file is part of KVALOBS
 
   KVALOBS is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License as 
-  published by the Free Software Foundation; either version 2 
+  modify it under the terms of the GNU General Public License as
+  published by the Free Software Foundation; either version 2
   of the License, or (at your option) any later version.
-  
+
   KVALOBS is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
   General Public License for more details.
-  
-  You should have received a copy of the GNU General Public License along 
-  with KVALOBS; if not, write to the Free Software Foundation Inc., 
+
+  You should have received a copy of the GNU General Public License along
+  with KVALOBS; if not, write to the Free Software Foundation Inc.,
   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-
 
 #ifndef RA2RR_12_FORWARD_H_
 #define RA2RR_12_FORWARD_H_
 
 #include "ra2rr_12.h"
 
-namespace aggregator
-{
+namespace aggregator {
 /**
  * \brief Calculates RR_12 for the time after observation.
  *
@@ -45,16 +43,17 @@ namespace aggregator
  * This class handles agregation forward in time (compared to the
  * incoming observation).
  */
-class ra2rr_12_forward : public ra2rr_12
-{
+class ra2rr_12_forward : public ra2rr_12 {
 public:
-  ra2rr_12_forward( );
+  ra2rr_12_forward();
 
-  virtual const TimeSpan getTimeSpan( const kvalobs::kvData &data ) const;
+  virtual std::string aggregatorName() const { return "ra2rr_12_forward"; }
+
+  virtual const TimeSpan getTimeSpan(const kvalobs::kvData &data) const;
 
   virtual int timeOffset() const { return 12; }
 };
 
-}
+} // namespace aggregator
 
 #endif /* RA2RR_12_FORWARD_H_ */

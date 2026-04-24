@@ -1,5 +1,5 @@
 /*
- Kvalobs - Free Quality Control Software for Meteorological Observations 
+ Kvalobs - Free Quality Control Software for Meteorological Observations
 
  Copyright (C) 2010 met.no
 
@@ -13,17 +13,17 @@
  This file is part of KVALOBS
 
  KVALOBS is free software; you can redistribute it and/or
- modify it under the terms of the GNU General Public License as 
- published by the Free Software Foundation; either version 2 
+ modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 2
  of the License, or (at your option) any later version.
- 
+
  KVALOBS is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  General Public License for more details.
- 
- You should have received a copy of the GNU General Public License along 
- with KVALOBS; if not, write to the Free Software Foundation Inc., 
+
+ You should have received a copy of the GNU General Public License along
+ with KVALOBS; if not, write to the Free Software Foundation Inc.,
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
@@ -32,57 +32,62 @@
 
 #include "AbstractAggregator.h"
 
-namespace kvservice
-{
+namespace kvservice {
 class DataAccess;
 }
 
-namespace aggregator
-{
+namespace aggregator {
 
-class po: public aggregator::AbstractAggregator
-{
+class po : public aggregator::AbstractAggregator {
 public:
-	explicit po(const kvservice::DataAccess & dataAccess);
-	virtual ~po();
+  explicit po(const kvservice::DataAccess &dataAccess);
+  virtual ~po();
 
-	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations);
-	virtual kvDataPtr process(const kvalobs::kvData & data, const ParameterSortedDataList & observations, const ParameterSortedDataList & alreadyAggregated);
+  virtual std::string aggregatorName() const { return "po"; }
+  virtual kvDataPtr process(const kvalobs::kvData &data,
+                            const ParameterSortedDataList &observations);
+  virtual kvDataPtr process(const kvalobs::kvData &data,
+                            const ParameterSortedDataList &observations,
+                            const ParameterSortedDataList &alreadyAggregated);
 
-	// Unused, awaiting a system for identifying inversion correcting stations:
-	kvDataPtr processMethod2(const kvalobs::kvData & data, const ParameterSortedDataList & observations);
+  // Unused, awaiting a system for identifying inversion correcting stations:
+  kvDataPtr processMethod2(const kvalobs::kvData &data,
+                           const ParameterSortedDataList &observations);
 
-	virtual const TimeSpan getTimeSpan(const kvalobs::kvData &data) const;
+  virtual const TimeSpan getTimeSpan(const kvalobs::kvData &data) const;
 
 protected:
-	// protected to be overrideable by tests
-	virtual float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const;
+  // protected to be overrideable by tests
+  virtual float getStationMetadata(const std::string &metadataName,
+                                   const kvalobs::kvData &validFor) const;
 
 private:
-	kvDataPtr process_(const kvalobs::kvData & data, const ParameterSortedDataList & observations, int method);
+  kvDataPtr process_(const kvalobs::kvData &data,
+                     const ParameterSortedDataList &observations, int method);
 
-	/**
-	 * \param pr air pressure reduced to sea level
-	 * \param ta air temperature
-	 * \param um yearly mean air humidity
-	 * \param tm yearly mean air temperature
-	 * \param hp reference value for air pressure
-	 */
-	double computePo(double pr, double ta, double um, double tm, double hp) const;
+  /**
+   * \param pr air pressure reduced to sea level
+   * \param ta air temperature
+   * \param um yearly mean air humidity
+   * \param tm yearly mean air temperature
+   * \param hp reference value for air pressure
+   */
+  double computePo(double pr, double ta, double um, double tm, double hp) const;
 
-	/**
-	 * \param pr air pressure reduced to sea level
-	 * \param ta air temperature
-	 * \param um yearly mean air humidity
-	 * \param tm yearly mean air temperature
-	 * \param hp reference value for air pressure
-	 */
-	double computePoWithInversionCorrection(double pr, double ta, double um, double tm, double hp) const;
+  /**
+   * \param pr air pressure reduced to sea level
+   * \param ta air temperature
+   * \param um yearly mean air humidity
+   * \param tm yearly mean air temperature
+   * \param hp reference value for air pressure
+   */
+  double computePoWithInversionCorrection(double pr, double ta, double um,
+                                          double tm, double hp) const;
 
 private:
-	const kvservice::DataAccess & dataAccess_;
+  const kvservice::DataAccess &dataAccess_;
 };
 
-}
+} // namespace aggregator
 
 #endif /* PO_H_ */

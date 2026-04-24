@@ -1,5 +1,5 @@
 /*
- Kvalobs - Free Quality Control Software for Meteorological Observations 
+ Kvalobs - Free Quality Control Software for Meteorological Observations
 
  Copyright (C) 2010 met.no
 
@@ -13,17 +13,17 @@
  This file is part of KVALOBS
 
  KVALOBS is free software; you can redistribute it and/or
- modify it under the terms of the GNU General Public License as 
- published by the Free Software Foundation; either version 2 
+ modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 2
  of the License, or (at your option) any later version.
- 
+
  KVALOBS is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  General Public License for more details.
- 
- You should have received a copy of the GNU General Public License along 
- with KVALOBS; if not, write to the Free Software Foundation Inc., 
+
+ You should have received a copy of the GNU General Public License along
+ with KVALOBS; if not, write to the Free Software Foundation Inc.,
  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
@@ -32,51 +32,54 @@
 
 #include "KoppenBasedMeanValueAggregator.h"
 
-namespace kvservice
-{
+namespace kvservice {
 class DataAccess;
 }
 
-namespace aggregator
-{
+namespace aggregator {
 
-class ta_24: public KoppenBasedMeanValueAggregator
-{
-public:   
-	explicit ta_24(const kvservice::DataAccess * dataAccess);
-	virtual ~ta_24();
+class ta_24 : public KoppenBasedMeanValueAggregator {
+public:
+  explicit ta_24(const kvservice::DataAccess *dataAccess);
+  virtual ~ta_24();
 
-	virtual double calculateWithKoppensFormula(const ValueList & source, double koppenFactor, CalculationDataType calcDataType, ExtraData extraData) const;
+  virtual std::string aggregatorName() const { return "ta_24"; }
+  virtual double calculateWithKoppensFormula(const ValueList &source,
+                                             double koppenFactor,
+                                             CalculationDataType calcDataType,
+                                             ExtraData extraData) const;
 
-	virtual ExtraData getExtraData(const kvalobs::kvData & data);
+  virtual ExtraData getExtraData(const kvalobs::kvData &data);
 
-	class ExtraCalculationData;
+  class ExtraCalculationData;
 
 protected:
-    virtual bool shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const;
-	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
+  virtual bool shouldProcess(const kvalobs::kvData &trigger,
+                             const kvDataList &observations) const;
+  virtual void extractUsefulData(kvDataList &out, const kvDataList &dataIn,
+                                 const kvalobs::kvData &trigger) const;
 
 private:
-	const kvservice::DataAccess * dataAccess_;
+  const kvservice::DataAccess *dataAccess_;
 };
 
-class ta_24::ExtraCalculationData : public KoppenExtraData
-{
+class ta_24::ExtraCalculationData : public KoppenExtraData {
 public:
-	explicit ExtraCalculationData(const kvalobs::kvData & trigger);
+  explicit ExtraCalculationData(const kvalobs::kvData &trigger);
 
-	double minimumTemperature(const kvservice::DataAccess * dataAccess, CalculationDataType calcDataType);
+  double minimumTemperature(const kvservice::DataAccess *dataAccess,
+                            CalculationDataType calcDataType);
 
-	static const double missing_;
+  static const double missing_;
+
 protected:
-	virtual void populate(const kvservice::DataAccess * dataAccess);
+  virtual void populate(const kvservice::DataAccess *dataAccess);
 
-	bool gotData_;
-	double originalTan24;
-	double correctedTan24;
+  bool gotData_;
+  double originalTan24;
+  double correctedTan24;
 };
 
-
-}
+} // namespace aggregator
 
 #endif /* TA_24_H_ */

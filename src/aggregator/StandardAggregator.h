@@ -32,17 +32,16 @@
 #define __agregator__AbstractAgregator_h__
 
 #include "AbstractAggregator.h"
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <kvalobs/kvData.h>
 #include <kvalobs/kvStation.h>
 #include <kvskel/datasource.hh>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <list>
-#include <set>
 #include <map>
+#include <set>
 #include <utility>
 
-namespace aggregator
-{
+namespace aggregator {
 
 /**
  * \brief An abstract base class for creating agregates of data.
@@ -69,163 +68,155 @@ namespace aggregator
  * should therefore be used if a subclass is to use multiple
  * threads.
  */
-class StandardAggregator : public AbstractAggregator
-{
+class StandardAggregator : public AbstractAggregator {
 public:
+  virtual std::string aggregatorName() const { return "StandardAggregator"; };
+  /**
+   * \brief Set up the basic parameters of the StandardAggregator
+   * object.
+   *
+   * \param readParam The paramID that incoming data should
+   * have. All data which comes to this object has this paramID.
+   *
+   * \param writeParam The paramID of generated data.
+   *
+   * \param interestingHours How many hours of data back in time are
+   * we interested in?
+   *
+   * \param generateWhen The times of day when we will generate
+   * data. Agregates will only be generated for these times.
+   */
+  StandardAggregator(
+      int readParam, int writeParam, int interestingHours,
+      const std::set<boost::posix_time::time_duration> &generateWhen);
 
-	/**
-	 * \brief Set up the basic parameters of the StandardAggregator
-	 * object.
-	 *
-	 * \param readParam The paramID that incoming data should
-	 * have. All data which comes to this object has this paramID.
-	 *
-	 * \param writeParam The paramID of generated data.
-	 *
-	 * \param interestingHours How many hours of data back in time are
-	 * we interested in?
-	 *
-	 * \param generateWhen The times of day when we will generate
-	 * data. Agregates will only be generated for these times.
-	 */
-	StandardAggregator(int readParam, int writeParam, int interestingHours,
-			const std::set<boost::posix_time::time_duration> & generateWhen);
+  virtual ~StandardAggregator();
 
-	virtual ~StandardAggregator();
+  virtual bool isInterestedIn(const kvalobs::kvData &data) const;
 
-	virtual bool isInterestedIn(const kvalobs::kvData &data) const;
+  virtual kvDataPtr process(const kvalobs::kvData &data,
+                            const ParameterSortedDataList &observations);
 
+  /**
+   * \brief Get the number of hours back in time we are interested
+   * in for generating an agregate observation.
+   */
+  int interestingHours() const { return interesting_hours; }
 
-	virtual kvDataPtr process(const kvalobs::kvData & data,
-			const ParameterSortedDataList & observations);
+  /**
+   * \brief Get the list of specifict times at which we want to
+   * generate agregate values.
+   */
+  const std::set<boost::posix_time::time_duration> &generateWhen() const {
+    return generate_when;
+  }
 
-	/**
-	 * \brief Get the number of hours back in time we are interested
-	 * in for generating an agregate observation.
-	 */
-	int interestingHours() const
-	{
-		return interesting_hours;
-	}
-
-	/**
-	 * \brief Get the list of specifict times at which we want to
-	 * generate agregate values.
-	 */
-	const std::set<boost::posix_time::time_duration> & generateWhen() const
-	{
-		return generate_when;
-	}
-
-	/**
-	 * \brief Find the earliest and latest interesting point in time
-	 * which we are interested in.
-	 *
-	 * The return values are noninclusive for earliest time, and
-	 * inclusive for latest time, so if this method returns the pair
-	 * (18:00, 19:00), it indicates that we are interested in all data
-	 * whith 18:00 \< validity \<= 19:00.
-	 *
-	 * \param data The data which triggered the call to this method.
-	 *
-	 * \return A pair of the times we are interested in.
-	 */
-	virtual const TimeSpan getTimeSpan(const kvalobs::kvData &data) const;
+  /**
+   * \brief Find the earliest and latest interesting point in time
+   * which we are interested in.
+   *
+   * The return values are noninclusive for earliest time, and
+   * inclusive for latest time, so if this method returns the pair
+   * (18:00, 19:00), it indicates that we are interested in all data
+   * whith 18:00 \< validity \<= 19:00.
+   *
+   * \param data The data which triggered the call to this method.
+   *
+   * \return A pair of the times we are interested in.
+   */
+  virtual const TimeSpan getTimeSpan(const kvalobs::kvData &data) const;
 
 protected:
+  /**
+   * \brief Determine if enough data has been received in order to
+   * create an agregate.
+   *
+   * If this method return false, control will be returned to the
+   * caller, without any attempt having been made to generate an
+   * agregate value.
+   *
+   * The default implementation returns true if \a
+   * observations.size() >= \a interestingHours.
+   *
+   * \param trigger The piece of data which triggered the call to
+   * this object.
+   *
+   * \param observations The list returned by \a getRelevantObsList.
+   *
+   * \return True if we should proceed with calculating an agregate,
+   * False otherwise.
+   */
+  virtual bool shouldProcess(const kvalobs::kvData &trigger,
+                             const kvDataList &observations) const;
 
-	/**
-	 * \brief Determine if enough data has been received in order to
-	 * create an agregate.
-	 *
-	 * If this method return false, control will be returned to the
-	 * caller, without any attempt having been made to generate an
-	 * agregate value.
-	 *
-	 * The default implementation returns true if \a
-	 * observations.size() >= \a interestingHours.
-	 *
-	 * \param trigger The piece of data which triggered the call to
-	 * this object.
-	 *
-	 * \param observations The list returned by \a getRelevantObsList.
-	 *
-	 * \return True if we should proceed with calculating an agregate,
-	 * False otherwise.
-	 */
-	virtual bool
-	shouldProcess(const kvalobs::kvData &trigger,
-			const kvDataList &observations) const;
+  /**
+   * Extract exactly all data which is needed for aggregating.
+   *
+   * @throws exception if unable to find all needed data
+   *
+   * @param out The needed data goes here
+   * @param dataIn source data to select from
+   * @param trigger the piece of data which caused this aggregation to start.
+   */
+  virtual void extractUsefulData(kvDataList &out, const kvDataList &dataIn,
+                                 const kvalobs::kvData &trigger) const = 0;
 
-	/**
-	 * Extract exactly all data which is needed for aggregating.
-	 *
-	 * @throws exception if unable to find all needed data
-	 *
-	 * @param out The needed data goes here
-	 * @param dataIn source data to select from
-	 * @param trigger the piece of data which caused this aggregation to start.
-	 */
-	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn,
-			const kvalobs::kvData & trigger) const =0;
+  struct ExtraAggregationData {
+    virtual ~ExtraAggregationData() {}
+  };
+  typedef ExtraAggregationData *ExtraData;
 
-	struct ExtraAggregationData {
-		virtual ~ExtraAggregationData() {}
-	};
-	typedef ExtraAggregationData * ExtraData;
+  virtual ExtraData getExtraData(const kvalobs::kvData &data) { return 0; }
 
-	virtual ExtraData getExtraData(const kvalobs::kvData & data) { return 0; }
+  typedef std::vector<double> ValueList;
 
-	typedef std::vector<double> ValueList;
+  enum CalculationDataType { Original, Corrected };
 
-	enum CalculationDataType
-	{
-		Original, Corrected
-	};
+  /**
+   * Do the actual aggregation.
+   *
+   * @param source base data for aggregating
+   * @param trigger The observation which caused this aggregation to run.
+   * @return the aggregated value
+   */
+  virtual double calculate(const ValueList &source,
+                           CalculationDataType calcDataType,
+                           ExtraData extraData) const = 0;
 
-	/**
-	 * Do the actual aggregation.
-	 *
-	 * @param source base data for aggregating
-	 * @param trigger The observation which caused this aggregation to run.
-	 * @return the aggregated value
-	 */
-	virtual double calculate(const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const = 0;
+  /**
+   * Get station metadata from kvalobs. This i a service function to
+   * subclasses. Will search the kvalobs database for metadata with the
+   * given name, which it applicable to the given kvData object. Data is
+   * fetched from the station_metadata table.
+   *
+   * This method is virtual in order to make it overrideable by tests.
+   *
+   * \throws std::runtime_error if unable to find metadata, or if there is
+   * an error when contacting kvalobs.
+   *
+   * \param metadataname Name of the metadata to fetch
+   * \param validFor The object this metadata will be applied to.
+   *
+   * \return The value of the given metadata
+   */
+  virtual float getStationMetadata(const std::string &metadataName,
+                                   const kvalobs::kvData &validFor) const;
 
-	/**
-	 * Get station metadata from kvalobs. This i a service function to
-	 * subclasses. Will search the kvalobs database for metadata with the
-	 * given name, which it applicable to the given kvData object. Data is
-	 * fetched from the station_metadata table.
-	 *
-	 * This method is virtual in order to make it overrideable by tests.
-	 *
-	 * \throws std::runtime_error if unable to find metadata, or if there is
-	 * an error when contacting kvalobs.
-	 *
-	 * \param metadataname Name of the metadata to fetch
-	 * \param validFor The object this metadata will be applied to.
-	 *
-	 * \return The value of the given metadata
-	 */
-	virtual float getStationMetadata(const std::string & metadataName, const kvalobs::kvData & validFor) const;
-
-	/**
-	 * \brief A generated name for this object. This will be printed
-	 * in front of all logging information given by this class.
-	 *
-	 * Cannot be const, because subclasses may change this name.
-	 */
-	std::string name;
+  /**
+   * \brief A generated name for this object. This will be printed
+   * in front of all logging information given by this class.
+   *
+   * Cannot be const, because subclasses may change this name.
+   */
+  std::string name;
 
 private:
+  double generateOriginal_(const kvDataList &data, ExtraData extraData) const;
+  double generateCorrected_(const kvDataList &data, ExtraData extraData) const;
 
-	double generateOriginal_(const kvDataList & data, ExtraData extraData) const;
-	double generateCorrected_(const kvDataList & data, ExtraData extraData) const;
-
-	const int interesting_hours;
-	const std::set<boost::posix_time::time_duration> generate_when;
+  const int interesting_hours;
+  const std::set<boost::posix_time::time_duration> generate_when;
 };
-}
+} // namespace aggregator
 
 #endif // __agregator__AbstractAgregator_h__

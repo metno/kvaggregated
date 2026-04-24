@@ -36,41 +36,42 @@
 #include <kvalobs/kvData.h>
 #include <set>
 
-
-namespace aggregator
-{
+namespace aggregator {
 
 /**
  * \brief A framework for calculating sum of rainfall over a period
  * of time.
  */
-class rr: public StandardAggregator
-{
+class rr : public StandardAggregator {
 public:
-	/**
-	 * \brief Constructor. Set up the basic parameters of the
-	 * StandardAggregator object.
-	 *
-	 * \param readParam The paramID that incoming data should
-	 * have. All data which comes to this object has this paramID.
-	 *
-	 * \param writeParam The paramID of generated data.
-	 *
-	 * \param interestingHours How many hours of data back in time are
-	 * we interested in?
-	 *
-	 * \param generateWhen The times of day when we will generate
-	 * data. Agregates will only be generated for these times.
-	 */
-	rr(int readParam, int writeParam, int interestingHours, const std::set<boost::posix_time::time_duration> &generateWhen);
+  /**
+   * \brief Constructor. Set up the basic parameters of the
+   * StandardAggregator object.
+   *
+   * \param readParam The paramID that incoming data should
+   * have. All data which comes to this object has this paramID.
+   *
+   * \param writeParam The paramID of generated data.
+   *
+   * \param interestingHours How many hours of data back in time are
+   * we interested in?
+   *
+   * \param generateWhen The times of day when we will generate
+   * data. Agregates will only be generated for these times.
+   */
+  rr(int readParam, int writeParam, int interestingHours,
+     const std::set<boost::posix_time::time_duration> &generateWhen);
+  virtual std::string aggregatorName() const { return "rr"; }
 
 protected:
-	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
+  virtual void extractUsefulData(kvDataList &out, const kvDataList &dataIn,
+                                 const kvalobs::kvData &trigger) const;
 
-	virtual double calculate(const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const;
-
+  virtual double calculate(const ValueList &source,
+                           CalculationDataType calcDataType,
+                           ExtraData extraData) const;
 };
 
-}
+} // namespace aggregator
 
 #endif // __agregator_rr_h__

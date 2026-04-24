@@ -155,12 +155,13 @@ void AggregatorHandler::process(kvservice::KvDataList & out, const kvalobs::kvDa
 			++it;
 		} catch (std::exception & e)
 		{
-			LOGFATAL(typeid( e ).name() << ":\n\t" << e.what());
-			throw ;
+			LOGERROR("Exception from aggregator '" << it->second->aggregatorName()<< "': " << e.what() << "\nt" << typeid(e).name());
+			//LOGFATAL(typeid( e ).name() << ":\n\t" << e.what());
+			//throw ;
 		}
 		catch ( ... )
 		{
-			LOGFATAL( "Unknown exception" );
+			LOGFATAL( "Aggregator '" << it->second->aggregatorName() << "' unknown exception" );
 			throw;
 		}
 	}

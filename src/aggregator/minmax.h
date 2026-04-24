@@ -36,52 +36,57 @@
 #include <kvalobs/kvData.h>
 #include <vector>
 
-namespace aggregator
-{
+namespace aggregator {
 /**
  * \brief A min or max function.
  *
  * Usually std::min or std::max from the header \<algorthm\>
  */
-typedef const double& (* Func)(const double&, const double&);
+typedef const double &(*Func)(const double &, const double &);
 
 /**
  * \brief Calculates minimum and maximum values for observations.
  */
-class MinMax: public StandardAggregator
-{
-	/**
-	 * \brief The function to be called for doing agregate calculation.
-	 */
-	Func function;
+class MinMax : public StandardAggregator {
+  /**
+   * \brief The function to be called for doing agregate calculation.
+   */
+  Func function;
+
 public:
+  /**
+   * \brief Constructor.
+   *
+   * \param readParam The paramID that incoming data should
+   * have.
+   *
+   * \param writeParam The paramID of generated data.
+   *
+   * \param interestingHours How many hours of data back in time are
+   * we interested in?
+   *
+   * \param generateWhen The times of day when we will generate
+   * data. Agregates will only be generated for these times.
+   *
+   * \param minmax A function pointer specifying what to do with the
+   * observations. The function is used as follows: for each
+   * observation: val = minmax(val, nexObservation)
+   */
+  MinMax(int readParam, int writeParam, int interestingHours,
+         const std::set<boost::posix_time::time_duration> &generateWhen,
+         Func minmax);
 
-	/**
-	 * \brief Constructor.
-	 *
-	 * \param readParam The paramID that incoming data should
-	 * have.
-	 *
-	 * \param writeParam The paramID of generated data.
-	 *
-	 * \param interestingHours How many hours of data back in time are
-	 * we interested in?
-	 *
-	 * \param generateWhen The times of day when we will generate
-	 * data. Agregates will only be generated for these times.
-	 *
-	 * \param minmax A function pointer specifying what to do with the
-	 * observations. The function is used as follows: for each
-	 * observation: val = minmax(val, nexObservation)
-	 */
-	MinMax(int readParam, int writeParam, int interestingHours, const std::set<
-			boost::posix_time::time_duration> &generateWhen, Func minmax);
+  virtual std::string aggregatorName() const { return "MinMax"; }
 
-    virtual bool shouldProcess( const kvalobs::kvData &trigger, const kvDataList &observations ) const;
+  virtual bool shouldProcess(const kvalobs::kvData &trigger,
+                             const kvDataList &observations) const;
 
-	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
+  virtual void extractUsefulData(kvDataList &out, const kvDataList &dataIn,
+                                 const kvalobs::kvData &trigger) const;
 
-	virtual double calculate(const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const;
+  virtual double calculate(const ValueList &source,
+                           CalculationDataType calcDataType,
+                           ExtraData extraData) const;
 };
 
 /**
@@ -102,9 +107,9 @@ public:
  * \return A MinMax object for calculating minimum value of all
  * observation.
  */
-inline MinMax min(int readParam, int writeParam, int hours, const std::set<boost::posix_time::time_duration> &when)
-{
-	return MinMax(readParam, writeParam, hours, when, std::min<double>);
+inline MinMax min(int readParam, int writeParam, int hours,
+                  const std::set<boost::posix_time::time_duration> &when) {
+  return MinMax(readParam, writeParam, hours, when, std::min<double>);
 }
 
 /**
@@ -125,11 +130,10 @@ inline MinMax min(int readParam, int writeParam, int hours, const std::set<boost
  * \return A MinMax object for calculating maximum value of all
  * observation.
  */
-inline MinMax max(int readParam, int writeParam, int hours, const std::set<
-		boost::posix_time::time_duration> &when)
-{
-	return MinMax(readParam, writeParam, hours, when, std::max<double>);
+inline MinMax max(int readParam, int writeParam, int hours,
+                  const std::set<boost::posix_time::time_duration> &when) {
+  return MinMax(readParam, writeParam, hours, when, std::max<double>);
 }
-}
+} // namespace aggregator
 
 #endif // __agregator_minmax_h__
