@@ -46,7 +46,7 @@ protected:
 
 	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
 
-	virtual float calculate(const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const;
+	virtual double calculate(const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const;
 };
 
 }

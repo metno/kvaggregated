@@ -42,11 +42,11 @@ namespace aggregator
 
 class ta_24: public KoppenBasedMeanValueAggregator
 {
-public:
+public:   
 	explicit ta_24(const kvservice::DataAccess * dataAccess);
 	virtual ~ta_24();
 
-	virtual float calculateWithKoppensFormula(const ValueList & source, float koppenFactor, CalculationDataType calcDataType, ExtraData extraData) const;
+	virtual double calculateWithKoppensFormula(const ValueList & source, double koppenFactor, CalculationDataType calcDataType, ExtraData extraData) const;
 
 	virtual ExtraData getExtraData(const kvalobs::kvData & data);
 
@@ -65,15 +65,15 @@ class ta_24::ExtraCalculationData : public KoppenExtraData
 public:
 	explicit ExtraCalculationData(const kvalobs::kvData & trigger);
 
-	float minimumTemperature(const kvservice::DataAccess * dataAccess, CalculationDataType calcDataType);
+	double minimumTemperature(const kvservice::DataAccess * dataAccess, CalculationDataType calcDataType);
 
-	static const float missing_;
+	static const double missing_;
 protected:
 	virtual void populate(const kvservice::DataAccess * dataAccess);
 
 	bool gotData_;
-	float originalTan24;
-	float correctedTan24;
+	double originalTan24;
+	double correctedTan24;
 };
 
 

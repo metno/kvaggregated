@@ -54,7 +54,7 @@ void ot_24::extractUsefulData(kvDataList & out, const kvDataList & dataIn, const
 			out.push_back(* it);
 }
 
-float ot_24::calculate(const ValueList & source, CalculationDataType, ExtraData) const
+double ot_24::calculate(const ValueList & source, CalculationDataType, ExtraData) const
 {
 	return std::accumulate(source.begin(), source.end(), 0.0);
 }

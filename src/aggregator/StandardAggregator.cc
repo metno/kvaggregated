@@ -148,8 +148,8 @@ AbstractAggregator::kvDataPtr StandardAggregator::process(
 
 		boost::scoped_ptr<ExtraAggregationData> extraData(getExtraData(data));
 
-		float original = generateOriginal_(relevantData, extraData.get());
-		float corrected = generateCorrected_(relevantData, extraData.get());
+		double original = generateOriginal_(relevantData, extraData.get());
+		double corrected = generateCorrected_(relevantData, extraData.get());
 
 		TimeSpan times = getTimeSpan(data);
 
@@ -180,7 +180,7 @@ float StandardAggregator::getStationMetadata(const std::string & metadataName, c
 }
 
 
-float StandardAggregator::generateOriginal_(const kvDataList & data, ExtraData extraData) const
+double StandardAggregator::generateOriginal_(const kvDataList & data, ExtraData extraData) const
 {
 	kvDataList::const_iterator find = std::find_if(data.begin(), data.end(),
 			original_missing);
@@ -194,7 +194,7 @@ float StandardAggregator::generateOriginal_(const kvDataList & data, ExtraData e
 	return calculate(values, Original, extraData);
 }
 
-float StandardAggregator::generateCorrected_(const kvDataList & data, ExtraData extraData) const
+double StandardAggregator::generateCorrected_(const kvDataList & data, ExtraData extraData) const
 {
 	kvDataList::const_iterator find = std::find_if(data.begin(), data.end(),
 			boost::not1(valid));

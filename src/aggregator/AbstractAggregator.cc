@@ -33,7 +33,7 @@
 namespace aggregator
 {
 
-const float AbstractAggregator::invalidParam = -32768;
+const double AbstractAggregator::invalidParam = -32768;
 
 AbstractAggregator::AbstractAggregator(int readParam, int writeParam) :
 		write_param(writeParam)
@@ -47,19 +47,19 @@ AbstractAggregator::~AbstractAggregator()
 
 namespace
 {
-float round(float f)
+double round(double f)
 {
 	if ( f < 0 )
-		f -= 0.05f;
+		f -= 0.05;
 	else
-		f += 0.05f;
+		f += 0.05;
 	f *= 10;
 	f = int(f);
-	return f / 10.0f;
+	return f / 10.0;
 }
 }
 AbstractAggregator::kvDataPtr AbstractAggregator::getDataObject(const kvalobs::kvData &trigger,
-		const boost::posix_time::ptime &obsTime, float original, float corrected, const std::list<kvalobs::kvData> & sourceData)
+		const boost::posix_time::ptime &obsTime, double original, double corrected, const std::list<kvalobs::kvData> & sourceData)
 {
 	int typeID = trigger.typeID();
 	if (typeID > 0)

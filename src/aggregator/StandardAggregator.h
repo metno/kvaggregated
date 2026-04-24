@@ -176,7 +176,7 @@ protected:
 
 	virtual ExtraData getExtraData(const kvalobs::kvData & data) { return 0; }
 
-	typedef std::vector<float> ValueList;
+	typedef std::vector<double> ValueList;
 
 	enum CalculationDataType
 	{
@@ -190,7 +190,7 @@ protected:
 	 * @param trigger The observation which caused this aggregation to run.
 	 * @return the aggregated value
 	 */
-	virtual float calculate(const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const = 0;
+	virtual double calculate(const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const = 0;
 
 	/**
 	 * Get station metadata from kvalobs. This i a service function to
@@ -220,8 +220,8 @@ protected:
 
 private:
 
-	float generateOriginal_(const kvDataList & data, ExtraData extraData) const;
-	float generateCorrected_(const kvDataList & data, ExtraData extraData) const;
+	double generateOriginal_(const kvDataList & data, ExtraData extraData) const;
+	double generateCorrected_(const kvDataList & data, ExtraData extraData) const;
 
 	const int interesting_hours;
 	const std::set<boost::posix_time::time_duration> generate_when;

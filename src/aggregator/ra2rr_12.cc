@@ -92,22 +92,22 @@ bool ra2rr_12::shouldProcess(const kvData & trigger,
 	return false;
 }
 
-float ra2rr_12::calculate(const ValueList & source, CalculationDataType, ExtraData ) const
+double ra2rr_12::calculate(const ValueList & source, CalculationDataType, ExtraData ) const
 {
-	const float zero = 0.01;
+	const double zero = 0.01;
 
-	float result = 0;
+	double result = 0;
 	if (source.size() == 2) // don't have data for 24 hours ago
 		result = source[1] - source[0];
 	else if (source.size() == 3) // have data for 24 hours ago
 	{
-		const float diff12h = source[2] - source[1];
+		const double diff12h = source[2] - source[1];
 		if (diff12h < zero)
 			result = 0;
 		else
 		{
-			const float diff24h = source[2] - source[0];
-			const float diff12hPrevious = source[1] - source[0];
+			const double diff24h = source[2] - source[0];
+			const double diff12hPrevious = source[1] - source[0];
 
 			if (diff12hPrevious <= -100)
 				result = diff12h;

@@ -78,12 +78,6 @@ void logMetrics(std::shared_ptr<Metrics> metrics, const boost::posix_time::ptime
   if( logAppender.isOk() ) {
     std::ostringstream o;
     std::string status=metrics->sendtToKvalobs()?"true":"false";
-
-    //This check for empty messages sendt to kvalobs.
-    //This is seen sometimes.
-    if(metrics->sendtToKvalobs()<0) {
-      status ="empty";
-    } 
     
     o << " (" << stationid << "/" << typeId << "/" << boost::posix_time::to_kvalobs_string(obstime) <<")"
       << " sendtToKv: " << status  

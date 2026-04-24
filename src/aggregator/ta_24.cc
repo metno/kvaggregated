@@ -48,18 +48,18 @@ ta_24::~ta_24()
 {
 }
 
-float ta_24::calculateWithKoppensFormula(const ValueList & source, float koppenFactor, CalculationDataType calcDataType, ExtraData extraData) const
+double ta_24::calculateWithKoppensFormula(const ValueList & source, double koppenFactor, CalculationDataType calcDataType, ExtraData extraData) const
 {
 	ExtraCalculationData * d = static_cast<ExtraCalculationData *>(extraData);
 
-	float minTemperature = d->minimumTemperature(dataAccess_, calcDataType);
+	double minTemperature = d->minimumTemperature(dataAccess_, calcDataType);
 
 	if ( minTemperature == d->missing_ )
 		return invalidParam;
 
-	float n = std::accumulate(source.begin(), source.end(), 0.0) / 3.0;
+	double n = std::accumulate(source.begin(), source.end(), 0.0) / 3.0;
 
-	float ret =  n - (koppenFactor * (n - minTemperature));
+	double ret =  n - (koppenFactor * (n - minTemperature));
 
 	return ret;
 }
@@ -110,7 +110,7 @@ ta_24::ExtraCalculationData::ExtraCalculationData(const kvalobs::kvData & trigge
 {
 }
 
-float ta_24::ExtraCalculationData::minimumTemperature(const kvservice::DataAccess * dataAccess, CalculationDataType calcDataType)
+double ta_24::ExtraCalculationData::minimumTemperature(const kvservice::DataAccess * dataAccess, CalculationDataType calcDataType)
 {
 	if ( not gotData_ )
 	{
@@ -152,6 +152,6 @@ void ta_24::ExtraCalculationData::populate(const kvservice::DataAccess * dataAcc
 		correctedTan24 = std::min(a.corrected(), b.corrected() );
 }
 
-const float ta_24::ExtraCalculationData::missing_ = -32767;
+const double ta_24::ExtraCalculationData::missing_ = -32767;
 
 }

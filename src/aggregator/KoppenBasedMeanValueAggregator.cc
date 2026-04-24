@@ -131,7 +131,7 @@ KoppenBasedMeanValueAggregator::ExtraData KoppenBasedMeanValueAggregator::getExt
 	return ret;
 }
 
-float KoppenBasedMeanValueAggregator::calculate(const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const
+double KoppenBasedMeanValueAggregator::calculate(const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const
 {
 	if ( source.size() == 3 )
 	{

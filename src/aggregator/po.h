@@ -68,7 +68,7 @@ private:
 	 * \param tm yearly mean air temperature
 	 * \param hp reference value for air pressure
 	 */
-	float computePo(float pr, float ta, float um, float tm, float hp) const;
+	double computePo(double pr, double ta, double um, double tm, double hp) const;
 
 	/**
 	 * \param pr air pressure reduced to sea level
@@ -77,7 +77,7 @@ private:
 	 * \param tm yearly mean air temperature
 	 * \param hp reference value for air pressure
 	 */
-	float computePoWithInversionCorrection(float pr, float ta, float um, float tm, float hp) const;
+	double computePoWithInversionCorrection(double pr, double ta, double um, double tm, double hp) const;
 
 private:
 	const kvservice::DataAccess & dataAccess_;

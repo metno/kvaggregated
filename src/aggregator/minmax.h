@@ -43,7 +43,7 @@ namespace aggregator
  *
  * Usually std::min or std::max from the header \<algorthm\>
  */
-typedef const float& (* Func)(const float&, const float&);
+typedef const double& (* Func)(const double&, const double&);
 
 /**
  * \brief Calculates minimum and maximum values for observations.
@@ -81,7 +81,7 @@ public:
 
 	virtual void extractUsefulData(kvDataList & out, const kvDataList & dataIn, const kvalobs::kvData & trigger) const;
 
-	virtual float calculate(const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const;
+	virtual double calculate(const ValueList & source, CalculationDataType calcDataType, ExtraData extraData) const;
 };
 
 /**
@@ -104,7 +104,7 @@ public:
  */
 inline MinMax min(int readParam, int writeParam, int hours, const std::set<boost::posix_time::time_duration> &when)
 {
-	return MinMax(readParam, writeParam, hours, when, std::min<float>);
+	return MinMax(readParam, writeParam, hours, when, std::min<double>);
 }
 
 /**
@@ -128,7 +128,7 @@ inline MinMax min(int readParam, int writeParam, int hours, const std::set<boost
 inline MinMax max(int readParam, int writeParam, int hours, const std::set<
 		boost::posix_time::time_duration> &when)
 {
-	return MinMax(readParam, writeParam, hours, when, std::max<float>);
+	return MinMax(readParam, writeParam, hours, when, std::max<double>);
 }
 }
 

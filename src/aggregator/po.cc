@@ -114,7 +114,7 @@ po::kvDataPtr po::process(const kvalobs::kvData & data, const ParameterSortedDat
 		if ( po ) // and the observation contained its own PO observation
 		{
 			// check if the aggregated and reported values are very similar.
-			const float WRITE_TRESHOLD = 0.305;
+			const double WRITE_TRESHOLD = 0.305;
 			if ( std::fabs(po->corrected() - ret->corrected()) < WRITE_TRESHOLD and
 					std::fabs(po->original() - ret->original()) < WRITE_TRESHOLD )
 			{
@@ -149,8 +149,8 @@ po::kvDataPtr po::process_(const kvalobs::kvData & data, const ParameterSortedDa
 			float tm = getStationMetadata("VS", factory.getMissing(TM_VS));
 			float hp = getStationMetadata("hp", data);
 
-			float original = invalidParam;
-			float corrected = invalidParam;
+			double original = invalidParam;
+			double corrected = invalidParam;
 
 			if ( not kvalobs::original_missing(* pr) and not kvalobs::original_missing(* ta) )
 			{
@@ -195,7 +195,7 @@ const po::TimeSpan po::getTimeSpan(const kvalobs::kvData &data) const
 	return TimeSpan(start, data.obstime());
 }
 
-float po::computePo(float pr, float ta, float um, float tm, float hp) const
+double po::computePo(double pr, double ta, double um, double tm, double hp) const
 {
 	const double e = 2.718281828;
 	double cu = um * ((2.5e-05 * hp) + 0.10701) * 0.0611213 * std::pow(e, (17.5043 * tm) / (241.2 + tm));
@@ -203,7 +203,7 @@ float po::computePo(float pr, float ta, float um, float tm, float hp) const
 	return pr / std::pow(e, double(hp) / y);
 }
 
-float po::computePoWithInversionCorrection(float pr, float ta, float um, float tm, float hp) const
+double po::computePoWithInversionCorrection(double pr, double ta, double um, double tm, double hp) const
 {
 	if ( ta < 1.5 )
 	{

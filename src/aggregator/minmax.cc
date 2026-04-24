@@ -63,9 +63,9 @@ void MinMax::extractUsefulData(kvDataList & out, const kvDataList & dataIn, cons
 	out = dataIn;
 }
 
-float MinMax::calculate(const ValueList & source, CalculationDataType, ExtraData ) const
+double MinMax::calculate(const ValueList & source, CalculationDataType, ExtraData ) const
 {
-	float ret = source.front();
+	double ret = source.front();
 	for ( ValueList::const_iterator it = source.begin(); it != source.end(); ++ it )
 		ret = function(ret, * it);
 	return ret;

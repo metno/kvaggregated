@@ -135,7 +135,7 @@ protected:
 	 */
 	kvDataPtr
 	getDataObject(const kvalobs::kvData &trigger,
-			const boost::posix_time::ptime &obsTime, float original, float corrected, const std::list<kvalobs::kvData> & sourceData);
+			const boost::posix_time::ptime &obsTime, double original, double corrected, const std::list<kvalobs::kvData> & sourceData);
 
 	/**
 	 * \brief This is the kvalobs internal value for errors.
@@ -147,7 +147,7 @@ protected:
 	 * value. Each subclass must determine what to do if such a value
 	 * is encountered.
 	 */
-	static const float invalidParam;
+	static const double invalidParam;
 
 private:
 

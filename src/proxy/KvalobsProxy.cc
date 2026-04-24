@@ -214,7 +214,7 @@ bool differentCorrected(const kvData & a, const kvData & b)
 		return true;
 	if (va and vb)
 	{
-		float diff = abs(a.corrected() - b.corrected());
+		double diff = abs(a.corrected() - b.corrected());
 		return diff > 0.04999;
 	}
 	return false;
@@ -228,7 +228,7 @@ bool differentOriginal(const kvData & a, const kvData & b)
 		return true;
 	if (va and vb)
 	{
-		float diff = abs(a.original() - b.original());
+		double diff = abs(a.original() - b.original());
 		return diff > 0.04999;
 	}
 	return false;
