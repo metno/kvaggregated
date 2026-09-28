@@ -28,166 +28,187 @@
 */
 
 #include "AggregatorConfiguration.h"
-#include <kvalobs/kvPath.h>
-#include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
-#include <string>
+#include <boost/program_options.hpp>
+#include <filesystem>
 #include <iostream>
+#include <kvalobs/kvPath.h>
+#include <string>
 
 using namespace boost::program_options;
 
-void AggregatorConfiguration::setup_()
-{
-	options_description mode("Working mode");
+bool AggregatorConfiguration::createProxyDatabase_ = false;
 
-	mode.add_options()
-			("back-production,b", value<std::string>(), "Produce data according to the given specification. Format for specification is '2008-04-08 06:00:00,5', which means produce data valid for period 2008-04-08T06:00:00 - 2008-04-08T11:00:00. Daemon mode will not be entered if this option is given.")
-			("daemon-mode,d", "Enter daemon mode, even if overridden by the --back-production option.")
-			("stations,s", value<std::vector<std::string> >(), "Only process stations from the given comma-separated list.")
-			("parameter,p", value<std::vector<std::string> >(), "Only process parameters from the given comma-separated list.")
-			("type,t", value<std::vector<std::string> >(), "Only process the typeid from the given comma-separated list.")
-	;
-	availableOptions_.add(mode);
+void AggregatorConfiguration::setup_() {
+  options_description mode("Working mode");
 
-	options_description database("Database");
-	bool repopulate;
-	database.add_options()
-		("proxy-database-name", value<std::string>(), "Use the given file as proxy database. If the file does not exist, it will be created")
-		("repopulate,r", "Repopulate internal agragator database on startup")
-	;
-	availableOptions_.add(database);
+  mode.add_options()(
+      "back-production,b", value<std::string>(),
+      "Produce data according to the given specification. Format for "
+      "specification is '2008-04-08 06:00:00,5', which means produce data "
+      "valid for period 2008-04-08T06:00:00 - 2008-04-08T11:00:00. Daemon mode "
+      "will not be entered if this option is given.")(
+      "daemon-mode,d",
+      "Enter daemon mode, even if overridden by the --back-production option.")(
+      "stations,s", value<std::vector<std::string>>(),
+      "Only process stations from the given comma-separated list.")(
+      "parameter,p", value<std::vector<std::string>>(),
+      "Only process parameters from the given comma-separated list.")(
+      "type,t", value<std::vector<std::string>>(),
+      "Only process the typeid from the given comma-separated list.");
+  availableOptions_.add(mode);
 
-	options_description general("General");
-	general.add_options()
-			("log-to-stdout", "Do not create log files. Send all log output to stdout.")
-			("help", "Get help message")
-			("version",	"Display version information")
-	;
-	availableOptions_.add(general);
+  options_description database("Database");
+  bool repopulate;
+  database.add_options()("proxy-database-name", value<std::string>(),
+                         "Use the given file as proxy database. If the file "
+                         "does not exist, it will be created")(
+      "repopulate,r", "Repopulate internal agragator database on startup")(
+      "create-proxy-database",
+      "Create the proxy database if it does not exist");
+  availableOptions_.add(database);
+
+  options_description general("General");
+  general.add_options()(
+      "log-to-stdout",
+      "Do not create log files. Send all log output to stdout.")(
+      "help", "Get help message")("version", "Display version information")(
+      "config-file", value<std::string>(),
+      "Specify the configuration file to use.");
+  availableOptions_.add(general);
 }
 
-
-AggregatorConfiguration::AggregatorConfiguration() :
-		messageStream_(std::cout), errorStream_(std::clog), availableOptions_("Available options")
-{
-	setup_();
+AggregatorConfiguration::AggregatorConfiguration()
+    : messageStream_(std::cout), errorStream_(std::clog),
+      availableOptions_("Available options") {
+  setup_();
 }
 
-AggregatorConfiguration::AggregatorConfiguration(std::ostream & messageStream, std::ostream & errorStream) :
-		messageStream_(messageStream), errorStream_(errorStream), availableOptions_("Available options")
-{
-	setup_();
+AggregatorConfiguration::AggregatorConfiguration(std::ostream &messageStream,
+                                                 std::ostream &errorStream)
+    : messageStream_(messageStream), errorStream_(errorStream),
+      availableOptions_("Available options") {
+  setup_();
 }
 
-AggregatorConfiguration::~AggregatorConfiguration()
-{
+AggregatorConfiguration::~AggregatorConfiguration() {}
+
+namespace {
+template <class Iterator>
+void createIntList(Iterator out, const std::string &csv) {
+  using namespace boost;
+
+  split_iterator<std::string::const_iterator> it =
+      make_split_iterator(csv, first_finder(","));
+  for (; it != split_iterator<std::string::const_iterator>(); ++it) {
+    *out = lexical_cast<int>(*it);
+    ++out;
+  }
 }
 
-namespace
-{
-template<class Iterator>
-void createIntList(Iterator out, const std::string & csv)
-{
-	using namespace boost;
+template <class Iterator>
+void getOptionList(Iterator out, const std::string &option,
+                   const variables_map &givenOptions) {
+  if (givenOptions.count(option)) {
+    typedef std::vector<std::string> StringList;
+    const StringList &stList = givenOptions[option].as<StringList>();
+    for (StringList::const_iterator it = stList.begin(); it != stList.end();
+         ++it)
+      createIntList(out, *it);
+  }
+}
+} // namespace
 
-	split_iterator<std::string::const_iterator> it = make_split_iterator(csv, first_finder(","));
-	for ( ; it != split_iterator<std::string::const_iterator>(); ++ it )
-	{
-		* out = lexical_cast<int>(*it);
-		++ out;
-	}
+AggregatorConfiguration::ParseResult
+AggregatorConfiguration::parse(int &argc, char **argv) {
+  configFile_ = "";
+  try {
+
+    //	parsed_options parsed =
+    //			command_line_parser(argc,
+    //argv).options(availableOptions_).allow_unregistered().run(); 	store(parsed,
+    //givenOptions_);
+    store(parse_command_line(argc, argv, availableOptions_), givenOptions_);
+    notify(givenOptions_);
+
+    if (givenOptions_.count("help")) {
+      help(messageStream_);
+      return Exit_Success;
+    }
+    if (givenOptions_.count("version")) {
+      version(messageStream_);
+      return Exit_Success;
+    }
+
+    getOptionList(std::back_inserter(stations_), "stations", givenOptions_);
+    getOptionList(std::back_inserter(parameters_), "parameter", givenOptions_);
+    getOptionList(std::back_inserter(types_), "type", givenOptions_);
+
+    createProxyDatabase_ = givenOptions_.count("create-proxy-database") > 0 ||
+                           givenOptions_.count("proxy-database-name") > 0;
+    logToStdOut_ = bool(givenOptions_.count("log-to-stdout"));
+    if (givenOptions_.count("config-file"))
+      configFile_ = givenOptions_["config-file"].as<std::string>();
+
+    return No_Action;
+  } catch (std::exception &e) {
+    errorStream_ << "Error when parsing command line options: " << e.what()
+                 << std::endl;
+    return Exit_Failure;
+  }
 }
 
-template<class Iterator>
-void getOptionList(Iterator out, const std::string & option, const variables_map & givenOptions)
-{
-	if ( givenOptions.count(option) )
-	{
-		typedef std::vector<std::string> StringList;
-		const StringList & stList = givenOptions[option].as<StringList>();
-		for ( StringList::const_iterator it = stList.begin(); it != stList.end(); ++ it )
-			createIntList(out, * it);
-	}
-}
+std::ostream &AggregatorConfiguration::version(std::ostream &s) const {
+  return s << "kvAgregated (kvalobs) " << VERSION << std::endl;
 }
 
-AggregatorConfiguration::ParseResult AggregatorConfiguration::parse(int & argc, char ** argv)
-{
-	try
-	{
-
-	//	parsed_options parsed =
-	//			command_line_parser(argc, argv).options(availableOptions_).allow_unregistered().run();
-	//	store(parsed, givenOptions_);
-		store(parse_command_line(argc, argv, availableOptions_), givenOptions_);
-		notify(givenOptions_);
-
-		if ( givenOptions_.count("help") )
-		{
-			help(messageStream_);
-			return Exit_Success;
-		}
-		if ( givenOptions_.count("version") )
-		{
-			version(messageStream_);
-			return Exit_Success;
-		}
-
-		getOptionList(std::back_inserter(stations_), "stations", givenOptions_);
-		getOptionList(std::back_inserter(parameters_), "parameter", givenOptions_);
-		getOptionList(std::back_inserter(types_), "type", givenOptions_);
-
-		logToStdOut_ = bool(givenOptions_.count("log-to-stdout"));
-
-		return No_Action;
-	}
-	catch ( std::exception & e )
-	{
-		errorStream_ << "Error when parsing command line options: " << e.what() << std::endl;
-		return Exit_Failure;
-	}
+std::ostream &AggregatorConfiguration::help(std::ostream &s) const {
+  return version(s) << "\nData agregation daemon for kvalobs.\n\n"
+                    << availableOptions_ << std::endl;
 }
 
-std::ostream & AggregatorConfiguration::version(std::ostream & s) const
-{
-	return s << "kvAgregated (kvalobs) " << VERSION << std::endl;
+bool AggregatorConfiguration::backProduction() const {
+  return givenOptions_.count("back-production");
 }
 
-
-std::ostream & AggregatorConfiguration::help(std::ostream & s) const
-{
-	return version(s) << "\nData agregation daemon for kvalobs.\n\n" << availableOptions_ << std::endl;
+std::string AggregatorConfiguration::backProductionSpec() const {
+  const variable_value &opt = givenOptions_["back-production"];
+  if (opt.empty())
+    return std::string();
+  return opt.as<std::string>();
 }
 
-
-bool AggregatorConfiguration::backProduction() const
-{
-	return givenOptions_.count("back-production");
+bool AggregatorConfiguration::daemonMode() const {
+  return givenOptions_.count("daemon-mode");
 }
 
-std::string AggregatorConfiguration::backProductionSpec() const
-{
-	const variable_value & opt = givenOptions_["back-production"];
-	if ( opt.empty() )
-		return std::string();
-	return opt.as<std::string>();
+std::string AggregatorConfiguration::proxyDatabaseName() const {
+  const variable_value &opt = givenOptions_["proxy-database-name"];
+  if (opt.empty())
+    return kvPath("localstatedir", "kvaggregated") + "/database.sqlite";
+  createProxyDatabase_ = true;
+  return opt.as<std::string>();
 }
 
-bool AggregatorConfiguration::daemonMode() const
-{
-	return givenOptions_.count("daemon-mode");
+bool AggregatorConfiguration::repopulateDatabase() const {
+  return givenOptions_.count("repopulate") > 0;
 }
 
-std::string AggregatorConfiguration::proxyDatabaseName() const
-{
-	const variable_value & opt = givenOptions_["proxy-database-name"];
-	if ( opt.empty() )
-		return kvPath("localstatedir", "kvagregated")+ "/database.sqlite";
-	return opt.as<std::string>();
+bool AggregatorConfiguration::createProxyDatabase() {
+  return createProxyDatabase_;
 }
 
-
-bool AggregatorConfiguration::repopulateDatabase() const
-{
-	return givenOptions_.count("repopulate");
+std::string AggregatorConfiguration::configFile() const {
+  if (configFile_.empty()) {
+    configFile_ = kvalobs::kvPath(kvalobs::sysconfdir, "kvaggregated") +
+                  "/kvaggregated.conf";
+    if (std::filesystem::exists(configFile_)) {
+      return configFile_;
+    }
+    configFile_ = kvalobs::kvPath(kvalobs::sysconfdir) + "/kvalobs.conf";
+    if (std::filesystem::exists(configFile_)) {
+      return configFile_;
+    }
+  }
+  return "";
 }

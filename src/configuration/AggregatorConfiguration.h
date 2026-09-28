@@ -66,6 +66,8 @@ public:
 
 	std::string proxyDatabaseName() const;
 	bool repopulateDatabase() const;
+	static bool createProxyDatabase();
+	std::string configFile() const;
 
 	bool logToStdOut() const { return logToStdOut_; }
 
@@ -84,8 +86,10 @@ private:
 	std::vector<int> stations_;
 	std::vector<int> parameters_;
 	std::vector<int> types_;
+	static bool createProxyDatabase_;
 
 	bool logToStdOut_;
+	mutable std::string configFile_;
 };
 
 #endif /* AGREGATORCONFIGURATION_H_ */

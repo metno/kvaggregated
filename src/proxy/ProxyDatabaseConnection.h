@@ -30,6 +30,7 @@
 #ifndef PROXYDATABASECONNECTION_H_
 #define PROXYDATABASECONNECTION_H_
 
+#include "configuration/AggregatorConfiguration.h"
 #include <boost/noncopyable.hpp>
 #include <string>
 
@@ -44,7 +45,7 @@ class Connection;
 class ProxyDatabaseConnection : boost::noncopyable
 {
 public:
-	explicit ProxyDatabaseConnection(const std::string & databaseProxyFile, bool createDatabase = false);
+	explicit ProxyDatabaseConnection(const std::string & databaseProxyFile, bool createDatabase = AggregatorConfiguration::createProxyDatabase());
 	~ProxyDatabaseConnection();
 
 	dnmi::db::Connection & get() { return * connection_; }
